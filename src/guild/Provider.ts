@@ -1,0 +1,42 @@
+import VoiceConnectionHandler from "../voice/ConnectionHandler"
+import {GuildContext} from "./Context"
+import AudioPlayer from "../voice/AudioPlayer"
+import DJ from "../music/DJ"
+import InterruptService from "../music/InterruptService"
+import Responder from "../communication/Responder"
+
+export default class GuildProvider {
+    private readonly voiceConnectionHandler: VoiceConnectionHandler
+    private readonly audioPlayer: AudioPlayer
+    private readonly dj: DJ
+    private readonly interruptService: InterruptService
+    private readonly responder: Responder
+
+    constructor(guildContext: GuildContext) {
+        this.voiceConnectionHandler = new VoiceConnectionHandler(guildContext)
+        this.audioPlayer = new AudioPlayer(guildContext)
+        this.dj = new DJ(guildContext)
+        this.interruptService = new InterruptService(guildContext)
+        this.responder = new Responder(guildContext)
+    }
+
+    getVoiceConnectionHandler(): VoiceConnectionHandler {
+        return this.voiceConnectionHandler
+    }
+
+    getAudioPlayer(): AudioPlayer {
+        return this.audioPlayer
+    }
+
+    getDJ(): DJ {
+        return this.dj
+    }
+
+    getInterruptService(): InterruptService {
+        return this.interruptService
+    }
+
+    getResponder(): Responder {
+        return this.responder
+    }
+}
