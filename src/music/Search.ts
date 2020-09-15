@@ -1,5 +1,5 @@
 import url from "url"
-import ytdl from "ytdl-core-discord"
+import ytdl from "ytdl-core"
 import Youtube from "./sources/Youtube/Youtube3"
 import {Utils} from "../utils/Utils"
 import {Readable} from "stream"
@@ -33,11 +33,11 @@ export namespace Search {
             const basicInfo = await ytdl.getBasicInfo(info.url)
             if (basicInfo.formats.length > 0) {
                 resolved = true
-                console.log(`Found ${basicInfo.title} for ${result.metadata.query}`)
+                console.log(`Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
                 return new YoutubeTrack(Utils.generateUUID(), {
-                    description: basicInfo.description,
-                    length: +basicInfo.length_seconds,
-                    title: basicInfo.title,
+                    description: basicInfo.videoDetails.shortDescription,
+                    length: +basicInfo.videoDetails.lengthSeconds,
+                    title: basicInfo.videoDetails.title,
                     url: info.url,
                     thumbnailURL: basicInfo.thumbnail_url
                 })
