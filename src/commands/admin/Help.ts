@@ -1,8 +1,8 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {CommandRegistry} from "../Registry"
-import {TableGenerator} from "../../communication/TableGenerator"
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, Command, CommandOptions} from '../Command'
+import {CommandRegistry} from '../Registry'
+import {TableGenerator} from '../../communication/TableGenerator'
 
 export default class HelpCommand extends Command {
     readonly options: CommandOptions = {
@@ -62,7 +62,7 @@ function createMultipleCommandHelpMessage(context: GuildContext, commandsByGroup
 
 function createGroupCommandTable(commands: Map<string, Command>): string {
     const tableData = []
-    const tableHeaders = ["Group", "Keyword", "Description"]
+    const tableHeaders = ['Group', 'Keyword', 'Description']
     commands.forEach((command, keyword) => {
         tableData.push([command.options.group, keyword, command.options.descriptions[command.options.keywords.indexOf(keyword)]])
     })
@@ -74,14 +74,16 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     const descriptionIndex = command.options.keywords.indexOf(keyword)
     description += `Description: ${command.options.descriptions[descriptionIndex]}\n`
     description += `Group: ${command.options.group}\n`
-    const aliases = ""
-    description += `Keyword: <${keyword}${aliases ? aliases : ""}>\n`
+    const aliases = ''
+    description += `Keyword: <${keyword}${aliases ? aliases : ''}>\n`
     if (command.options.arguments.length > 0) {
         const tableData = []
-        const tableHeaders = ["Argument", "Description", "Flag", "Required", "Type"]
+        const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Default']
         command.options.arguments.forEach((argument) => {
-            const flag = argument.flag != "_" ? argument.flag : ""
-            tableData.push([argument.key, argument.description, flag , argument.required ? "yes": "no", ArgumentType[argument.type]])
+            const flag = argument.flag != '_' ? argument.flag : ''
+            const defaultValue = argument.default ? argument.default : ''
+            const required =  argument.required ? 'yes': 'no'
+            tableData.push([argument.key, argument.description, flag , required, ArgumentType[argument.type], defaultValue])
         })
         description += TableGenerator.createTable(tableHeaders, tableData)
     } else {

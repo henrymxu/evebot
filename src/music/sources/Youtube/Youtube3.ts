@@ -3,7 +3,7 @@ import ytsr from "ytsr"
 import ytpl from "ytpl"
 
 export default class Youtube3 implements TrackSource {
-    getTrackUrl(query: string): Promise<SearchResult> {
+    getTrackURLFromSearch(query: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
             ytsr(query, {limit: 5}).then(result => {
                 const videos = result.items.filter(item => item.type == "video")
@@ -29,7 +29,7 @@ export default class Youtube3 implements TrackSource {
         })
     }
 
-    getTrackUrlsFromPlaylist(playlistURL: string): Promise<SearchResult> {
+    getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
             ytpl(playlistURL).then(result => {
                 console.log(`Found playlist ${result.title} with ${result.total_items} items`)

@@ -12,7 +12,7 @@ export default class Youtube implements TrackSource {
         }
     }
 
-    getTrackUrl(query: string): Promise<SearchResult> {
+    getTrackURLFromSearch(query: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
             YoutubeAPI(query, this.options, (err, results) => {
                 if (err || !results || results.length === 0) {
@@ -38,7 +38,7 @@ export default class Youtube implements TrackSource {
         })
     }
 
-    getTrackUrlsFromPlaylist(playlistURL: string): Promise<SearchResult> {
+    getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
         return undefined;
     }
 

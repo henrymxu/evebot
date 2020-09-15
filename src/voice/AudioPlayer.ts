@@ -177,7 +177,7 @@ export default class AudioPlayer {
         const current = this.trackQueue.shift()
         if (current) {
             this.getConnection()?.dispatcher?.end()
-            current.getStream().destroy()
+            current.getStream()?.destroy()
         }
         const trackItem = this.trackQueue[0]
         if (!trackItem) {

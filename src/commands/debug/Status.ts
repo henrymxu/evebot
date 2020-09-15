@@ -55,7 +55,7 @@ function getStatusResponse(context: GuildContext): string {
     const tableHeader3 = ['Registered Users']
     const tableData3 = []
     context.getProvider().getVoiceConnectionHandler().getVoiceStreams().forEach((_, userID) => {
-        tableData3.push([context.getUserFromUserID(userID)])
+        tableData3.push([context.getUserFromUserID(userID).username])
     })
     response += `${TableGenerator.createTable(tableHeader3, tableData3)}`
     return response

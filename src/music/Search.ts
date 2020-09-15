@@ -53,22 +53,22 @@ function parse(query: string): Promise<SearchResult> {
         switch (result.pathname) {
             case '/watch':
                 console.log(`Found a Youtube video for ${query}`)
-                return YoutubeSource.getTrackUrl(query)
+                return YoutubeSource.getTrackURLFromSearch(query)
             case '/playlist':
                 console.log(`Found a Youtube playlist for ${query}`)
-                return YoutubeSource.getTrackUrlsFromPlaylist(query)
+                return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
         }
     } else if (result.hostname === 'open.spotify.com') {
         if (result.pathname.includes('playlist')) {
             // return retrieveSongsFromSpotifyPlaylist(result.pathname)
         }
     }
-    return YoutubeSource.getTrackUrl(query)
+    return YoutubeSource.getTrackURLFromSearch(query)
 }
 
 export interface TrackSource {
-    getTrackUrl(query: string): Promise<SearchResult>
-    getTrackUrlsFromPlaylist(playlistURL: string): Promise<SearchResult>
+    getTrackURLFromSearch(query: string): Promise<SearchResult>
+    getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult>
 }
 
 export interface SearchResult {

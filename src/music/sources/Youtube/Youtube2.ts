@@ -9,7 +9,7 @@ export default class Youtube2 implements TrackSource {
         this.api = new YoutubeAPI(Keys.get('youtube_api_token'))
     }
 
-    getTrackUrl(query: string): Promise<SearchResult> {
+    getTrackURLFromSearch(query: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
             this.api.searchVideos(query, 3, {
                 'relevanceLanguage': 'en'
@@ -31,7 +31,7 @@ export default class Youtube2 implements TrackSource {
         })
     }
 
-    getTrackUrlsFromPlaylist(playlistURL: string): Promise<SearchResult> {
+    getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
             this.api.getPlaylist(playlistURL).then(playlist => {
                 console.log(`The playlist's title is ${playlist.title}`)

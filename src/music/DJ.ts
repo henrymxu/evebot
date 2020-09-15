@@ -1,15 +1,18 @@
 import {Search} from "./Search"
 import {GuildContext} from "../guild/Context"
-import {Message, MessageEmbed} from "discord.js"
-import {MessageGenerator} from "../communication/MessageGenerator"
+import {Message} from "discord.js"
 import {Track} from "./tracks/Track"
 import {TrackMessageFactory} from "../communication/TrackMessageGenerator"
+import SpotifyRadio from "./radio/SpotifyRadio"
+import {Radio} from "./radio/Radio"
 
 export default class DJ {
     private context: GuildContext
+    private readonly radio: Radio
 
-    constructor(guildContext: GuildContext) {
-        this.context = guildContext
+    constructor(context: GuildContext) {
+        this.context = context
+        this.radio = new SpotifyRadio(context, this.playTrack)
     }
 
     volume(volume: number, relative: boolean = false) {
@@ -18,17 +21,14 @@ export default class DJ {
 
     play(query: string, requesterId: string, message?: Message) {
         this.context.getProvider().getResponder().startTyping(message)
-        Search.search(query).then((tracks) => {
-            tracks.forEach((track) => {
-                track.metaData = {requesterId: requesterId, source: message}
-                const isPlaying = this.context.getProvider().getAudioPlayer().queueTrack(track)
-                if (!isPlaying) { this.onTrackQueued(track) }
-                this.context.getProvider().getResponder().stopTyping(message)
-            })
-        }).catch(err => {
-            console.log(`Error queuing ${query}: ${err}`)
-            this.context.getProvider().getResponder().stopTyping(message)
-        })
+        if (this.radio.isPlaying()) {
+            this.radio.stop()
+        }
+        this.playTrack(query, requesterId, message)
+    }
+
+    getRadio(): SpotifyRadio {
+        return this.radio
     }
 
     getQueueMessage(): Track[]  {
@@ -53,7 +53,22 @@ export default class DJ {
     }
 
     stop() {
+        this.radio.stop()
         return this.context.getProvider().getAudioPlayer().stop()
+    }
+
+    private playTrack(query: string, requesterId: string, message?: Message) {
+        Search.search(query).then((tracks) => {
+            tracks.forEach((track) => {
+                track.metaData = {requesterId: requesterId, source: message}
+                const isPlaying = this.context.getProvider().getAudioPlayer().queueTrack(track)
+                if (!isPlaying) { this.onTrackQueued(track) }
+                this.context.getProvider().getResponder().stopTyping(message)
+            })
+        }).catch(err => {
+            console.log(`Error queuing ${query}: ${err}`)
+            this.context.getProvider().getResponder().stopTyping(message)
+        })
     }
 
     private onTrackQueued(track: Track) {
@@ -72,5 +87,10 @@ export default class DJ {
         this.context.getProvider().getResponder().delete(track.id)
         this.context.getProvider().getResponder().delete('queue')
         this.context.getProvider().getResponder().delete('song')
+
+        if (this.radio.isPlaying()) {
+            this.radio.next()
+            this.radio.resume()
+        }
     }
 }
