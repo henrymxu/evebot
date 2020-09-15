@@ -1,9 +1,8 @@
-import {Track} from "./Track"
+import {Track, TrackState} from "./Track"
 import {Readable} from "stream"
 import ytdl from "ytdl-core-discord"
 import {GuildContext} from "../../guild/Context"
 import {StreamUtils} from "../../utils/StreamUtils"
-import {Utils} from "../../utils/Utils"
 
 export default class YoutubeTrack extends Track {
     private stream: Readable
@@ -19,15 +18,16 @@ export default class YoutubeTrack extends Track {
     }
 
     getTitle(): string {
+        // TODO: Truncate string
         return this.youtubeInfo.title
     }
 
     getArtist(): string {
-        return this.getYoutubeTrackInfo().url
+        return ' - '
     }
 
-    getLength(): string {
-        return Utils.convertSecondsToTimeString(this.getYoutubeTrackInfo().length)
+    getLength(): number {
+        return this.getYoutubeTrackInfo().length
     }
 
     getStream(): Readable {
@@ -35,7 +35,7 @@ export default class YoutubeTrack extends Track {
     }
 
     loadStream(context: GuildContext): Promise<Readable> {
-        this.currentlyLoading = true
+        this.state = TrackState.LOADING
         const announceStream = context.getVoiceDependencyProvider()
             .getSpeechGenerator().asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
         const songStream = ytdl(this.youtubeInfo.url, {quality: 'highestaudio', highWaterMark: 1024 * 1024 * 10})
@@ -43,8 +43,8 @@ export default class YoutubeTrack extends Track {
         return new Promise<Readable>((res, rej) => {
             Promise.all([announceStream, songStream]).then((streams: Readable[]) => {
                 this.stream = StreamUtils.mergeAsync(...streams)
+                this.state = TrackState.LOADED
                 res(this.stream)
-                this.currentlyLoading = false
             })
         })
     }

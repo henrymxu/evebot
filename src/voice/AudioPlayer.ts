@@ -2,7 +2,7 @@ import PriorityQueue from "priorityqueuejs"
 import {StreamType, VoiceConnection} from "discord.js"
 import {Readable} from "stream"
 import {GuildContext} from "../guild/Context"
-import {Track} from "../music/tracks/Track"
+import {Track, TrackState} from "../music/tracks/Track"
 
 export default class AudioPlayer {
     private context: GuildContext
@@ -13,7 +13,7 @@ export default class AudioPlayer {
 
     private trackQueue: Track[]
 
-    private state: string // idle, paused, playing, interrupting
+    private state: AudioPlayerState // idle, paused, playing, interrupting
     private volume: number
 
     constructor(context: GuildContext) {
@@ -31,7 +31,7 @@ export default class AudioPlayer {
 
         this.trackQueue = []
 
-        this.state = "idle"
+        this.state = AudioPlayerState.IDLE
         this.volume = 25
     }
     
@@ -52,23 +52,23 @@ export default class AudioPlayer {
     }
 
     pause(): boolean {
-        if (!this.getConnection().dispatcher || this.state == "paused") {
+        if (!this.getConnection().dispatcher || this.state == AudioPlayerState.PAUSED) {
             return false
         }
         this.getConnection().dispatcher.pause()
-        this.state = "paused"
+        this.state = AudioPlayerState.PAUSED
         return true
     }
 
     resume(): boolean {
-        if (!this.getConnection().dispatcher || this.state != "paused") {
+        if (!this.getConnection().dispatcher || this.state != AudioPlayerState.PAUSED) {
             return false
         }
         if (this.getConnection().dispatcher) {
             this.getConnection().dispatcher.resume()
-            this.state = "playing"
+            this.state = AudioPlayerState.PLAYING
         } else {
-            this.state = "idle"
+            this.state = AudioPlayerState.IDLE
         }
         return true
     }
@@ -83,8 +83,7 @@ export default class AudioPlayer {
     }
 
     skip(): boolean {
-        this.playNext()
-        return true
+        return this.playNext()
     }
 
     queueInterrupt(stream: Readable, audioType: string, priority: number, callback: ()=>any = ()=>{}) {
@@ -107,10 +106,10 @@ export default class AudioPlayer {
             this.prepareToPlay(true)
             return
         }
-        if (this.state == "playing" && this.trackQueue.length > 0) {
+        if (this.state == AudioPlayerState.PLAYING && this.trackQueue.length > 0) {
             this.trackQueue[0].getStream().pause()
             this.trackQueue[0].getStream().unpipe()
-        } else if (this.state == "interrupting" && this.interruptQueue.size() > 1) {
+        } else if (this.state == AudioPlayerState.INTERRUPTING && this.interruptQueue.size() > 1) {
             if (this.interruptQueue[0] === this.currentInterrupt) {
                 return
             }
@@ -123,10 +122,10 @@ export default class AudioPlayer {
         this.getConnection().play(
             interrupt.stream, {type: interrupt.audioType as StreamType}
         ).on('start', () => {
-            this.state = "interrupting"
+            this.state = AudioPlayerState.INTERRUPTING
         }).on('finish', () => {
             this.interruptQueue.deq()
-            this.state = "idle"
+            this.state = AudioPlayerState.IDLE
             this.currentInterrupt = undefined
             this.completedInterruptCallbacks.push(interrupt.callback)
             this.onInterruptQueued()
@@ -148,10 +147,15 @@ export default class AudioPlayer {
         if (!track || track.isLoading()) {
             return
         }
-        if (track.getStream()) {
+        if ((track.isLoaded()) && track.getStream()) {
             this.play(track)
         } else {
             track.loadStream(this.context).then((stream) => {
+                if (track.isSkipped()) {
+                    console.log(`${track.getTitle()} was skipped before stream finished loading`)
+                    stream.destroy()
+                    return
+                }
                 this.context.getProvider().getDJ().onTrackStarted(track)
                 this.play(track)
             })
@@ -165,20 +169,16 @@ export default class AudioPlayer {
             highWaterMark: 48,
             volume: this.getScaledVolume()
         }).on('start', () => {
-            this.state = "playing"
+            this.state = AudioPlayerState.PLAYING
+            track.setState(TrackState.PLAYING)
         }).on('finish', () => {
-            this.context.getProvider().getDJ().onTrackCompleted(track)
-            this.state = "idle"
             this.playNext()
         })
     }
 
     private playNext(): boolean {
         const current = this.trackQueue.shift()
-        if (current) {
-            this.getConnection()?.dispatcher?.end()
-            current.getStream()?.destroy()
-        }
+        this.endTrack(current)
         const trackItem = this.trackQueue[0]
         if (!trackItem) {
             return false
@@ -187,9 +187,27 @@ export default class AudioPlayer {
         return true
     }
 
+    private endTrack(track: Track) {
+        if (track) {
+            this.getConnection()?.dispatcher?.destroy()
+            track.setState(TrackState.SKIPPED)
+            track.getStream()?.removeAllListeners('finish')
+            track.getStream()?.destroy()
+            this.context.getProvider().getDJ().onTrackCompleted(track)
+            this.state = AudioPlayerState.IDLE
+        }
+    }
+
     private getScaledVolume(): number {
         return (this.volume / 100) * (2 - 0.5) + 0.5
     }
+}
+
+enum AudioPlayerState {
+    IDLE,
+    PAUSED,
+    PLAYING,
+    INTERRUPTING
 }
 
 interface InterruptItem {

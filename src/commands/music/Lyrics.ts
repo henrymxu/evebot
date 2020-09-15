@@ -36,13 +36,13 @@ export default class LyricsCommand extends Command {
         GeniusLyrics.get(query, args.get('artist')).then((result) => {
             const embed = MessageGenerator.getBaseEmbed()
             embed.setImage(result.albumArt)
-            embed.setTitle(args.get('query'))
+            embed.setTitle(query)
             embed.setURL(result.url)
             context.getProvider().getResponder().send(
                 {content: result.lyrics,
                     message: message, options: {code: 'Markdown', embed: embed}})
         }).catch(err => {
-            console.log(`Error retrieving lyrics for ${args.get('query')}: ${err}`)
+            console.log(`Error retrieving lyrics for ${query}: ${err}`)
             context.getProvider().getResponder().acknowledge(1, message)
         })
     }

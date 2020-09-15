@@ -2,6 +2,7 @@ import VoiceCommand from "../../voice/VoiceCommand"
 import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, CommandOptions} from "../Command"
+import {QueryMode} from "../../music/DJ"
 
 export default class PlayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -21,11 +22,11 @@ export default class PlayCommand extends VoiceCommand {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        let mode: QueryMode = QueryMode.Play
         if (args.get('keyword') === 'album') {
-            context.getProvider().getDJ().playAlbum(args.get('query'), source.id, message)
-            return
+            mode = QueryMode.Album
         }
-        context.getProvider().getDJ().play(args.get('query'), source.id, message)
+        context.getProvider().getDJ().request(mode, args.get('query'), source.id, message)
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {

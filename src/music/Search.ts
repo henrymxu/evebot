@@ -12,7 +12,7 @@ const YoutubeSource = new Youtube()
 export namespace Search {
     export function search(query): Promise<Track[]> {
         return new Promise((res, rej) => {
-            parse(query).then(async result => {
+            parse(query).then(async (result) => {
                 if (result.metadata.mode == "single") {
                     resolveSingleTrack(result).then((trackInfo) => {
                         res([trackInfo])

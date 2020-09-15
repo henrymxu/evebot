@@ -5,13 +5,29 @@ import {GuildContext} from "../../guild/Context"
 export abstract class Track {
     id: string
     metaData: TrackMetaData
-    protected currentlyLoading: boolean = false
+    protected state: TrackState = TrackState.QUEUED
     protected constructor(id: string) {
         this.id = id
     }
 
     isLoading(): boolean {
-        return this.currentlyLoading
+        return this.state === TrackState.LOADING
+    }
+
+    isLoaded(): boolean {
+        return this.state === TrackState.LOADED || this.state === TrackState.PLAYING
+    }
+
+    isSkipped(): boolean {
+        return this.state === TrackState.SKIPPED
+    }
+
+    isPlaying(): boolean {
+        return this.state === TrackState.PLAYING
+    }
+
+    setState(state: TrackState) {
+        this.state = state
     }
 
     getRequester(context: GuildContext): string {
@@ -20,10 +36,18 @@ export abstract class Track {
 
     abstract getTitle(): string
     abstract getArtist(): string
-    abstract getLength(): string
+    abstract getLength(): number
 
     abstract loadStream(context: GuildContext): Promise<Readable>
     abstract getStream(): Readable | undefined
+}
+
+export enum TrackState {
+    QUEUED,
+    LOADING,
+    LOADED,
+    PLAYING,
+    SKIPPED
 }
 
 export interface TrackItem {
