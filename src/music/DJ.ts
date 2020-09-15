@@ -5,9 +5,12 @@ import {Track} from "./tracks/Track"
 import {TrackMessageFactory} from "../communication/TrackMessageGenerator"
 import SpotifyRadio from "./radio/SpotifyRadio"
 import {Radio} from "./radio/Radio"
+import {MessageGenerator} from "../communication/MessageGenerator"
+import {Spotify} from "./sources/Spotify/Spotify"
+import {Album} from "./tracks/Album"
 
 export default class DJ {
-    private context: GuildContext
+    private readonly context: GuildContext
     private readonly radio: Radio
 
     constructor(context: GuildContext) {
@@ -25,6 +28,24 @@ export default class DJ {
             this.radio.stop()
         }
         this.playTrack(query, requesterId, message)
+    }
+
+    playAlbum(query: string, requesterId: string, message?: Message) {
+        this.context.getProvider().getResponder().startTyping(message)
+        if (this.radio.isPlaying()) {
+            this.radio.stop()
+        }
+        Spotify.getTrackNamesFromAlbumSearch(query).then((album) => {
+            this.onAlbumQueued(album, message)
+            Search.searchAlbum(album).then((tracks) => {
+                this.playTracks(tracks, requesterId, message)
+                this.onTracksQueued(tracks)
+            })
+        }).catch(err => {
+            console.log(err)
+        }).finally(() => {
+            this.context.getProvider().getResponder().stopTyping(message)
+        })
     }
 
     getRadio(): SpotifyRadio {
@@ -59,16 +80,39 @@ export default class DJ {
 
     private playTrack(query: string, requesterId: string, message?: Message) {
         Search.search(query).then((tracks) => {
-            tracks.forEach((track) => {
-                track.metaData = {requesterId: requesterId, source: message}
-                const isPlaying = this.context.getProvider().getAudioPlayer().queueTrack(track)
-                if (!isPlaying) { this.onTrackQueued(track) }
-                this.context.getProvider().getResponder().stopTyping(message)
-            })
+            if (tracks.length > 1) {
+                this.playTracks(tracks, requesterId, message)
+                return
+            }
+            const track = tracks[0]
+            track.metaData = {requesterId: requesterId, source: message}
+            const isPlaying = this.context.getProvider().getAudioPlayer().queueTrack(track)
+            if (!isPlaying) { this.onTrackQueued(track) }
         }).catch(err => {
             console.log(`Error queuing ${query}: ${err}`)
+        }).finally(() => {
             this.context.getProvider().getResponder().stopTyping(message)
         })
+    }
+
+    private playTracks(tracks: Track[], requesterId: string, message?: Message) {
+        tracks.forEach((track) => {
+            track.metaData = {requesterId: requesterId, source: message}
+            this.context.getProvider().getAudioPlayer().queueTrack(track)
+        })
+    }
+
+    private onAlbumQueued(album: Album, message?: Message) {
+        const embed = MessageGenerator.getBaseEmbed()
+        embed.setTitle(album.name)
+        embed.setURL(album.metadata.externalURL)
+        embed.setImage(album.metadata.imageURL)
+        this.context.getProvider().getResponder().send({content: embed, message: message})
+    }
+
+    private onTracksQueued(tracks: Track[]) {
+        const message = TrackMessageFactory.createQueuedTracksMessage(this.context, tracks)
+        this.context.getProvider().getResponder().send({content: message, id: 'queue', message: tracks[0].metaData.source, options: {code: 'Markdown'}})
     }
 
     private onTrackQueued(track: Track) {

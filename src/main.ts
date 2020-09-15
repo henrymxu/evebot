@@ -6,7 +6,6 @@ import {GlobalContext} from "./GlobalContext"
 import {CommandDispatcher} from "./commands/Dispatcher"
 import {CommandRegistry} from "./commands/Registry"
 import path from "path"
-import {Spotify} from "./music/sources/Spotify/Spotify"
 
 const client = GlobalContext.getClient()
 CommandDispatcher.register(client)

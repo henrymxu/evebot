@@ -6,9 +6,16 @@ export namespace Lifecycle {
         client.on('voiceStateUpdate', (oldState, newState) => {
             if (!hasUserJoinedChannel(oldState, newState)) {
                 if (hasUserLeftChannel(oldState, newState)) {
+                    if (isItself(client, newState)) {
+                        GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().reset()
+                    }
                     GlobalContext.get(oldState.guild.id).getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member.user)
                 }
                 if (hasUserChangedChannel(oldState, newState)) {
+                    if (isItself(client, newState)) {
+                        console.log(`Bot was moved from ${oldState.channel.name} to ${newState.channel.name}`)
+                        GlobalContext.get(newState.guild.id).setVoiceConnection(newState.connection)
+                    }
                     GlobalContext.get(oldState.guild.id).getProvider().getVoiceConnectionHandler().userChangedChannel(oldState)
                 }
                 return
@@ -21,6 +28,10 @@ export namespace Lifecycle {
             }
             GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
         })
+    }
+
+    function isItself(client: Client, voiceState: VoiceState): boolean {
+        return client.user.id === voiceState.member.user.id
     }
 
     function isAlreadyInChannel(channel: VoiceChannel, botId: string): boolean {

@@ -4,7 +4,9 @@ import Youtube from "./sources/Youtube/Youtube3"
 import {Utils} from "../utils/Utils"
 import {Readable} from "stream"
 import {Track} from "./tracks/Track"
-import YoutubeTrack from "./tracks/YoutubeTrack"
+import YoutubeTrack, {YoutubeTrackInfo} from "./tracks/YoutubeTrack"
+import {Album} from "./tracks/Album"
+import ExternalTrack, {ExternalTrackInfo} from "./tracks/ExternalTrack"
 
 const YoutubeSource = new Youtube()
 export namespace Search {
@@ -27,20 +29,40 @@ export namespace Search {
         })
     }
 
-    async function resolveSingleTrack(result: SearchResult): Promise<Track> {
+    export function searchAlbum(album: Album): Promise<Track[]> {
+        const promises: Promise<Track>[] = []
+        album.tracks.forEach((track) => {
+            promises.push(new Promise<Track>((res1, rej1) => {
+                parse(`${track.artist} - ${track.name}`).then((searchResult) => {
+                    resolveSingleTrack(searchResult, track).then((trackResult) => {
+                        res1(trackResult)
+                    })
+                })
+            }))
+        })
+        return Promise.all(promises)
+    }
+
+    async function resolveSingleTrack(result: SearchResult, extraInfo?: ExternalTrackInfo): Promise<Track> {
         let resolved = false
         for (let info of result.infos) {
             const basicInfo = await ytdl.getBasicInfo(info.url)
             if (basicInfo.formats.length > 0) {
                 resolved = true
                 console.log(`Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
-                return new YoutubeTrack(Utils.generateUUID(), {
+                const id = Utils.generateUUID()
+                const youtubeInfo: YoutubeTrackInfo = {
                     description: basicInfo.videoDetails.shortDescription,
                     length: +basicInfo.videoDetails.lengthSeconds,
                     title: basicInfo.videoDetails.title,
                     url: info.url,
                     thumbnailURL: basicInfo.thumbnail_url
-                })
+                }
+                if (!extraInfo) {
+                    return new YoutubeTrack(id, youtubeInfo)
+                } else {
+                    return new ExternalTrack(id, youtubeInfo, extraInfo)
+                }
             }
         }
         return Promise.reject('Could not find a playable video (region locked)')
@@ -60,6 +82,7 @@ function parse(query: string): Promise<SearchResult> {
         }
     } else if (result.hostname === 'open.spotify.com') {
         if (result.pathname.includes('playlist')) {
+            //.replace('/playlist/', '')
             // return retrieveSongsFromSpotifyPlaylist(result.pathname)
         }
     }

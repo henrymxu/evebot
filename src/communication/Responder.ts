@@ -4,7 +4,7 @@ import {Communicator} from "./Communicator"
 
 export default class Responder {
     private context: GuildContext
-    private messageCache: Map<string, Message> = new Map()
+    private messageCache: Map<string, Message[]> = new Map()
     private typingStatus: Set<string> = new Set()
     constructor(context: GuildContext) {
         this.context = context
@@ -36,10 +36,10 @@ export default class Responder {
         return new Promise((res, rej) => {
             Communicator.send(message.content, message.options, textChannel).then((result) => {
                 const results: Message[] = result instanceof Message ? [result] : result
+                if (message.id) {
+                    this.messageCache.set(message.id, results)
+                }
                 results.forEach((messageResult) => {
-                    if (message.id) {
-                        this.messageCache.set(message.id, messageResult)
-                    }
                     if (this.typingStatus.has(message.id)) {
                         this.stopTyping(message.message)
                         this.typingStatus.delete(message.id)
@@ -56,12 +56,14 @@ export default class Responder {
     }
 
     delete(source: Message | string, delay?: number) {
-        const message = !(source instanceof Message) ? this.messageCache.get(source) : source
-        if (message) {
-            message.delete({
-                timeout: delay * 1000
-            }).catch(err => {
+        const messages = !(source instanceof Message) ? this.messageCache.get(source) : [source]
+        if (messages) {
+            messages.forEach((message) => {
+                message.delete({
+                    timeout: delay * 1000
+                }).catch(err => {
 
+                })
             })
         }
     }

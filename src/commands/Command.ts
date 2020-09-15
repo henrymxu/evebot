@@ -46,5 +46,6 @@ export enum ArgumentType {
     string,
     integer,
     number,
-    user
+    user,
+    flag
 }

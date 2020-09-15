@@ -4,7 +4,6 @@ import {Message, MessageEmbed, User} from "discord.js"
 import {Track} from "../../music/tracks/Track"
 import {MessageGenerator} from "../../communication/MessageGenerator"
 import {TrackMessageFactory} from "../../communication/TrackMessageGenerator"
-import {TableGenerator} from "../../communication/TableGenerator"
 
 export default class QueueCommand extends Command {
     readonly options: CommandOptions = {
@@ -39,16 +38,7 @@ function createQueueMessage(context: GuildContext, tracks: Track[]): MessageEmbe
     if (tracks.length == 0) {
         return createErrorMessage(context)
     }
-    let response = ''
-    const tableHeaders = ['Song name', 'Requester', 'Length']
-    const tableData = []
-    tracks.forEach((track, index) => {
-        const title = index === 0 ? `< ${track.getTitle()} >` : track.getTitle()
-        tableData.push([title,
-            context.getUserFromUserID(track.metaData.requesterId).username, track.asQueueString()])
-    })
-    response += TableGenerator.createTable(tableHeaders, tableData)
-    return response
+    return TrackMessageFactory.createQueuedTracksMessage(context, tracks)
 }
 
 function createSongMessage(context: GuildContext, track: Track): MessageEmbed {

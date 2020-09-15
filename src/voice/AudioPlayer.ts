@@ -145,7 +145,7 @@ export default class AudioPlayer {
 
     private prepareToPlay(isResume: boolean) {
         const track = this.trackQueue[0]
-        if (!track) {
+        if (!track || track.isLoading()) {
             return
         }
         if (track.getStream()) {

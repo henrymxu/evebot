@@ -6,9 +6,9 @@ import {ArgumentType, CommandOptions} from "../Command"
 export default class PlayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Play',
-        keywords: ['play'],
+        keywords: ['play', 'album'],
         group: 'music',
-        descriptions: ['Play a song or playlist'],
+        descriptions: ['Play a song or playlist', 'Play an album'],
         arguments: [
             {
                 key: 'query',
@@ -21,6 +21,10 @@ export default class PlayCommand extends VoiceCommand {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        if (args.get('keyword') === 'album') {
+            context.getProvider().getDJ().playAlbum(args.get('query'), source.id, message)
+            return
+        }
         context.getProvider().getDJ().play(args.get('query'), source.id, message)
     }
 

@@ -7,19 +7,27 @@ import {Utils} from "../../utils/Utils"
 
 export default class YoutubeTrack extends Track {
     private stream: Readable
-    info: YoutubeInfo
+    private readonly youtubeInfo: YoutubeTrackInfo
 
-    constructor(id: string, info: YoutubeInfo) {
+    constructor(id: string, info: YoutubeTrackInfo) {
         super(id)
-        this.info = info
+        this.youtubeInfo = info
+    }
+
+    getYoutubeTrackInfo(): YoutubeTrackInfo {
+        return this.youtubeInfo
     }
 
     getTitle(): string {
-        return this.info.title
+        return this.youtubeInfo.title
     }
 
-    asQueueString(): string {
-        return Utils.convertSecondsToTimeString(this.info.length)
+    getArtist(): string {
+        return this.getYoutubeTrackInfo().url
+    }
+
+    getLength(): string {
+        return Utils.convertSecondsToTimeString(this.getYoutubeTrackInfo().length)
     }
 
     getStream(): Readable {
@@ -27,20 +35,22 @@ export default class YoutubeTrack extends Track {
     }
 
     loadStream(context: GuildContext): Promise<Readable> {
+        this.currentlyLoading = true
         const announceStream = context.getVoiceDependencyProvider()
-            .getSpeechGenerator().asyncGenerateSpeechFromText(`Now Playing ${this.info.title}`)
-        const songStream = ytdl(this.info.url, {quality: 'highestaudio', highWaterMark: 1024 * 1024 * 10})
+            .getSpeechGenerator().asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
+        const songStream = ytdl(this.youtubeInfo.url, {quality: 'highestaudio', highWaterMark: 1024 * 1024 * 10})
 
         return new Promise<Readable>((res, rej) => {
             Promise.all([announceStream, songStream]).then((streams: Readable[]) => {
                 this.stream = StreamUtils.mergeAsync(...streams)
                 res(this.stream)
+                this.currentlyLoading = false
             })
         })
     }
 }
 
-interface YoutubeInfo {
+export interface YoutubeTrackInfo {
     url: string
     title: string
     length: number
