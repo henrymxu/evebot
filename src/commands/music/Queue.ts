@@ -27,7 +27,7 @@ export default class QueueCommand extends Command {
                 return
             }
             case 'song': {
-                const embed = createSongMessage(context.getProvider().getDJ().getCurrentSong())
+                const embed = createSongMessage(context, context.getProvider().getDJ().getCurrentSong())
                 context.getProvider().getResponder().send({content: embed, id: 'song', message: message})
                 return
             }
@@ -37,7 +37,7 @@ export default class QueueCommand extends Command {
 
 function createQueueMessage(context: GuildContext, tracks: Track[]): MessageEmbed | string {
     if (tracks.length == 0) {
-        return MessageGenerator.createErrorEmbed(`Queue is empty! Use ${context.getPrefix()}play command to queue some tracks!`)
+        return createErrorMessage(context)
     }
     let response = ''
     const tableHeaders = ['Song name', 'Requester', 'Length']
@@ -51,9 +51,13 @@ function createQueueMessage(context: GuildContext, tracks: Track[]): MessageEmbe
     return response
 }
 
-function createSongMessage(track: Track): MessageEmbed {
+function createSongMessage(context: GuildContext, track: Track): MessageEmbed {
     if (!track) {
-        return MessageGenerator.createErrorEmbed('You must be playing a track to use this command!')
+        return createErrorMessage(context)
     }
     return TrackMessageFactory.createCurrentlyPlayingEmbed(track)
+}
+
+function createErrorMessage(context: GuildContext): MessageEmbed {
+    return MessageGenerator.createErrorEmbed(`Queue is empty! Use ${context.getPrefix()}play command to queue some tracks!`)
 }

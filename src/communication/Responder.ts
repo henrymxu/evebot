@@ -61,7 +61,7 @@ export default class Responder {
             message.delete({
                 timeout: delay * 1000
             }).catch(err => {
-                console.log(`Error deleting message: ${err}`)
+
             })
         }
     }
