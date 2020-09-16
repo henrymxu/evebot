@@ -13,7 +13,7 @@ export namespace Lifecycle {
                 }
                 if (hasUserChangedChannel(oldState, newState)) {
                     if (isItself(client, newState)) {
-                        console.log(`Bot was moved from ${oldState.channel.name} to ${newState.channel.name}`)
+                        console.log(`Bot was moved from ${oldState.channel.name} to ${newState.channel.name} | new connection = ${newState.connection}`)
                         GlobalContext.get(newState.guild.id).setVoiceConnection(newState.connection)
                     }
                     GlobalContext.get(oldState.guild.id).getProvider().getVoiceConnectionHandler().userChangedChannel(oldState)

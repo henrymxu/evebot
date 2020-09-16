@@ -41,7 +41,7 @@ export default class RadioCommand extends VoiceCommand {
                 required: false,
                 default: 20,
                 type: ArgumentType.number,
-                validate: val => parseInt(val) > 0 && parseInt(val) <= 100
+                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 100
             }
         ],
         example: 'radio -a \'Taylor Swift\' -t \'Closer\''

@@ -3,12 +3,13 @@ import {GuildContext} from "../../guild/Context"
 import {Command, CommandOptions} from "../Command"
 import {TableGenerator} from "../../communication/TableGenerator"
 import {SpeechProvider} from "../../speech/Interfaces"
+import {GuildUtils} from "../../utils/GuildUtils"
 
 export default class StatusCommand extends Command {
     readonly options: CommandOptions = {
         name: 'Status',
         keywords: ['status', 'memory'],
-        group: 'admin',
+        group: 'debug',
         descriptions: ['Show various information of the bot\s status', 'Show current memory usage of the bot'],
         arguments: []
     }
@@ -55,7 +56,7 @@ function getStatusResponse(context: GuildContext): string {
     const tableHeader3 = ['Registered Users']
     const tableData3 = []
     context.getProvider().getVoiceConnectionHandler().getVoiceStreams().forEach((_, userID) => {
-        tableData3.push([context.getUserFromUserID(userID).username])
+        tableData3.push([GuildUtils.getUserFromUserID(context, userID).username])
     })
     response += `${TableGenerator.createTable(tableHeader3, tableData3)}`
     return response

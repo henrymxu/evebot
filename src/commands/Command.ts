@@ -1,5 +1,5 @@
 import {GuildContext} from "../guild/Context"
-import {Message, User} from "discord.js"
+import {Guild, Message, User} from "discord.js"
 
 export abstract class Command {
     abstract readonly options: CommandOptions
@@ -39,7 +39,8 @@ export interface CommandArgument {
     required: boolean
     type: ArgumentType
     default?: any
-    validate?: (arg: any) => boolean
+    array?: boolean
+    validate?: (context: GuildContext, arg: any) => boolean
 }
 
 export enum ArgumentType {

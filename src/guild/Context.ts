@@ -1,7 +1,8 @@
 import {Guild, TextChannel, User, VoiceConnection} from "discord.js"
-import {GuildConfig} from "../Config"
+import {Config, GuildConfig} from "../Config"
 import {VoiceDependencyProvider, VoiceDependencyProviderBuilder} from "../voice/DependencyProvider"
 import GuildProvider from "./Provider"
+import {GuildUtils} from "../utils/GuildUtils"
 
 export class GuildContext {
     private voiceConnection: VoiceConnection
@@ -12,10 +13,13 @@ export class GuildContext {
 
     private readonly id: string
 
+    private readonly config: Config
+
     constructor(id: string) {
         this.id = id
         this.voiceDependencyProvider = VoiceDependencyProviderBuilder.build(null)
         this.guildProvider = new GuildProvider(this)
+        this.config = GuildConfig.loadConfig(id)
     }
 
     setVoiceConnection(voiceConnection: VoiceConnection) {
@@ -31,15 +35,15 @@ export class GuildContext {
     }
 
     getTextChannel(): TextChannel {
-        return this.textChannel
+        return this.textChannel ? this.textChannel : findDefaultTextChannel(this)
     }
 
     getPrefix(): string {
-        return '?'
+        return this.getConfig().getPrefix()
     }
 
-    getConfig(): object {
-        return GuildConfig.getConfig(this.id)
+    getConfig(): Config {
+        return this.config
     }
 
     getGuild(): Guild {
@@ -53,23 +57,17 @@ export class GuildContext {
     getProvider(): GuildProvider {
         return this.guildProvider
     }
+}
 
-    getUserFromUserID(userID: string): User {
-        return this.getGuild().member(userID).user
-    }
-
-    static findTextChannel(guild: Guild): TextChannel {
-        const desiredChannel = GuildConfig.getCurrentConfigParameter(guild, "defaultTextChannel") as unknown as string
+export function findDefaultTextChannel(context: GuildContext): TextChannel {
+    const desiredChannelId = context.getConfig()["defaultTextChannel"]
+    let textChannel = GuildUtils.findTextChannelByID(context, desiredChannelId)
+    if (!textChannel) {
         // @ts-ignore
-        let textChannel: TextChannel = guild.channels.cache.filter(channel => channel.type === 'text')
-            .find(channel => channel.name == desiredChannel)
-        if (!textChannel) {
-            // @ts-ignore
-            textChannel = guild.channels.cache.filter(channel => channel.type === 'text').first()
-        }
-        if (!textChannel) {
-            console.log(`No text channel found for ${guild.name}`)
-        }
-        return textChannel
+        textChannel = guild.channels.cache.filter(channel => channel.type === 'text').first()
     }
+    if (!textChannel) {
+        console.log(`No text channel found for ${context.getGuild().name}`)
+    }
+    return textChannel
 }

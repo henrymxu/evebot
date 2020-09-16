@@ -109,3 +109,22 @@ export interface SearchMetaData {
     query: string
 }
 
+function filter(format) {
+    return format.codecs === 'opus' &&
+        format.container === 'webm' &&
+        format.audioSampleRate == 48000;
+}
+
+/**
+ * Tries to find the highest bitrate audio-only format. Failing that, will use any available audio format.
+ * @param {Object[]} formats The formats to select from
+ * @param {boolean} isLive Whether the content is live or not
+ */
+function nextBestFormat(formats: any[], isLive: boolean) {
+    let filter = format => format.audioBitrate;
+    if (isLive) filter = format => format.audioBitrate && format.isHLS;
+    formats = formats
+        .filter(filter)
+        .sort((a, b) => b.audioBitrate - a.audioBitrate);
+    return formats.find(format => !format.bitrate) || formats[0];
+}

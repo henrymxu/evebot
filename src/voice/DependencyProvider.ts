@@ -26,6 +26,6 @@ export class VoiceDependencyProvider {
 
 export namespace VoiceDependencyProviderBuilder {
     export function build(config: object): VoiceDependencyProvider {
-        return new VoiceDependencyProvider(new Porcupine())
+        return new VoiceDependencyProvider(new Snowboy())
     }
 }

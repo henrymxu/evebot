@@ -21,8 +21,7 @@ export default class SayCommand extends VoiceCommand {
                 flag: 'v',
                 description: 'Voice the bot should use. Microsoft: (https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support#standard-voices)',
                 required: false,
-                type: ArgumentType.string,
-                validate: val => true
+                type: ArgumentType.string
             }
         ],
         example: 'say hello my name is eve -v en-IN-Heera-Apollo'

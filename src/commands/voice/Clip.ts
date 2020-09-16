@@ -4,6 +4,7 @@ import VoiceCommand from "../../voice/VoiceCommand"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, CommandOptions} from "../Command"
 import {MessageGenerator} from "../../communication/MessageGenerator"
+import {GuildUtils} from "../../utils/GuildUtils"
 
 export default class ClipCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -25,7 +26,7 @@ export default class ClipCommand extends VoiceCommand {
                 required: false,
                 type: ArgumentType.integer,
                 default: 10,
-                validate: val => parseInt(val) > 0 && parseInt(val) <= 20
+                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
             },
             {
                 key: 'caption',
@@ -49,7 +50,7 @@ export default class ClipCommand extends VoiceCommand {
         }
         context.getProvider().getResponder().startTyping(message)
         AudioUtils.convertBufferToMp3Buffer(voiceStream.getBuffer(args.get('length')), args.get('caption'), user.tag).then((buffer) => {
-            const embed = MessageGenerator.attachFileToEmbed(MessageGenerator.createBasicEmbed(`Recording from [<@${user.id}>]`),
+            const embed = MessageGenerator.attachFileToEmbed(MessageGenerator.createBasicEmbed(`Recording from [${GuildUtils.createUserMentionString(user.id)}]`),
                 buffer, `${args.get('caption')}.mp3`)
             context.getProvider().getResponder().send({content: embed, message: message}).then((results) => {
                 context.getProvider().getResponder().stopTyping(message)

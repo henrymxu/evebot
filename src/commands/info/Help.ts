@@ -8,7 +8,7 @@ export default class HelpCommand extends Command {
     readonly options: CommandOptions = {
         name: 'Help',
         keywords: ['help'],
-        group: 'admin',
+        group: 'info',
         descriptions: ['Show help'],
         arguments: [
             {
@@ -75,7 +75,7 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     description += `Description: ${command.options.descriptions[descriptionIndex]}\n`
     description += `Group: ${command.options.group}\n`
     const aliases = ''
-    description += `Keyword: <${keyword}${aliases ? aliases : ''}>\n`
+    description += `Keyword: <${keyword}${aliases || ''}>\n`
     if (command.options.arguments.length > 0) {
         const tableData = []
         const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Default']

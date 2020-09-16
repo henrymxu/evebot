@@ -13,7 +13,7 @@ export default class AudioPlayer {
 
     private trackQueue: Track[]
 
-    private state: AudioPlayerState // idle, paused, playing, interrupting
+    private state: AudioPlayerState
     private volume: number
 
     constructor(context: GuildContext) {
@@ -83,7 +83,8 @@ export default class AudioPlayer {
     }
 
     skip(): boolean {
-        return this.playNext()
+        this.playNext()
+        return true
     }
 
     queueInterrupt(stream: Readable, audioType: string, priority: number, callback: ()=>any = ()=>{}) {

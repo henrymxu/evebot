@@ -6,23 +6,24 @@ import {TableGenerator} from "./TableGenerator"
 import {GuildContext} from "../guild/Context"
 import {Album} from "../music/tracks/Album"
 import {Utils} from "../utils/Utils"
+import {GuildUtils} from "../utils/GuildUtils"
 
 namespace TrackMessageGenerator {
     export function createSongTrackNowPlayingEmbed(track: YoutubeTrack): MessageEmbed {
         return MessageGenerator.getBaseEmbed()
             .setTitle('Now Playing')
-            .setDescription(`[${track.getYoutubeTrackInfo().title}](${track.getYoutubeTrackInfo().url}) [<@${track.metaData.requesterId}>]`)
+            .setDescription(`[${track.getYoutubeTrackInfo().title}](${track.getYoutubeTrackInfo().url}) [${GuildUtils.createUserMentionString(track.metaData.requesterId)}]`)
             .setThumbnail(track.getYoutubeTrackInfo().thumbnailURL)
     }
 
     export function createLinkTrackCurrentlyPlayingEmbed(track: Track, url: string): MessageEmbed {
         return MessageGenerator.getBaseEmbed()
-            .setDescription(`[${track.getTitle()}](${url}) [<@${track.metaData.requesterId}>]`)
+            .setDescription(`[${track.getTitle()}](${url}) [${GuildUtils.createUserMentionString(track.metaData.requesterId)}]`)
     }
 
     export function createLinkTrackNewlyQueuedEmbed(track: Track, url: string): MessageEmbed {
         return MessageGenerator.getBaseEmbed()
-            .setDescription(`<@${track.metaData.requesterId}> queued: [${track.getTitle()}](${url})`)
+            .setDescription(`${GuildUtils.createUserMentionString(track.metaData.requesterId)} queued: [${track.getTitle()}](${url})`)
     }
 }
 

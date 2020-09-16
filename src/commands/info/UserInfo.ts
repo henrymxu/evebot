@@ -7,7 +7,7 @@ export default class UserInfoCommand extends Command {
     readonly options: CommandOptions = {
         name: 'Userinfo',
         keywords: ['userinfo'],
-        group: 'admin',
+        group: 'info',
         descriptions: ['Show info about a user'],
         arguments: [
             {

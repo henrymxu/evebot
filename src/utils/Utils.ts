@@ -8,8 +8,11 @@ export namespace Utils {
     export function convertSecondsToTimeString(totalSeconds: number): string {
         const date = new Date(0)
         date.setSeconds(totalSeconds)
-        const timeString = date.toISOString().substr(11, 8)
-        return timeString
+        return date.toISOString().substr(11, 8)
+    }
+
+    export function isLowercaseString(input: string): boolean {
+        return input === input.toLowerCase()
     }
 
     export function roughSizeOfObject( object: any): number {

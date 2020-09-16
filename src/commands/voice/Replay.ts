@@ -24,7 +24,7 @@ export default class ReplayCommand extends VoiceCommand {
                 required: false,
                 type: ArgumentType.integer,
                 default: 10,
-                validate: val => parseInt(val) > 0 && parseInt(val) <= 20
+                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
             },
         ],
         example: 'clip @Eve -l 8'

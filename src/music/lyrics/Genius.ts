@@ -4,7 +4,7 @@ import Keys from "../../Keys"
 export namespace GeniusLyrics {
     export function get(songTitle: string, artist?: string): Promise<LyricsResult> {
         return new Promise((res, rej) => {
-            const artistString = artist ? artist : ''
+            const artistString = artist || ''
             const options = {
                 apiKey: Keys.get('genius_token'),
                 title: songTitle,

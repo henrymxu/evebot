@@ -14,7 +14,9 @@ export default class DJ {
 
     constructor(context: GuildContext) {
         this.context = context
-        this.radio = new SpotifyRadio(context, this.play)
+        this.radio = new SpotifyRadio(context, (query: string, requesterId: string, message?: Message) => {
+            return this.play(query, requesterId, message)
+        })
     }
 
     volume(volume: number, relative: boolean = false) {

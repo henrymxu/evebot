@@ -21,7 +21,7 @@ export default class Keys {
     }
 
     static get(key: string): string {
-        return (this.getInstance().keys.has(key)) ? this.getInstance().keys.get(key) : process.env[key]
+        return this.getInstance().keys.get(key) || process.env[key]
     }
 
     private loadKeysFromJson() {

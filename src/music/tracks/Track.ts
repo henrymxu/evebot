@@ -1,6 +1,7 @@
 import {Readable} from "stream"
 import {Message} from "discord.js"
 import {GuildContext} from "../../guild/Context"
+import {GuildUtils} from "../../utils/GuildUtils"
 
 export abstract class Track {
     id: string
@@ -31,7 +32,7 @@ export abstract class Track {
     }
 
     getRequester(context: GuildContext): string {
-        return context.getUserFromUserID(this.metaData.requesterId).username
+        return GuildUtils.getUserFromUserID(context, this.metaData.requesterId).username
     }
 
     abstract getTitle(): string

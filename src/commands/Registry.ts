@@ -1,5 +1,6 @@
 import requireAll from "require-all"
 import {Command} from "./Command"
+import {Utils} from "../utils/Utils"
 
 const commands: Map<string, Command> = new Map()
 const groups: Set<string> = new Set()
@@ -79,6 +80,11 @@ function validateCommand(command: Command): boolean {
     if (options.keywords.length != options.descriptions.length) {
         throw(`${options.name} command is missing / has to many descriptions (number of descriptions should match number of keywords)`)
     }
+    options.keywords.forEach(keyword => {
+        if (!Utils.isLowercaseString(keyword)) {
+            throw(`${options.name} has non complete lowercase keyword ${keyword}`)
+        }
+    })
     commands.forEach(registeredCommand => {
         if (registeredCommand.options.name == options.name) {
             throw(`Multiple commands registered with name ${options.name}`)
@@ -100,7 +106,7 @@ function validateCommand(command: Command): boolean {
         if (argument.flag == '_' || argument.flag == 'h') {
             throw(`${options.name} command, ${argument.key} cannot use flag '_' or 'h'. These are reserved for default and help options`)
         }
-        const parsedFlag = argument.flag ? argument.flag : '_'
+        const parsedFlag = argument.flag || '_'
         if (argKeys.has(argument.key)) {
             throw(`${options.name} command, has multiple arguments with ${argument.key} key`)
         }

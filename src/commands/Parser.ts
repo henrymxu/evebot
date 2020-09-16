@@ -3,6 +3,7 @@ import {ArgumentType, Command} from "./Command"
 
 import parser from "yargs-parser"
 import {User} from "discord.js"
+import {GuildUtils} from "../utils/GuildUtils"
 
 export namespace CommandParser {
     export function parseKeyword(context: GuildContext, message: string): string {
@@ -14,14 +15,25 @@ export namespace CommandParser {
     }
 
     export function parseArguments(context: GuildContext, command: Command, keyword: string, message: string): ParserResult {
-        const messageArgs: {} = parser(message)
+        const allFlags = []
+        command.options.arguments.forEach(arg => { allFlags.push(arg.flag || '_') })
+        const messageArgs: {} = parser(message, {array: allFlags, configuration: {"short-option-groups": true}})
+        // filter out the command keyword, if the guild uses - as the prefix, there may be some issues
         messageArgs['_'].shift()
-        messageArgs['_'] = messageArgs['_'].join(' ')
+        // Join all non array types, remove empty array types
+        command.options.arguments.forEach(arg => {
+            const flag = arg.flag || '_'
+            if (!arg.array) {
+                messageArgs[flag] = messageArgs[flag] ? messageArgs[flag].join(' ') : undefined
+            } else if (messageArgs[flag]) {
+                messageArgs[flag] = messageArgs[flag].length > 0 ? messageArgs[flag] : undefined
+            }
+        })
         const args: Map<string, any> = new Map()
         const invalidArgs: Map<string, Error> = new Map()
         let helpCommand = false
         for (let argument of command.options.arguments) {
-            const flag = argument.flag ? argument.flag : '_'
+            const flag = argument.flag || '_'
             const value = messageArgs[flag]
             const key = argument.key
             if (argument.flag == 'h') {
@@ -39,7 +51,7 @@ export namespace CommandParser {
                     invalidArgs.set(key, new Error(`Invalid type provided for ${key}: ${value}`))
                     continue
                 }
-                if (argument.validate && !argument.validate(parsedValue)) {
+                if (argument.validate && !argument.validate(context, parsedValue)) {
                     invalidArgs.set(key, new Error(`Invalid value provided for ${key}: ${parsedValue}`))
                     continue
                 }
@@ -85,7 +97,7 @@ function parseNumber(input: string): number {
 function parseUser(context: GuildContext, input: string): User {
     const id = parseIdFromMention(input)
     if (id) {
-        return context.getUserFromUserID(id)
+        return GuildUtils.getUserFromUserID(context, id)
     }
     const memberFromTag = context.getGuild().members.cache.filter((member) => {
         return compareCaseInsensitive(member.user.tag, input)
