@@ -23,6 +23,3 @@ RUN npm install typescript -g
 RUN npm install --unsafe-perm
 
 RUN tsc
-
-#"--max_old_space_size=768"
-CMD ["node", "dist/main.js"]
