@@ -1,6 +1,6 @@
 import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from "../Interfaces"
 import {Readable} from "stream"
-import Keys from "../../Keys"
+import {Keys} from "../../Keys"
 import Auth from "ibm-watson/auth"
 import {SpeechToTextV1} from "ibm-watson/sdk"
 

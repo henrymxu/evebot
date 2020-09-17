@@ -1,6 +1,6 @@
 import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from "./Interfaces"
 import Microsoft from "./providers/Microsoft"
-import Keys from "../Keys"
+import {Keys} from "../Keys"
 
 const providers: SpeechProvider[] = [new Microsoft()]
 

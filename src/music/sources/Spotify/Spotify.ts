@@ -1,5 +1,5 @@
 import SpotifyWebAPI from "spotify-web-api-node"
-import Keys from "../../../Keys"
+import {Keys} from "../../../Keys"
 import {ExternalTrackInfo} from "../../tracks/ExternalTrack"
 import {Album} from "../../tracks/Album"
 

@@ -2,7 +2,7 @@ import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from "../Interfaces";
 import {Readable} from "stream";
 import {AudioUtils} from "../../utils/AudioUtils"
 import {SpeechClient} from "@google-cloud/speech";
-import Keys from "../../Keys";
+import {Keys} from "../../Keys";
 
 const configVars = ['google_keyFileName', 'google_keyFileCred']
 export default class Google implements SpeechRecognizer, SpeechProvider {

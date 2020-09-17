@@ -1,5 +1,5 @@
 import {ResultInfo, SearchResult, TrackSource} from "../../Search"
-import Keys from "../../../Keys"
+import {Keys} from "../../../Keys"
 
 import YoutubeAPI from "simple-youtube-api"
 

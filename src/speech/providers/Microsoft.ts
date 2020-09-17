@@ -2,7 +2,7 @@ import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from "../Interfaces"
 import {Duplex, Readable} from "stream"
 import {AudioUtils} from "../../utils/AudioUtils"
 const SpeechSDK = require('microsoft-cognitiveservices-speech-sdk')
-import Keys from "../../Keys"
+import {Keys} from "../../Keys"
 
 const configVars = ['microsoft_token', 'microsoft_location']
 

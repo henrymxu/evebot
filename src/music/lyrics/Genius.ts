@@ -1,5 +1,5 @@
 import genius from "genius-lyrics-api"
-import Keys from "../../Keys"
+import {Keys} from "../../Keys"
 
 export namespace GeniusLyrics {
     export function get(songTitle: string, artist?: string): Promise<LyricsResult> {

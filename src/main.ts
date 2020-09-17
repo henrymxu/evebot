@@ -1,6 +1,6 @@
 'use strict'
 
-import Keys from "./Keys"
+import {Keys} from "./Keys"
 import {Lifecycle} from "./Lifecycle"
 import {GlobalContext} from "./GlobalContext"
 import {CommandDispatcher} from "./commands/Dispatcher"
@@ -15,7 +15,9 @@ Lifecycle.registerJoinOnJoin(client)
 
 client.login(Keys.get("discord_token")).then(result => {
     console.log(`Logged in!`)
-});
+}).catch(err => {
+    console.log(`Unable to login! ${err}`)
+})
 
 client.on('invalidated', () => {
     console.log('Session invalidated')
