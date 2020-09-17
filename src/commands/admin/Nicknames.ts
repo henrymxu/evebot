@@ -1,7 +1,7 @@
 import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, Command, CommandOptions} from "../Command"
-import {Nicknames} from "../../Config"
+import {Nicknames} from "../../guild/Config"
 import {TableGenerator} from "../../communication/TableGenerator"
 
 export default class NicknamesCommand extends Command {

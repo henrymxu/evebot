@@ -48,12 +48,7 @@ export namespace GuildUtils {
         if (idFromNickname) {
             return GuildUtils.parseUserFromUserID(context, idFromNickname)
         }
-        for (let member of Object.values(context.getGuild().members.cache)) {
-            if (compareCaseInsensitive(member.displayName, input)) {
-                return member.user
-            }
-        }
-        return null
+        return context.getGuild().members.cache.find(member => compareCaseInsensitive(member.displayName, input))?.user
     }
 
     export function parseRoleFromString(context: GuildContext, input: string): Role {

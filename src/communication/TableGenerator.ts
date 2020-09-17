@@ -1,7 +1,6 @@
 import {table} from "table"
 import {MessageEmbed} from "discord.js"
 import {MessageGenerator} from "./MessageGenerator"
-import {Nicknames} from "../Config"
 
 export namespace TableGenerator {
     export function createTable(headers: string[], data: string[][]): string {

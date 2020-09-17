@@ -1,7 +1,7 @@
 import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, Command, CommandOptions} from "../Command"
-import {Aliases} from "../../Config"
+import {Aliases} from "../../guild/Config"
 import {TableGenerator} from "../../communication/TableGenerator"
 import {CommandRegistry} from "../Registry"
 import {GuildUtils} from "../../utils/GuildUtils"

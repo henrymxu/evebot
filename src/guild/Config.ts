@@ -1,32 +1,19 @@
 import fs from "fs"
-import {FileUtils} from "./utils/FileUtils"
+import {FileUtils} from "../utils/FileUtils"
 import {Role, User} from "discord.js"
 
-export namespace GuildConfig {
-    export function loadConfig(guildId: string): Config {
-        const path = `./configs/config_${guildId}.json`
+export class Config {
+    private readonly guildID: string
+    private readonly json: any
+
+    constructor(guildID: string) {
+        this.guildID = guildID
+        const path = `./configs/config_${guildID}.json`
         if (!fs.existsSync(path)) {
             fs.copyFileSync('./default_config.json', path)
         }
-        return new Config(FileUtils.openJsonFile(path))
-    }
-
-    export function saveConfig(guildId: string, guildConfig: Config) {
-        const path = `./configs/config_${guildId}.json`
-        fs.writeFile(path, JSON.stringify(guildConfig, null, '\t'), err => {
-            if (err) {
-                console.log(`An error occured when saving guild ${guildId} config: ${err}`)
-            }
-        })
-    }
-}
-
-export class Config {
-    private json: any
-
-    constructor(configJSON: any) {
-        this.json = configJSON
         //throw ('Attempted to load an invalid config file')
+        this.json = (FileUtils.openJsonFile(path))
     }
 
     getPrefix(): string {
@@ -34,7 +21,7 @@ export class Config {
     }
 
     setPrefix(prefix: string) {
-        this.json.prefix = prefix
+        Config.setKeyValue(this, 'prefix', prefix)
     }
 
     getDefaultPrivilege(): boolean {
@@ -42,7 +29,7 @@ export class Config {
     }
 
     setDefaultPrivilege(privilege: boolean) {
-        this.json.defaultPrivilege = privilege
+        return Config.setKeyValue(this, 'defaultPrivilege', privilege)
     }
 
     getDefaultTextChannel(): string {
@@ -50,7 +37,7 @@ export class Config {
     }
 
     setDefaultTextChannel(textChannelID: string) {
-        this.json.defaulTextChannel = textChannelID
+        return Config.setKeyValue(this, 'defaultTextChannel', textChannelID)
     }
 
     getUserIDForNickname(nickname: string): string {
@@ -58,25 +45,15 @@ export class Config {
     }
 
     getNicknames(userID: string): Nicknames {
-        let nicknames: string[] = Object.values(this.json.nicknames).filter(val => val === userID) as string[]
-        return new Set(nicknames || [])
+        return Config.getValuesOfUniqueKeyAsSet(this, 'nicknames', userID)
     }
 
     removeNicknames(userID: string, nicknames: string[]) {
-        nicknames.forEach(nickname => {
-            this.json.nicknames.delete(nickname)
-        })
+        Config.removeKeysFromMap(this, 'nicknames', nicknames)
     }
 
     addNicknames(userID: string, nicknames: string[]): Error {
-        const alreadyHadNickname = []
-        nicknames.forEach(nickname => {
-            if (this.json.nicknames[nickname]) {
-                alreadyHadNickname.push(`${nickname} => ${this.json.nicknames[nickname]}`)
-            }
-            this.json.nicknames[nickname] = userID
-        })
-        return alreadyHadNickname.length > 0 ? new Error(alreadyHadNickname.join('\n')) : null
+        return Config.addUniqueKeyToMap(this, 'nicknames', nicknames, userID)
     }
 
     getCommandNameForAlias(alias: string): string {
@@ -84,25 +61,15 @@ export class Config {
     }
 
     getAliases(command: string): Aliases {
-        let aliases: string[] = Object.values(this.json.aliases).filter(val => val === command) as string[]
-        return new Set(aliases || [])
+        return Config.getValuesOfUniqueKeyAsSet(this, 'aliases', command)
     }
 
     removeAliases(command: string, aliases: string[]) {
-        aliases.forEach(alias => {
-            this.json.aliases.delete(alias)
-        })
+        Config.removeKeysFromMap(this, 'aliases', aliases)
     }
 
     addAliases(command: string, aliases: string[]): Error {
-        const alreadyHadAlias = []
-        aliases.forEach(alias => {
-            if (this.json.aliases[alias]) {
-                alreadyHadAlias.push(`${alias} => ${this.json.aliases[alias]}`)
-            }
-            this.json.aliases[alias] = command
-        })
-        return alreadyHadAlias.length > 0 ? new Error(alreadyHadAlias.join('\n')) : null
+        return Config.addUniqueKeyToMap(this, 'aliases', aliases, command)
     }
 
     getPrivileges(): Privilege[] {
@@ -129,28 +96,19 @@ export class Config {
     }
 
     deletePrivilege(name: string) {
-        this.json.privileges[name] = undefined
-    }
-
-    private modifyEntityPrivilege(privilegeName: string, entity: User | Role, isGranting: boolean) {
-        let privilege = this.json.privileges[privilegeName] || createPrivilege()
-        let baseKey = entity instanceof User ? 'users' : 'roles'
-        let addingToKey = `${isGranting ? 'granted' : 'denied'}${baseKey}`
-        let removingFromKey = `${isGranting ? 'denied' : 'granted'}${baseKey}`
-        privilege[removingFromKey] = removeArrayFromArray(privilege[removingFromKey], [entity.id])
-        privilege[addingToKey] = addArrayToArray(privilege[addingToKey], [entity.id])
-        this.json.privileges[privilegeName] = privilege
+        this.json.privileges.delete(name)
+        this.save()
     }
 
     grantEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
         entities.forEach(entity => {
-            this.modifyEntityPrivilege(privilegeName, entity, true)
+            Config.modifyEntityPrivilege(this, privilegeName, entity, true)
         })
     }
 
     denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
         entities.forEach(entity => {
-            this.modifyEntityPrivilege(privilegeName, entity, false)
+            Config.modifyEntityPrivilege(this, privilegeName, entity, false)
         })
     }
 
@@ -163,6 +121,55 @@ export class Config {
             privilege.grantedUsers = removeArrayFromArray(privilege.grantedUsers, ids)
             privilege.deniedUsers = removeArrayFromArray(privilege.deniedUsers, ids)
         }
+    }
+
+    private save() {
+        const path = `./configs/config_${this.guildID}.json`
+        fs.writeFile(path, JSON.stringify(this.json, null, '\t'), err => {
+            if (err) {
+                console.log(`An error occured when saving guild ${this.guildID} config: ${err}`)
+            }
+        })
+    }
+
+    private static modifyEntityPrivilege(config: Config, privilegeName: string, entity: User | Role, isGranting: boolean) {
+        let privilege = config.json.privileges[privilegeName] || createPrivilege()
+        let baseKey = entity instanceof User ? 'users' : 'roles'
+        let addingToKey = `${isGranting ? 'granted' : 'denied'}${baseKey}`
+        let removingFromKey = `${isGranting ? 'denied' : 'granted'}${baseKey}`
+        privilege[removingFromKey] = removeArrayFromArray(privilege[removingFromKey], [entity.id])
+        privilege[addingToKey] = addArrayToArray(privilege[addingToKey], [entity.id])
+        config.json.privileges[privilegeName] = privilege
+        config.save()
+    }
+
+    private static setKeyValue(config: Config, key: string, value: any) {
+        config.json[key] = value
+        config.save()
+    }
+
+    private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string): Error {
+        const alreadyHad = []
+        keys.forEach(key => {
+            if (config.json[entry][key]) {
+                alreadyHad.push(`${key} => ${config.json[entry][key]}`)
+            }
+            config.json[entry][key] = value
+        })
+        config.save()
+        return alreadyHad.length > 0 ? new Error(alreadyHad.join('\n')) : null
+    }
+
+    private static removeKeysFromMap(config: Config, entry: string, keys: string[]) {
+        keys.forEach(key => {
+            config[entry]?.delete(key)
+        })
+        config.save()
+    }
+
+    private static getValuesOfUniqueKeyAsSet(config: Config, entry: string, value: string): Set<string> {
+        let values: string[] = Object.values(config.json[entry]).filter(val => val === value) as string[]
+        return new Set(values || [])
     }
 }
 

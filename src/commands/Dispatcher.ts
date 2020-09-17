@@ -49,7 +49,7 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
 
 function handleTextChannelMessage(message: Message) {
     const context = GlobalContext.get(message.guild.id)
-    // context.setTextChannel(message.channel as TextChannel)
+    context.setTextChannel(message.channel as TextChannel)
     handleGuildCommand(context, message.content, message.author, message)
 }
 

@@ -1,8 +1,9 @@
-import {Guild, TextChannel, User, VoiceConnection} from "discord.js"
-import {Config, GuildConfig} from "../Config"
+import {Guild, TextChannel, VoiceConnection} from "discord.js"
+import {Config} from "./Config"
 import {VoiceDependencyProvider, VoiceDependencyProviderBuilder} from "../voice/DependencyProvider"
 import GuildProvider from "./Provider"
 import {GuildUtils} from "../utils/GuildUtils"
+import {GlobalContext} from "../GlobalContext"
 
 export class GuildContext {
     private voiceConnection: VoiceConnection
@@ -12,14 +13,13 @@ export class GuildContext {
     private readonly guildProvider: GuildProvider
 
     private readonly id: string
-
     private readonly config: Config
 
     constructor(id: string) {
         this.id = id
         this.voiceDependencyProvider = VoiceDependencyProviderBuilder.build(null)
         this.guildProvider = new GuildProvider(this)
-        this.config = GuildConfig.loadConfig(id)
+        this.config = new Config(id)
     }
 
     setVoiceConnection(voiceConnection: VoiceConnection) {
@@ -47,7 +47,7 @@ export class GuildContext {
     }
 
     getGuild(): Guild {
-        return this.textChannel ? this.textChannel.guild : this.voiceConnection.channel.guild
+        return GlobalContext.getClient().guilds.resolve(this.id)
     }
 
     getVoiceDependencyProvider(): VoiceDependencyProvider {
