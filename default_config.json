@@ -4,7 +4,11 @@
   "nicknames": {
 
   },
-  "permissions": {
+  "aliases": {
+
+  },
+  "defaultPrivilege": true,
+  "privileges": {
 
   }
 }

@@ -1,26 +1,29 @@
 import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, Command, CommandOptions} from "../Command"
-import {Nicknames} from "../../Config"
+import {Aliases} from "../../Config"
 import {TableGenerator} from "../../communication/TableGenerator"
+import {CommandRegistry} from "../Registry"
+import {GuildUtils} from "../../utils/GuildUtils"
 
-export default class NicknamesCommand extends Command {
+export default class AliasesCommand extends Command {
     readonly options: CommandOptions = {
-        name: 'Nicknames',
-        keywords: ['nicknames'],
+        name: 'Aliases',
+        keywords: ['aliases'],
         group: 'admin',
-        descriptions: ['Modify nicknames for users'],
+        descriptions: ['Modify aliases for commands'],
         arguments: [
             {
-                key: 'user',
-                description: 'User you would like modify nicknames for',
+                key: 'command',
+                description: 'Command you would like to add aliases for',
                 required: true,
-                type: ArgumentType.USER
+                type: ArgumentType.STRING,
+                validate: GuildUtils.isStringACommand
             },
             {
                 key: 'add',
                 flag: 'a',
-                description: 'Nicknames you would like to add',
+                description: 'Aliases you would like to add',
                 required: false,
                 type: ArgumentType.STRING,
                 array: true
@@ -28,7 +31,7 @@ export default class NicknamesCommand extends Command {
             {
                 key: 'remove',
                 flag: 'r',
-                description: 'Nicknames you would like to remove',
+                description: 'Aliases you would like to remove',
                 required: false,
                 type: ArgumentType.STRING,
                 array: true
@@ -36,7 +39,7 @@ export default class NicknamesCommand extends Command {
             {
                 key: 'list',
                 flag: 'l',
-                description: 'List nicknames for the user',
+                description: 'List aliases for this command',
                 required: false,
                 type: ArgumentType.FLAG
             }
@@ -44,12 +47,12 @@ export default class NicknamesCommand extends Command {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        const user = args.get('user')
+        const command = CommandRegistry.getCommand(context, args.get('command'))
         if (!args.get('list') && (args.get('add') || args.get('remove'))) {
-            context.getConfig().addNicknames(user.id, args.get('add') || [])
-            context.getConfig().removeNicknames(user.id, args.get('remove') || [])
+            context.getConfig().addAliases(command.options.name, args.get('add') || [])
+            context.getConfig().removeAliases(command.options.name, args.get('remove') || [])
         }
-        const embed = TableGenerator.createBasicListEmbed(user.tag, context.getConfig().getNicknames(user.id), 'Nicknames')
+        const embed = TableGenerator.createBasicListEmbed(command.options.name, context.getConfig().getAliases(command.options.name), 'Aliases')
         context.getProvider().getResponder().send({content: embed, message: message}, 20)
     }
 }

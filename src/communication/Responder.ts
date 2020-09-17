@@ -1,6 +1,7 @@
 import {GuildContext} from "../guild/Context"
 import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
 import {Communicator} from "./Communicator"
+import {MessageGenerator} from "./MessageGenerator"
 
 export default class Responder {
     private context: GuildContext
@@ -8,6 +9,11 @@ export default class Responder {
     private typingStatus: Set<string> = new Set()
     constructor(context: GuildContext) {
         this.context = context
+    }
+
+    error(error: string | Error, message?: Message) {
+        const embed = MessageGenerator.createErrorEmbed(error instanceof Error ? error.message : error)
+        this.send({content: embed, message: message}, 30)
     }
 
     acknowledge(mode: number, message: Message) {

@@ -1,5 +1,6 @@
 import fs from "fs"
 import {FileUtils} from "./utils/FileUtils"
+import {Role, User} from "discord.js"
 
 export namespace GuildConfig {
     export function loadConfig(guildId: string): Config {
@@ -32,101 +33,145 @@ export class Config {
         return this.json.prefix
     }
 
-    setPrefix(prefix: string): boolean {
+    setPrefix(prefix: string) {
         this.json.prefix = prefix
-        return true
+    }
+
+    getDefaultPrivilege(): boolean {
+        return this.json.defaultPrivilege
+    }
+
+    setDefaultPrivilege(privilege: boolean) {
+        this.json.defaultPrivilege = privilege
     }
 
     getDefaultTextChannel(): string {
         return this.json.defaultTextChannel
     }
 
-    setDefaultTextChannel(textChannelID: string): boolean {
+    setDefaultTextChannel(textChannelID: string) {
         this.json.defaulTextChannel = textChannelID
-        return true
+    }
+
+    getUserIDForNickname(nickname: string): string {
+        return this.json.nicknames[nickname]
     }
 
     getNicknames(userID: string): Nicknames {
-        return new Set(this.json.nicknames[userID] || [])
+        let nicknames: string[] = Object.values(this.json.nicknames).filter(val => val === userID) as string[]
+        return new Set(nicknames || [])
     }
 
-    removeNicknames(userID: string, nicknames: string[]): boolean {
-        if (this.json.nicknames[userID]) {
-            this.json.nicknames[userID] = removeArrayFromArray(this.json.nicknames[userID], nicknames)
-        }
-        return true
-    }
-
-    addNicknames(userID: string, nicknames: string[]): boolean {
-        let result = true
+    removeNicknames(userID: string, nicknames: string[]) {
         nicknames.forEach(nickname => {
-            if (this.json.nicknames[userID] && this.json.nicknames[userID].indexOf(nickname) !== -1) {
-                result = false
+            this.json.nicknames.delete(nickname)
+        })
+    }
+
+    addNicknames(userID: string, nicknames: string[]): Error {
+        const alreadyHadNickname = []
+        nicknames.forEach(nickname => {
+            if (this.json.nicknames[nickname]) {
+                alreadyHadNickname.push(`${nickname} => ${this.json.nicknames[nickname]}`)
             }
-            this.json.nicknames[userID] = this.json.nicknames[userID] || []
-            this.json.nicknames[userID].push(nickname)
+            this.json.nicknames[nickname] = userID
         })
-        return result
+        return alreadyHadNickname.length > 0 ? new Error(alreadyHadNickname.join('\n')) : null
     }
 
-    getPermissions(): Permission[] {
-        const permissions: Permission[] = []
-        Object.keys(this.json.permissions).forEach(key => {
-            permissions.push(this.getPermission(key))
+    getCommandNameForAlias(alias: string): string {
+        return this.json.aliases[alias]
+    }
+
+    getAliases(command: string): Aliases {
+        let aliases: string[] = Object.values(this.json.aliases).filter(val => val === command) as string[]
+        return new Set(aliases || [])
+    }
+
+    removeAliases(command: string, aliases: string[]) {
+        aliases.forEach(alias => {
+            this.json.aliases.delete(alias)
         })
-        return permissions
     }
 
-    hasPermission(key: string): boolean {
-        return this.json.permissions[key] !== undefined
+    addAliases(command: string, aliases: string[]): Error {
+        const alreadyHadAlias = []
+        aliases.forEach(alias => {
+            if (this.json.aliases[alias]) {
+                alreadyHadAlias.push(`${alias} => ${this.json.aliases[alias]}`)
+            }
+            this.json.aliases[alias] = command
+        })
+        return alreadyHadAlias.length > 0 ? new Error(alreadyHadAlias.join('\n')) : null
     }
 
-    getPermission(key: string): Permission {
-        let permission = this.json.permissions[key]
-        return {
+    getPrivileges(): Privilege[] {
+        const privileges: Privilege[] = []
+        Object.keys(this.json.privileges).forEach(key => {
+            privileges.push(this.getPrivilege(key))
+        })
+        return privileges
+    }
+
+    hasPrivilege(key: string): boolean {
+        return this.json.privileges[key] !== undefined
+    }
+
+    getPrivilege(key: string): Privilege {
+        let privilege = this.json.privileges[key]
+        return privilege ? {
             command: key,
-            allowedRoles: new Set(permission.allowedRoles || []),
-            allowedUsers: new Set(permission.allowedUsers || []),
-            disallowedRoles: new Set(permission.disallowedRoles || []),
-            disallowedUsers: new Set(permission.disallowedUsers || [])
-        }
+            grantedRoles: new Set(privilege.grantedRoles || []),
+            grantedUsers: new Set(privilege.grantedUsers || []),
+            deniedRoles: new Set(privilege.deniedRoles || []),
+            deniedUsers: new Set(privilege.deniedUsers || [])
+        } : null
     }
 
-    createPermission(name: string, allowedRoles: string[], allowedUsers: string[],
-                     disallowedRoles: string[], disallowedUsers: string[]): boolean {
-        if (this.hasPermission(name)) {
-            const currentPermission = this.json.permissions[name]
-            currentPermission.allowedUsers = addArrayToArray(currentPermission.allowedUsers, allowedUsers)
-            currentPermission.allowedRoles = addArrayToArray(currentPermission.allowedRoles, allowedRoles)
-            currentPermission.disallowedUsers = addArrayToArray(currentPermission.disallowedUsers, disallowedUsers)
-            currentPermission.disallowedRoles = addArrayToArray(currentPermission.disallowedRoles, disallowedRoles)
-            this.json.permissions[name] = currentPermission
-        } else {
-            this.json.permissions[name] = {
-                allowedRoles: Array.from(allowedRoles),
-                allowedUsers: Array.from(allowedUsers),
-                disallowedRoles: Array.from(disallowedRoles),
-                disallowedUsers: Array.from(disallowedUsers)
-            }
-        }
-        return true
+    deletePrivilege(name: string) {
+        this.json.privileges[name] = undefined
     }
 
-    deletePermission(name: string, allowedRoles: string[], allowedUsers: string[],
-                     disallowedRoles: string[], disallowedUsers: string[]): boolean {
-        if (allowedRoles.length === 0 && allowedUsers.length === 0
-            && disallowedRoles.length === 0 && disallowedUsers.length == 0) {
-            this.json.permissions[name] = undefined
+    private modifyEntityPrivilege(privilegeName: string, entity: User | Role, isGranting: boolean) {
+        let privilege = this.json.privileges[privilegeName] || createPrivilege()
+        let baseKey = entity instanceof User ? 'users' : 'roles'
+        let addingToKey = `${isGranting ? 'granted' : 'denied'}${baseKey}`
+        let removingFromKey = `${isGranting ? 'denied' : 'granted'}${baseKey}`
+        privilege[removingFromKey] = removeArrayFromArray(privilege[removingFromKey], [entity.id])
+        privilege[addingToKey] = addArrayToArray(privilege[addingToKey], [entity.id])
+        this.json.privileges[privilegeName] = privilege
+    }
+
+    grantEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
+        entities.forEach(entity => {
+            this.modifyEntityPrivilege(privilegeName, entity, true)
+        })
+    }
+
+    denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
+        entities.forEach(entity => {
+            this.modifyEntityPrivilege(privilegeName, entity, false)
+        })
+    }
+
+    removeEntitiesFromPrivilege(privilegeName: string, entities: (User | Role)[]) {
+        let privilege = this.json.privileges[privilegeName]
+        if (privilege) {
+            const ids = entities.map(entity => entity.id)
+            privilege.grantedRoles = removeArrayFromArray(privilege.grantedRoles, ids)
+            privilege.deniedRoles = removeArrayFromArray(privilege.deniedRoles, ids)
+            privilege.grantedUsers = removeArrayFromArray(privilege.grantedUsers, ids)
+            privilege.deniedUsers = removeArrayFromArray(privilege.deniedUsers, ids)
         }
-        if (this.hasPermission(name)) {
-            const currentPermission = this.json.permissions[name]
-            currentPermission.allowedUsers = removeArrayFromArray(currentPermission.allowedUsers, allowedUsers)
-            currentPermission.allowedRoles = removeArrayFromArray(currentPermission.allowedRoles, allowedRoles)
-            currentPermission.disallowedUsers = removeArrayFromArray(currentPermission.disallowedUsers, disallowedUsers)
-            currentPermission.disallowedRoles = removeArrayFromArray(currentPermission.disallowedRoles, disallowedRoles)
-            this.json.permissions[name] = currentPermission
-        }
-        return true
+    }
+}
+
+function createPrivilege(): object {
+    return {
+        grantedRoles: [],
+        grantedUsers: [],
+        deniedRoles: [],
+        deniedUsers: []
     }
 }
 
@@ -143,10 +188,12 @@ function removeArrayFromArray(current: string[] ,removes: string[]): string[] {
 
 export type Nicknames = Set<string>
 
-export interface Permission {
+export type Aliases = Set<string>
+
+export interface Privilege {
     command: string
-    allowedRoles: Set<string>
-    allowedUsers: Set<string>
-    disallowedRoles: Set<string>
-    disallowedUsers: Set<string>
+    grantedRoles: Set<string>
+    grantedUsers: Set<string>
+    deniedRoles: Set<string>
+    deniedUsers: Set<string>
 }

@@ -1,4 +1,7 @@
 import {table} from "table"
+import {MessageEmbed} from "discord.js"
+import {MessageGenerator} from "./MessageGenerator"
+import {Nicknames} from "../Config"
 
 export namespace TableGenerator {
     export function createTable(headers: string[], data: string[][]): string {
@@ -27,5 +30,19 @@ export namespace TableGenerator {
             data.unshift(headers)
         }
         return table(data, config)
+    }
+
+    export function createBasicListEmbed(title: string, set: Set<string>, noneType?: string): MessageEmbed {
+        const embed = MessageGenerator.getBaseEmbed()
+        let description = ''
+        if (!set || set.size === 0) {
+            description = `No ${noneType || 'items'}`
+        } else {
+            set.forEach((item) => {
+                description += `${item}\n`
+            })
+        }
+        embed.setDescription(description.trimRight())
+        return embed
     }
 }

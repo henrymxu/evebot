@@ -20,22 +20,23 @@ export namespace CommandDispatcher {
 
     // Assumes that the command does not include the prefix
     export function handleExplicitCommand(context: GuildContext, user: User, message: string) {
-        const prefix = '?'
+        const prefix = context.getPrefix()
+        // Check Voice Command Permissions
         handleGuildCommand(context, `${prefix}${message}`, user)
     }
 }
 
 function handleGuildCommand(context: GuildContext, commandString: string, source: User, message?: Message) {
-    const keyword = CommandParser.parseKeyword(context, commandString)
-    if (!keyword) {
+    const keywordResult = CommandParser.parseKeyword(context, commandString)
+    if (!keywordResult.keyword) {
         return
     }
-    const command = CommandRegistry.getCommand(keyword)
+    const command = CommandRegistry.getCommand(context, keywordResult.keyword)
     if (!command) {
-        console.log(`CommandDispatcher: no command found for ${keyword}`)
+        console.log(`CommandDispatcher: no command found for ${keywordResult.keyword}`)
         return
     }
-    const result = CommandParser.parseArguments(context, command, keyword, commandString)
+    const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
     if (result.error) {
         console.log(`Could not parse arguments for ${commandString}`)
         return
@@ -48,7 +49,7 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
 
 function handleTextChannelMessage(message: Message) {
     const context = GlobalContext.get(message.guild.id)
-    context.setTextChannel(message.channel as TextChannel)
+    // context.setTextChannel(message.channel as TextChannel)
     handleGuildCommand(context, message.content, message.author, message)
 }
 

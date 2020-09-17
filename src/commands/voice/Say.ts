@@ -14,14 +14,14 @@ export default class SayCommand extends VoiceCommand {
                 key: 'message',
                 description: 'Message the bot should say',
                 required: true,
-                type: ArgumentType.string,
+                type: ArgumentType.STRING,
             },
             {
                 key: 'voice',
                 flag: 'v',
                 description: 'Voice the bot should use. Microsoft: (https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support#standard-voices)',
                 required: false,
-                type: ArgumentType.string
+                type: ArgumentType.STRING
             }
         ],
         example: 'say hello my name is eve -v en-IN-Heera-Apollo'

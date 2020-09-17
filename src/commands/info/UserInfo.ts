@@ -14,7 +14,7 @@ export default class UserInfoCommand extends Command {
                 key: 'user',
                 description: 'User you would like to show info about',
                 required: true,
-                type: ArgumentType.user
+                type: ArgumentType.USER
             }
         ]
     }

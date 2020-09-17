@@ -15,7 +15,7 @@ export default class PlayCommand extends VoiceCommand {
                 key: 'query',
                 description: 'Name or url of song',
                 required: true,
-                type: ArgumentType.string
+                type: ArgumentType.STRING
             }
         ],
         example: 'play Blank Space'

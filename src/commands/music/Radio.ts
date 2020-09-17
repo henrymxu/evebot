@@ -3,7 +3,6 @@ import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, CommandOptions} from "../Command"
 import {TableGenerator} from "../../communication/TableGenerator"
-import {MessageGenerator} from "../../communication/MessageGenerator"
 import {RadioConfiguration, RadioContext} from "../../music/radio/Radio"
 
 export default class RadioCommand extends VoiceCommand {
@@ -18,21 +17,21 @@ export default class RadioCommand extends VoiceCommand {
                 flag: 'a',
                 description: 'Artist name (Radio will use this to determine what artists to choose from)',
                 required: false,
-                type: ArgumentType.string
+                type: ArgumentType.STRING
             },
             {
                 key: 'genre',
                 flag: 'g',
                 description: 'Genre (Radio will use this to determine what genres to choose from)',
                 required: false,
-                type: ArgumentType.string
+                type: ArgumentType.STRING
             },
             {
                 key: 'track',
                 flag: 't',
                 description: 'Track name (Radio will use this to choose from similar tracks)',
                 required: false,
-                type: ArgumentType.string
+                type: ArgumentType.STRING
             },
             {
                 key: 'length',
@@ -40,7 +39,7 @@ export default class RadioCommand extends VoiceCommand {
                 description: 'Number of songs in the radio',
                 required: false,
                 default: 20,
-                type: ArgumentType.number,
+                type: ArgumentType.NUMBER,
                 validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 100
             }
         ],
@@ -55,8 +54,7 @@ export default class RadioCommand extends VoiceCommand {
                     {content: createRadioMessage(radioConfiguration),
                         message: message, options: {code: 'Markdown'}}, 30)
             } else {
-                const response = MessageGenerator.createErrorEmbed(`There is no radio playing! Use ${context.getPrefix()}radio command to start one!`)
-                context.getProvider().getResponder().send({content: response, message: message}, 30)
+                context.getProvider().getResponder().error(`There is no radio playing! Use ${context.getPrefix()}radio command to start one!`, message)
             }
             return
         }

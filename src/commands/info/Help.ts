@@ -3,6 +3,7 @@ import {GuildContext} from '../../guild/Context'
 import {ArgumentType, Command, CommandOptions} from '../Command'
 import {CommandRegistry} from '../Registry'
 import {TableGenerator} from '../../communication/TableGenerator'
+import {GuildUtils} from "../../utils/GuildUtils"
 
 export default class HelpCommand extends Command {
     readonly options: CommandOptions = {
@@ -15,7 +16,8 @@ export default class HelpCommand extends Command {
                 key: 'query',
                 description: 'Group or specific command',
                 required: false,
-                type: ArgumentType.string
+                type: ArgumentType.STRING,
+                validate: GuildUtils.isStringACommandOrCommandGroup
             }
         ]
     }

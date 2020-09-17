@@ -2,7 +2,6 @@ import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import VoiceCommand from "../../voice/VoiceCommand"
 import {ArgumentType, CommandOptions} from "../Command"
-import {MessageGenerator} from "../../communication/MessageGenerator"
 
 export default class ReplayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -15,14 +14,14 @@ export default class ReplayCommand extends VoiceCommand {
                 key: 'user',
                 description: 'User you would like to replay',
                 required: true,
-                type: ArgumentType.user
+                type: ArgumentType.USER
             },
             {
                 key: 'length',
                 flag: 'l',
                 description: 'Length of replay (seconds)',
                 required: false,
-                type: ArgumentType.integer,
+                type: ArgumentType.INTEGER,
                 default: 10,
                 validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
             },
@@ -35,7 +34,7 @@ export default class ReplayCommand extends VoiceCommand {
         const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
         if (!voiceStream) {
             console.log(`No audioStream for ${user.tag}`)
-            context.getProvider().getResponder().send({content: MessageGenerator.createErrorEmbed('No listening stream registered for user'), message: message})
+            context.getProvider().getResponder().error('No listening stream registered for user', message)
             return
         }
         context.getProvider().getInterruptService().playVoiceStream(voiceStream.getRecordedStream(args.get('length')))

@@ -15,23 +15,23 @@ export default class LyricsCommand extends Command {
                 key: 'query',
                 description: 'Name of song (if none is provided, currently playing song is used)',
                 required: false,
-                type: ArgumentType.string
+                type: ArgumentType.STRING
             },
             {
                 key: 'artist',
                 flag: 'a',
                 description: 'Artist of song',
                 required: false,
-                type: ArgumentType.string
+                type: ArgumentType.STRING
             }
         ]
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        const query = args.get('query') ? args.get('query') : context.getProvider().getDJ().getCurrentSong().getTitle()
+        const query = args.get('query') || context.getProvider().getDJ().getCurrentSong().getTitle()
         if (!query) {
-            const response = MessageGenerator.createErrorEmbed(`There is no song playing! Provide a song name for some lyrics`)
-            context.getProvider().getResponder().send({content: response, message: message}, 30)
+
+            const response = context.getProvider().getResponder().error(`There is no song playing! Provide a song name for some lyrics`, message)
         }
         GeniusLyrics.get(query, args.get('artist')).then((result) => {
             const embed = MessageGenerator.getBaseEmbed()

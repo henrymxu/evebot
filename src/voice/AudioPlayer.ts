@@ -77,6 +77,7 @@ export default class AudioPlayer {
         if (!this.getConnection().dispatcher) {
             return false
         }
+        this.getQueue().forEach(track => { track.setState(TrackState.SKIPPED) })
         this.getConnection().dispatcher.destroy()
         this.initialize()
         return true

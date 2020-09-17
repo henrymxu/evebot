@@ -17,14 +17,14 @@ export default class ClipCommand extends VoiceCommand {
                 key: 'user',
                 description: 'User you would like to clip',
                 required: true,
-                type: ArgumentType.user
+                type: ArgumentType.USER
             },
             {
                 key: 'length',
                 flag: 'l',
                 description: 'Length of clip (seconds)',
                 required: false,
-                type: ArgumentType.integer,
+                type: ArgumentType.INTEGER,
                 default: 10,
                 validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
             },
@@ -33,7 +33,7 @@ export default class ClipCommand extends VoiceCommand {
                 flag: 'c',
                 description: 'Title of clip',
                 required: false,
-                type: ArgumentType.string,
+                type: ArgumentType.STRING,
                 default: 'Clip'
             }
         ],
@@ -45,7 +45,7 @@ export default class ClipCommand extends VoiceCommand {
         const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
         if (voiceStream == null) {
             console.log(`No audioStream for ${user.tag} / ${user.id}`)
-            context.getProvider().getResponder().send({content: MessageGenerator.createErrorEmbed('No listening stream registered for user'), message: message})
+            context.getProvider().getResponder().error('No listening stream registered for user', message)
             return
         }
         context.getProvider().getResponder().startTyping(message)

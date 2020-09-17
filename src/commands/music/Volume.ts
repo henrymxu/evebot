@@ -13,7 +13,7 @@ export default class VolumeCommand extends Command {
                 key: 'volume',
                 description: 'The desired volume of the bot (0 - 100)',
                 required: true,
-                type: ArgumentType.integer,
+                type: ArgumentType.INTEGER,
                 validate: (context, arg) => {
                     return arg >= 0 && arg <= 100
                 }

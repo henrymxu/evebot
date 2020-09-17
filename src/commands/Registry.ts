@@ -1,13 +1,18 @@
 import requireAll from "require-all"
 import {Command} from "./Command"
 import {Utils} from "../utils/Utils"
+import {GuildContext} from "../guild/Context"
 
 const commands: Map<string, Command> = new Map()
 const groups: Set<string> = new Set()
 
 export namespace CommandRegistry {
-    export function getCommand(keyword: string) {
-        return commands.get(keyword.toLowerCase())
+    export function getCommand(context: GuildContext, keyword: string) {
+        let command = commands.get(keyword.toLowerCase())
+        if (!command) {
+            command = commands.get(context.getConfig().getCommandNameForAlias(keyword.toLowerCase()))
+        }
+        return command
     }
 
     export function getCommands(): Map<string, Command> {

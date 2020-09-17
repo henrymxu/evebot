@@ -32,7 +32,7 @@ export abstract class Track {
     }
 
     getRequester(context: GuildContext): string {
-        return GuildUtils.getUserFromUserID(context, this.metaData.requesterId).username
+        return GuildUtils.parseUserFromUserID(context, this.metaData.requesterId).username
     }
 
     abstract getTitle(): string
