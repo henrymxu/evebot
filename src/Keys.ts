@@ -18,6 +18,6 @@ function loadKeysFromJson(): Map<string, string> {
     Object.keys(json).forEach(key => {
         keys.set(key, json[key])
     })
-    console.log(keys)
+    console.log(process.env)
     return keys
 }
