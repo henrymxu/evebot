@@ -6,9 +6,9 @@ export namespace Lifecycle {
         client.on('voiceStateUpdate', (oldState, newState) => {
             if (!hasUserJoinedChannel(oldState, newState)) {
                 if (hasUserLeftChannel(oldState, newState)) {
-                    if (isItself(client, newState)) {
-                        GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().reset()
-                    }
+                    // if (isItself(client, newState)) {
+                    //     GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().reset()
+                    // }
                     GlobalContext.get(oldState.guild.id).getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member.user)
                 }
                 if (hasUserChangedChannel(oldState, newState)) {

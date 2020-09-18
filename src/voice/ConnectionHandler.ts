@@ -4,6 +4,7 @@ import {GuildContext} from "../guild/Context"
 import {SilentStreamUtils} from "../utils/SilentStreamUtils"
 import {PassThrough} from "stream"
 import {CommandDispatcher} from "../commands/Dispatcher"
+import {GlobalContext} from "../GlobalContext"
 
 const USER_REJOIN_THRESHOLD = 5000
 const VOICE_COMMAND_LENGTH = 3000
@@ -26,7 +27,17 @@ export default class VoiceConnectionHandler {
         return this.voiceStreams.get(user.id)
     }
 
+    disconnect(): Promise<void> {
+        return new Promise((res, rej) => {
+            this.context.getVoiceConnection().on('disconnect', () => {
+                res()
+            })
+            this.context.getVoiceConnection().disconnect()
+        })
+    }
+
     reset() {
+        console.log('Resetting bot')
         this.voiceStreams.clear()
         this.context.getVoiceDependencyProvider().getHotwordEngine().clear()
         this.removedTimeouts.forEach((timeout) => {
@@ -67,7 +78,7 @@ export default class VoiceConnectionHandler {
         }
         SilentStreamUtils.playSilentAudioStream(connection)
         connection.on('speaking', (user, speaking) => {
-            if (user === undefined) {
+            if (user === undefined || GlobalContext.getClient().user.id === user.id) {
                 return
             }
             if (this.removedTimeouts.has(user.id)) {
