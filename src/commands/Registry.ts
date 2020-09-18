@@ -40,7 +40,7 @@ export namespace CommandRegistry {
     export function registerCommandsIn(path: string) {
         const modules = requireAll({
             dirname: path,
-            filter: /^([^.].*)\.ts(on)?$/
+            filter: /^([^.].*)\.(ts|js)(on)?$/
         })
 
         function getLeafNodes(nodes: object, result = []): any[] {
