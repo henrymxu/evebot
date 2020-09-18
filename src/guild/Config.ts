@@ -3,13 +3,16 @@ import {FileUtils} from "../utils/FileUtils"
 import {Role, User} from "discord.js"
 
 export class Config {
-    private readonly guildID: string
+    private readonly guildId: string
     private readonly json: any
 
-    constructor(guildID: string) {
-        this.guildID = guildID
-        const path = `./configs/config_${guildID}.json`
+    constructor(guildId: string) {
+        this.guildId = guildId
+        const path = `./configs/config_${guildId}.json`
         if (!fs.existsSync(path)) {
+            if (!fs.existsSync('./configs')){
+                fs.mkdirSync('./configs')
+            }
             fs.copyFileSync('./default_config.json', path)
         }
         //throw ('Attempted to load an invalid config file')
@@ -124,10 +127,10 @@ export class Config {
     }
 
     private save() {
-        const path = `./configs/config_${this.guildID}.json`
+        const path = `./configs/config_${this.guildId}.json`
         fs.writeFile(path, JSON.stringify(this.json, null, '\t'), err => {
             if (err) {
-                console.log(`An error occured when saving guild ${this.guildID} config: ${err}`)
+                console.log(`An error occured when saving guild ${this.guildId} config: ${err}`)
             }
         })
     }
