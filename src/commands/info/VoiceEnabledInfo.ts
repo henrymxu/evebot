@@ -1,6 +1,6 @@
 import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
+import {Command, CommandOptions} from "../Command"
 
 export default class VoiceEnabledInfo extends Command {
     readonly options: CommandOptions = {

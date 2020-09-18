@@ -43,7 +43,8 @@ export default class AliasesCommand extends Command {
                 required: false,
                 type: ArgumentType.FLAG
             }
-        ]
+        ],
+        examples: ['aliases play -a sing', 'aliases play -l']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

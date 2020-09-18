@@ -37,7 +37,7 @@ export default class ClipCommand extends VoiceCommand {
                 default: 'Clip'
             }
         ],
-        example: 'clip @Eve -l 5 -c "Eve Funny Clip"'
+        examples: 'clip @Eve -l 5 -c "Eve Funny Clip"'
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

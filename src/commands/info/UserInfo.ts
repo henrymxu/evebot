@@ -16,7 +16,8 @@ export default class UserInfoCommand extends Command {
                 required: true,
                 type: ArgumentType.USER
             }
-        ]
+        ],
+        examples: ['userinfo @George']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

@@ -52,7 +52,7 @@ export default class PrivilegesCommand extends Command {
                 type: ArgumentType.FLAG,
             }
         ],
-        example: 'privileges play -allow Liam @Olivia Admins -disallow @Kevin Newcomers'
+        examples: ['privileges play -allow Liam @Olivia Admins -disallow @Kevin Newcomers']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

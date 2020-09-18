@@ -66,7 +66,7 @@ export interface CommandOptions {
     group: string
     descriptions: string[]
     arguments: CommandArgument[]
-    example?: string
+    examples?: string[]
 }
 
 export interface CommandArgument {

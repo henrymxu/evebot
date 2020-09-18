@@ -40,7 +40,8 @@ export default class NicknamesCommand extends Command {
                 required: false,
                 type: ArgumentType.FLAG
             }
-        ]
+        ],
+        examples: ['nicknames @Jonathan -a Johnny John', 'nicknames @Jonathan -l']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

@@ -26,7 +26,7 @@ export default class ReplayCommand extends VoiceCommand {
                 validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
             },
         ],
-        example: 'clip @Eve -l 8'
+        examples: 'clip @Eve -l 8'
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

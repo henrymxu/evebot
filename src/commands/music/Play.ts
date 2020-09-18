@@ -18,7 +18,7 @@ export default class PlayCommand extends VoiceCommand {
                 type: ArgumentType.STRING
             }
         ],
-        example: 'play Blank Space'
+        examples: ['play Blank Space']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

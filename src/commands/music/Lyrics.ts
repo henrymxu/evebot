@@ -24,14 +24,14 @@ export default class LyricsCommand extends Command {
                 required: false,
                 type: ArgumentType.STRING
             }
-        ]
+        ],
+        examples: ['lyrics', 'lyrics Wildest Dreams']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         const query = args.get('query') || context.getProvider().getDJ().getCurrentSong().getTitle()
         if (!query) {
-
-            const response = context.getProvider().getResponder().error(`There is no song playing! Provide a song name for some lyrics`, message)
+            context.getProvider().getResponder().error(`There is no song playing! Provide a song name for some lyrics`, message)
         }
         GeniusLyrics.get(query, args.get('artist')).then((result) => {
             const embed = MessageGenerator.getBaseEmbed()

@@ -43,7 +43,7 @@ export default class RadioCommand extends VoiceCommand {
                 validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 100
             }
         ],
-        example: 'radio -a \'Taylor Swift\' -t \'Closer\''
+        examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

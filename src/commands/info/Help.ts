@@ -19,7 +19,8 @@ export default class HelpCommand extends Command {
                 type: ArgumentType.STRING,
                 validate: GuildUtils.isStringACommandOrCommandGroup
             }
-        ]
+        ],
+        examples: ['help voice']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
@@ -91,8 +92,11 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     } else {
         description += `Arguments: None\n`
     }
-    if (command.options.example) {
-        description += `Example: <${context.getPrefix()}${command.options.example}>`
+    if (command.options.examples) {
+        description += `<Examples>\n`
+        command.options.examples.forEach(command => {
+           description += `< ${command} >\n`
+        })
     }
-    return description
+    return description.trimRight()
 }
