@@ -2,6 +2,7 @@ import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import VoiceCommand from "../../voice/VoiceCommand"
 import {ArgumentType, CommandOptions} from "../Command"
+import {Logger} from "../../Logger"
 
 export default class ReplayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -26,14 +27,14 @@ export default class ReplayCommand extends VoiceCommand {
                 validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
             },
         ],
-        examples: 'clip @Eve -l 8'
+        examples: ['clip @Eve -l 8']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         const user: User = args.get('user')
         const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
         if (!voiceStream) {
-            console.log(`No audioStream for ${user.tag}`)
+            Logger.w(context, ReplayCommand.name, `No audioStream for ${user.tag} [${user.id}]`)
             context.getProvider().getResponder().error('No listening stream registered for user', message)
             return
         }

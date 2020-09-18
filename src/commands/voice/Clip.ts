@@ -5,6 +5,7 @@ import {GuildContext} from "../../guild/Context"
 import {ArgumentType, CommandOptions} from "../Command"
 import {MessageGenerator} from "../../communication/MessageGenerator"
 import {GuildUtils} from "../../utils/GuildUtils"
+import {Logger} from "../../Logger"
 
 export default class ClipCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -37,14 +38,14 @@ export default class ClipCommand extends VoiceCommand {
                 default: 'Clip'
             }
         ],
-        examples: 'clip @Eve -l 5 -c "Eve Funny Clip"'
+        examples: ['clip @Eve -l 5 -c Eve Funny Clip']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         const user: User = args.get('user')
         const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
         if (voiceStream == null) {
-            console.log(`No audioStream for ${user.tag} / ${user.id}`)
+            Logger.w(context, ClipCommand.name, `No audioStream for ${user.tag} [${user.id}]`)
             context.getProvider().getResponder().error('No listening stream registered for user', message)
             return
         }
@@ -56,7 +57,7 @@ export default class ClipCommand extends VoiceCommand {
                 context.getProvider().getResponder().stopTyping(message)
             })
         }).catch((err) => {
-            console.log(`There was an error converting Wav Buffer to MP3 Buffer: ${err.toString()}`)
+            Logger.e(context, ClipCommand.name, `There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`)
         })
     }
 

@@ -1,6 +1,9 @@
 import {TrackSource, SearchResult} from "../../Search"
 import ytsr from "ytsr"
 import ytpl from "ytpl"
+import {Logger} from "../../../Logger"
+
+const TAG = "YoutubeSource3"
 
 export default class Youtube3 implements TrackSource {
     getTrackURLFromSearch(query: string): Promise<SearchResult> {
@@ -23,7 +26,7 @@ export default class Youtube3 implements TrackSource {
                 }
                 res(searchResult)
             }).catch((err) => {
-                console.log(`Youtube3 Search Error: ${err}`)
+                Logger.e(null, TAG, `Search Error, reason: ${err}`)
                 rej(err)
             })
         })
@@ -32,7 +35,7 @@ export default class Youtube3 implements TrackSource {
     getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
             ytpl(playlistURL).then(result => {
-                console.log(`Found playlist ${result.title} with ${result.total_items} items`)
+                Logger.i(null, TAG, `Found playlist ${result.title} with ${result.total_items} items`)
                 const searchResult: SearchResult = {
                     infos: result.items.map((item) => {
                         return {

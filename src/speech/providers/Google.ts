@@ -3,6 +3,7 @@ import {Readable} from "stream";
 import {AudioUtils} from "../../utils/AudioUtils"
 import {SpeechClient} from "@google-cloud/speech";
 import {Keys} from "../../Keys";
+import {Logger} from "../../Logger"
 
 const configVars = ['google_keyFileName', 'google_keyFileCred']
 export default class Google implements SpeechRecognizer, SpeechProvider {
@@ -47,7 +48,7 @@ export default class Google implements SpeechRecognizer, SpeechProvider {
                     res(data.results[0].alternatives[0].transcript)
                 })
                 .on('error', err => {
-                    console.error(err)
+                    Logger.e(null, Google.name, `Generate speech error, reason ${err}`)
                     rej(err)
                 })
             audioStream.pipe(AudioUtils.createStereoToMonoTransformStream()).pipe(recognizeStream)

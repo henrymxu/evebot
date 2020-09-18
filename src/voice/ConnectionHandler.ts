@@ -5,6 +5,7 @@ import {SilentStreamUtils} from "../utils/SilentStreamUtils"
 import {PassThrough} from "stream"
 import {CommandDispatcher} from "../commands/Dispatcher"
 import {GlobalContext} from "../GlobalContext"
+import {Logger} from "../Logger"
 
 const USER_REJOIN_THRESHOLD = 5000
 const VOICE_COMMAND_LENGTH = 3000
@@ -37,7 +38,6 @@ export default class VoiceConnectionHandler {
     }
 
     reset() {
-        console.log('Resetting bot')
         this.voiceStreams.clear()
         this.context.getVoiceDependencyProvider().getHotwordEngine().clear()
         this.removedTimeouts.forEach((timeout) => {
@@ -121,9 +121,8 @@ export default class VoiceConnectionHandler {
         if (!user) {
             return
         }
-        console.log(`Preparing to remove ${user.tag}`)
         const timeout = setTimeout(() => {
-            console.log(`Removing ${user.tag}`)
+            Logger.i(this.context, VoiceConnectionHandler.name, `Removing ${user.tag} [${user.id}`)
             this.voiceStreams.delete(user.id)
             this.removedTimeouts.delete(user.id)
         }, USER_REJOIN_THRESHOLD)
@@ -134,7 +133,7 @@ export default class VoiceConnectionHandler {
     }
 
     private startVoiceStreamForUser(user: User) {
-        console.log(`Registering ${user.tag} => ${user.id}`)
+        Logger.i(this.context, VoiceConnectionHandler.name, `Registering ${user.tag} [${user.id}]`)
         const connection = this.context.getVoiceConnection()
         let audio = connection.receiver.createStream(user, {
             mode: 'pcm',
@@ -147,7 +146,7 @@ export default class VoiceConnectionHandler {
         const hotwordEngine = this.context.getVoiceDependencyProvider().getHotwordEngine()
         hotwordEngine.register(user.id, recorderStream, ((trigger) => {
             if (this.isListeningToCommand.has(user.id)) {
-                console.log(`Already listening for a command from ${user.id}`)
+                Logger.w(this.context, 'HotwordDetector', `Already listening for a command from ${user.tag} [${user.id}]`)
                 return
             }
             this.isListeningToCommand.set(user.id, true)
@@ -157,7 +156,7 @@ export default class VoiceConnectionHandler {
 
             const speechRecognizer = this.context.getVoiceDependencyProvider().getSpeechRecognizer()
             speechRecognizer.recognizeTextFromSpeech(recognitionStream).then((text) => {
-                console.log(`${user.tag} said ${text}`)
+                Logger.i(this.context, 'HotwordDetector', `${user.tag} said ${text}`)
                 CommandDispatcher.handleExplicitCommand(this.context, user, text)
             })
             setTimeout(() => {

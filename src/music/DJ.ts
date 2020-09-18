@@ -7,6 +7,7 @@ import SpotifyRadio from "./radio/SpotifyRadio"
 import {Radio} from "./radio/Radio"
 import {Spotify} from "./sources/Spotify/Spotify"
 import {Album} from "./tracks/Album"
+import {Logger} from "../Logger"
 
 export default class DJ {
     private readonly context: GuildContext
@@ -44,7 +45,7 @@ export default class DJ {
 
     private executePlay(playFunc, query: string, message) {
         playFunc().catch(err => {
-            console.log(`Error queuing ${query}: ${err}`)
+            Logger.e(this.context, DJ.name, `Error queuing ${query}, reason: ${err}`)
         }).finally(() => {
             this.context.getProvider().getResponder().stopTyping(message)
         })
@@ -126,13 +127,13 @@ export default class DJ {
     }
 
     onTrackStarted(track: Track) {
-        console.log(`Started playing: ${track.getTitle()}`)
+        Logger.i(this.context, DJ.name, `Started playing: ${track.getTitle()}`)
         const embed = TrackMessageFactory.createNowPlayingEmbed(track)
         this.context.getProvider().getResponder().send({content: embed, id: track.id, message: track.metaData.source})
     }
 
     onTrackCompleted(track: Track) {
-        console.log(`Finished playing: ${track.getTitle()}`)
+        Logger.i(this.context, DJ.name, `Finished playing: ${track.getTitle()}`)
         this.context.getProvider().getResponder().delete(track.id)
         this.context.getProvider().getResponder().delete('queue')
         this.context.getProvider().getResponder().delete('song')

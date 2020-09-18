@@ -4,6 +4,7 @@ import {VoiceDependencyProvider, VoiceDependencyProviderBuilder} from "../voice/
 import GuildProvider from "./Provider"
 import {GuildUtils} from "../utils/GuildUtils"
 import {GlobalContext} from "../GlobalContext"
+import {Logger} from "../Logger"
 
 export class GuildContext {
     private voiceConnection: VoiceConnection
@@ -67,7 +68,7 @@ export function findDefaultTextChannel(context: GuildContext): TextChannel {
         textChannel = guild.channels.cache.filter(channel => channel.type === 'text').first()
     }
     if (!textChannel) {
-        console.log(`No text channel found for ${context.getGuild().name}`)
+        Logger.w(context, "FindDefaultTextChannel",`${context.getGuild().name} does not have defaultTextChannel`)
     }
     return textChannel
 }

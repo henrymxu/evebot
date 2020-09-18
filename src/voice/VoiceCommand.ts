@@ -1,6 +1,7 @@
 import {Command} from "../commands/Command"
 import {Message, VoiceChannel} from "discord.js"
 import {GuildContext} from "../guild/Context"
+import {Logger} from "../Logger"
 
 export default abstract class VoiceCommand extends Command {
     abstract botMustBeInSameVoiceChannel(): boolean
@@ -36,15 +37,15 @@ export default abstract class VoiceCommand extends Command {
         const botVoiceChannel = message.client.voice.connections.has(message.guild.id) ?
             message.client.voice.connections.get(message.guild.id).channel : null
         if (this.userMustBeInVoiceChannel() && !userVoiceChannel) {
-            console.log(`${message.member.displayName} is not in voice channel`)
+            Logger.w(context, VoiceCommand.name, `${message.member.user.tag} was not in voice channel`)
             return Status.INVALID
         }
         if (this.botMustBeAlreadyInVoiceChannel() && !botVoiceChannel) {
-            console.log(`Bot is not already in voice channel`)
+            Logger.w(context, VoiceCommand.name, `Bot was not already in voice channel`)
             return Status.INVALID
         }
         if (this.botMustBeInSameVoiceChannel() && userVoiceChannel.id != botVoiceChannel.id) {
-            console.log(`Bot is not in same voice channel ${userVoiceChannel.id} != ${botVoiceChannel.id}`)
+            Logger.w(context, VoiceCommand.name, `Bot was not in same voice channel, ${userVoiceChannel.id} != ${botVoiceChannel.id}`)
             return Status.INVALID
         }
         if (isAlreadyInVoiceChannel(context, userVoiceChannel)) {

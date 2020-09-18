@@ -24,7 +24,7 @@ export default class SayCommand extends VoiceCommand {
                 type: ArgumentType.STRING
             }
         ],
-        examples: 'say hello my name is eve -v en-IN-Heera-Apollo'
+        examples: ['say hello my name is eve -v en-IN-Heera-Apollo']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

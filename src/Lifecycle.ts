@@ -1,5 +1,8 @@
 import {Client, VoiceChannel, VoiceState} from "discord.js"
 import {GlobalContext} from "./GlobalContext"
+import {Logger} from "./Logger"
+
+const TAG = 'Lifecycle'
 
 export namespace Lifecycle {
     export function registerJoinOnJoin(client: Client) {
@@ -13,7 +16,7 @@ export namespace Lifecycle {
                 }
                 if (hasUserChangedChannel(oldState, newState)) {
                     if (isItself(client, newState)) {
-                        console.log(`Bot was moved from ${oldState.channel.name} to ${newState.channel.name} | new connection = ${newState.connection}`)
+                        Logger.w(GlobalContext.get(oldState.guild.id), TAG, `Bot was moved from ${oldState.channel.name} to ${newState.channel.name} | New connection = ${newState.connection}`)
                         GlobalContext.get(newState.guild.id).setVoiceConnection(newState.connection)
                     }
                     GlobalContext.get(oldState.guild.id).getProvider().getVoiceConnectionHandler().userChangedChannel(oldState)

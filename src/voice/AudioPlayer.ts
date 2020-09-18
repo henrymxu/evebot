@@ -3,6 +3,7 @@ import {StreamType, VoiceConnection} from "discord.js"
 import {Readable} from "stream"
 import {GuildContext} from "../guild/Context"
 import {Track, TrackState} from "../music/tracks/Track"
+import {Logger} from "../Logger"
 
 export default class AudioPlayer {
     private context: GuildContext
@@ -42,7 +43,7 @@ export default class AudioPlayer {
     setVolume(volume: number, relative: boolean): boolean {
         this.volume = relative ? this.volume * volume : volume
         const scaledVolume = this.getScaledVolume()
-        console.log(`Setting volume to ${this.volume} [${scaledVolume}]`)
+        Logger.i(this.context, AudioPlayer.name, `Setting volume to ${this.volume} [${scaledVolume}]`)
         this.getConnection()?.dispatcher?.setVolume(scaledVolume)
         return true
     }
@@ -154,7 +155,7 @@ export default class AudioPlayer {
         } else {
             track.loadStream(this.context).then((stream) => {
                 if (track.isSkipped()) {
-                    console.log(`${track.getTitle()} was skipped before stream finished loading`)
+                    Logger.w(this.context, AudioPlayer.name, `${track.getTitle()} was skipped before stream finished loading`)
                     stream.destroy()
                     return
                 }

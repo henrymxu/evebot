@@ -3,6 +3,7 @@ import {Duplex, Readable} from "stream"
 import {AudioUtils} from "../../utils/AudioUtils"
 const SpeechSDK = require('microsoft-cognitiveservices-speech-sdk')
 import {Keys} from "../../Keys"
+import {Logger} from "../../Logger"
 
 const configVars = ['microsoft_token', 'microsoft_location']
 
@@ -41,7 +42,7 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
             }, (err) => {
                 synthesizer.close()
                 synthesizer = undefined
-                console.error(`Microsoft::generateSpeechFromText -> ${err}`)
+                Logger.e(null, Microsoft.name, `Generate speech error, reason ${err}`)
                 rej(err)
             })
         })

@@ -1,5 +1,6 @@
 import {GuildContext} from "../guild/Context"
 import {Message, User} from "discord.js"
+import {Logger} from "../Logger"
 
 export abstract class Command {
     abstract readonly options: CommandOptions
@@ -14,14 +15,14 @@ export abstract class Command {
 
     public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         if (!checkPrivileges(context, source, args.get('keyword'))) {
-            console.log(`${source.username} does not have privilege to execute ${args.get('keyword')}`)
+            Logger.w(context, Command.name, `${source.username} does not have privileges to execute ${args.get('keyword')}`)
             return
         }
         this.preExecute(context, message).then(() => {
-            console.log(`Executing command ${args.get('keyword')}`)
+            Logger.d(context, Command.name, `Executing command ${args.get('keyword')}`)
             this.execute(context, source, args, message)
         }).catch(err => {
-            console.log(`Did not execute command ${args.get('keyword')}, execute failed ${err}`)
+            Logger.w(context, Command.name, `Execution failed for command ${args.get('keyword')}, reason ${err}`)
             this.onPreExecuteFailed(context, message)
         })
     }

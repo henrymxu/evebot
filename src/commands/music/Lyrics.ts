@@ -3,6 +3,7 @@ import {GuildContext} from "../../guild/Context"
 import {ArgumentType, Command, CommandOptions} from "../Command"
 import {GeniusLyrics} from "../../music/lyrics/Genius"
 import {MessageGenerator} from "../../communication/MessageGenerator"
+import {Logger} from "../../Logger"
 
 export default class LyricsCommand extends Command {
     readonly options: CommandOptions = {
@@ -42,7 +43,7 @@ export default class LyricsCommand extends Command {
                 {content: result.lyrics,
                     message: message, options: {code: 'Markdown', embed: embed}})
         }).catch(err => {
-            console.log(`Error retrieving lyrics for ${query}: ${err}`)
+            Logger.e(context, LyricsCommand.name, `Error retrieving lyrics for ${query}, reason: ${err}`)
             context.getProvider().getResponder().acknowledge(1, message)
         })
     }

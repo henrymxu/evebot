@@ -83,7 +83,6 @@ export default class PrivilegesCommand extends Command {
 function mapNameToUserOrRole(context: GuildContext, name: string): User | Role {
     let role = GuildUtils.parseRoleFromString(context, name)
     if (role) {
-        console.log(`Found role ${role.id} for ${name}`)
         return role
     }
     return GuildUtils.parseUserFromString(context, name)

@@ -16,7 +16,6 @@ export abstract class HotwordEngine {
 
     register(userID: string, input: Transform, callback: (trigger: string) => void) {
         if (this.detectors.has(userID)) {
-            console.log(`Already have detector for ${userID}`)
             return
         }
         this.detectors.set(userID, this.createDetector(userID, input, callback))

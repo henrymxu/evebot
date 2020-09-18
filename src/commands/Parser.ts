@@ -5,6 +5,9 @@ import parser from "yargs-parser"
 import {User} from "discord.js"
 import {GuildUtils} from "../utils/GuildUtils"
 import {CommandRegistry} from "./Registry"
+import {Logger} from "../Logger"
+
+const TAG = 'CommandParser'
 
 export namespace CommandParser {
     export function parseKeyword(context: GuildContext, message: string): KeywordResult {
@@ -62,7 +65,7 @@ export namespace CommandParser {
         }
         if (invalidArgs.size != 0) {
             invalidArgs.forEach(error => {
-                console.log(`Invalid arg: ${error}`)
+                Logger.w(context, TAG, `Invalid argument, reason: ${error}`)
             })
             return {args: null, error: new Error('Something wrong with args')}
         }

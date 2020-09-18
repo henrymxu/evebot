@@ -6,6 +6,7 @@ import {GlobalContext} from "./GlobalContext"
 import {CommandDispatcher} from "./commands/Dispatcher"
 import {CommandRegistry} from "./commands/Registry"
 import path from "path"
+import {Logger} from "./Logger"
 
 const client = GlobalContext.getClient()
 CommandDispatcher.register(client)
@@ -14,11 +15,11 @@ CommandRegistry.registerCommandsIn(path.join(__dirname, 'commands'))
 Lifecycle.registerJoinOnJoin(client)
 
 client.login(Keys.get('discord_token')).then(result => {
-    console.log(`Logged in!`)
+    Logger.i(null, 'Main',`Logged in!`)
 }).catch(err => {
-    console.log(`Unable to login! ${err}`)
+    Logger.e(null, 'Main', `Unable to login, reason: ${err}`)
 })
 
 client.on('invalidated', () => {
-    console.log('Session invalidated')
+    Logger.e(null, 'Main', `Session was invalidated`)
 })

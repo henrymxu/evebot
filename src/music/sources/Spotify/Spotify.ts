@@ -96,7 +96,6 @@ export namespace Spotify {
                         res(convertResponseToSpotifyAlbum(album, tracks))
                     })
                 }).catch(err => {
-                    console.log(`Spotify error: ${err}`)
                     rej(err)
                 })
             })
@@ -112,7 +111,6 @@ export namespace Spotify {
             spotifyApi.getAlbumTracks(albumID).then((data) => {
                 res(convertResponseToSpotifyTracks(data.body.items))
             }).catch(err => {
-                console.log(`Spotify error: ${err}`)
                 rej(err)
             })
         })
@@ -130,7 +128,6 @@ export namespace Spotify {
                     this.getTrackNamesFromPlaylistID(result.body.playlists.items[0].id, data.body['access_token'])
                         .then((data) => { res(data) })
                 }).catch(err => {
-                    console.log(`Spotify error: ${err}`)
                     rej(err)
                 })
             })
@@ -148,7 +145,6 @@ export namespace Spotify {
             }).then((data) => {
                 res(convertResponseToSpotifyTracks(data.body.tracks))
             }).catch(err => {
-                console.log(`Spotify error: ${err}`)
                 rej(err)
             })
         })

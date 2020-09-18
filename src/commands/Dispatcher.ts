@@ -3,6 +3,9 @@ import {CommandParser} from "./Parser"
 import {GlobalContext} from "../GlobalContext"
 import {GuildContext} from "../guild/Context"
 import {CommandRegistry} from "./Registry"
+import {Logger} from "../Logger"
+
+const TAG = "CommandDispatcher"
 
 export namespace CommandDispatcher {
     export function register(client: Client) {
@@ -33,12 +36,12 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
     }
     const command = CommandRegistry.getCommand(context, keywordResult.keyword)
     if (!command) {
-        console.log(`CommandDispatcher: no command found for ${keywordResult.keyword}`)
+        Logger.w(context, TAG,`No command found for ${keywordResult.keyword}`)
         return
     }
     const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
     if (result.error) {
-        console.log(`Could not parse arguments for ${commandString}`)
+        Logger.w(context, TAG, `Could not parse arguments for ${commandString}, reason ${result.error}`)
         return
     }
     if (result.help) {

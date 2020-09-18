@@ -7,7 +7,9 @@ import {Track} from "./tracks/Track"
 import YoutubeTrack, {YoutubeTrackInfo} from "./tracks/YoutubeTrack"
 import {Album} from "./tracks/Album"
 import ExternalTrack, {ExternalTrackInfo} from "./tracks/ExternalTrack"
+import {Logger} from "../Logger"
 
+const TAG = 'YoutubeSearch'
 const YoutubeSource = new Youtube()
 export namespace Search {
     export function search(query): Promise<Track[]> {
@@ -23,7 +25,7 @@ export namespace Search {
 
                 }
             }).catch(err => {
-                console.log(`Search error: ${err}`)
+                Logger.e(null, TAG, `Error searching for track ${query}, reason: ${err}`)
                 rej(err)
             })
         })
@@ -49,7 +51,7 @@ export namespace Search {
             const basicInfo = await ytdl.getBasicInfo(info.url)
             if (basicInfo.formats.length > 0) {
                 resolved = true
-                console.log(`Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
+                Logger.d(null, TAG, `Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
                 const id = Utils.generateUUID()
                 const youtubeInfo: YoutubeTrackInfo = {
                     description: basicInfo.videoDetails.shortDescription,
@@ -74,10 +76,10 @@ function parse(query: string): Promise<SearchResult> {
     if (result.hostname === 'www.youtube.com') {
         switch (result.pathname) {
             case '/watch':
-                console.log(`Found a Youtube video for ${query}`)
+                Logger.d(null, TAG, `Found a Youtube video for ${query}`)
                 return YoutubeSource.getTrackURLFromSearch(query)
             case '/playlist':
-                console.log(`Found a Youtube playlist for ${query}`)
+                Logger.d(null, TAG, `Found a Youtube playlist for ${query}`)
                 return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
         }
     } else if (result.hostname === 'open.spotify.com') {

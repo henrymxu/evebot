@@ -81,12 +81,13 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     description += `Keyword: <${keyword}${aliases || ''}>\n`
     if (command.options.arguments.length > 0) {
         const tableData = []
-        const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Default']
+        const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Array', 'Default']
         command.options.arguments.forEach((argument) => {
             const flag = argument.flag != '_' ? argument.flag : ''
             const defaultValue = argument.default ? argument.default : ''
             const required =  argument.required ? 'yes': 'no'
-            tableData.push([argument.key, argument.description, flag , required, ArgumentType[argument.type], defaultValue])
+            const array = argument.array ? 'yes': 'no'
+            tableData.push([argument.key, argument.description, flag , required, ArgumentType[argument.type], array, defaultValue])
         })
         description += TableGenerator.createTable(tableHeaders, tableData)
     } else {

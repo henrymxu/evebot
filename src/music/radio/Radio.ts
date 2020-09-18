@@ -32,7 +32,7 @@ export abstract class Radio {
             this.radioConfiguration.recommendedTracks.shift()
         }
         if (this.radioConfiguration.recommendedTracks.length == 0) {
-            console.log('out of radio songs')
+            // TODO retrieve more songs?
             return
         }
         let songToPlay = this.radioConfiguration.recommendedTracks.shift()
