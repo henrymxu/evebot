@@ -13,7 +13,8 @@ CommandRegistry.registerCommandsIn(path.join(__dirname, 'commands'))
 
 Lifecycle.registerJoinOnJoin(client)
 
-client.login(Keys.get("discord_token")).then(result => {
+console.log(Keys.get('discord_token'))
+client.login(Keys.get('discord_token')).then(result => {
     console.log(`Logged in!`)
 }).catch(err => {
     console.log(`Unable to login! ${err}`)
