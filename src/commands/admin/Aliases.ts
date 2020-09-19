@@ -1,4 +1,4 @@
-import {Message, User} from "discord.js"
+import {Message, Permissions, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, Command, CommandOptions} from "../Command"
 import {Aliases} from "../../guild/Config"
@@ -44,6 +44,7 @@ export default class AliasesCommand extends Command {
                 type: ArgumentType.FLAG
             }
         ],
+        permissions: new Permissions(['MANAGE_GUILD']),
         examples: ['aliases play -a sing', 'aliases play -l']
     }
 

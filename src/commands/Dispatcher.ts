@@ -4,6 +4,7 @@ import {GlobalContext} from "../GlobalContext"
 import {GuildContext} from "../guild/Context"
 import {CommandRegistry} from "./Registry"
 import {Logger} from "../Logger"
+import {Command} from "./Command"
 
 const TAG = "CommandDispatcher"
 
@@ -47,6 +48,14 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
     if (result.help) {
         // TODO: send help command instead of executing
     }
+    if (!checkPermissions(context, source, command)) {
+        Logger.w(context, command.options.name, `${source.username} does not have permissions to execute ${keywordResult.keyword}`)
+        return
+    }
+    if (!checkPrivileges(context, source, keywordResult.keyword)) {
+        Logger.w(context, command.options.name, `${source.username} does not have privileges to execute ${keywordResult.keyword}`)
+        return
+    }
     command.run(context, source, result.args, message)
 }
 
@@ -58,4 +67,44 @@ function handleTextChannelMessage(message: Message) {
 
 function handleDMChannelMessage(message: Message) {
 
+}
+
+function checkPermissions(context: GuildContext, user: User, command: Command): boolean {
+    const permission = command.options.permissions
+    if (!permission) {
+        return true
+    }
+    return context.getGuild().member(user).permissions.has(permission)
+}
+
+function checkPrivileges(context: GuildContext, user: User, keyword: string): boolean {
+    const privilege = context.getConfig().getPrivilege(keyword)
+    if (!privilege ||
+        privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
+        privilege.deniedRoles.size === 0 && privilege.deniedUsers.size === 0) {
+        return context.getConfig().getDefaultPrivilege()
+    }
+    if (privilege.grantedUsers.has(user.id)) {
+        return true
+    }
+    if (privilege.deniedUsers.has(user.id)) {
+        return false
+    }
+    for (let role of Object.keys(context.getGuild().member(user).roles.cache)) {
+        if (privilege.grantedRoles.has(role)) {
+            return true
+        }
+        if (privilege.deniedRoles.has(role)) {
+            return false
+        }
+    }
+    if (privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
+        privilege.deniedRoles.size !== 0 && privilege.deniedUsers.size !== 0) {
+        return true
+    }
+    if (privilege.grantedRoles.size !== 0 && privilege.grantedUsers.size !== 0 &&
+        privilege.deniedRoles.size === 0 && privilege.deniedUsers.size === 0) {
+        return false
+    }
+    return false
 }

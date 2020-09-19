@@ -1,5 +1,5 @@
 import {GuildContext} from "../guild/Context"
-import {Message, User} from "discord.js"
+import {Message, Permissions, User} from "discord.js"
 import {Logger} from "../Logger"
 
 export abstract class Command {
@@ -14,10 +14,6 @@ export abstract class Command {
     }
 
     public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        if (!checkPrivileges(context, source, args.get('keyword'))) {
-            Logger.w(context, Command.name, `${source.username} does not have privileges to execute ${args.get('keyword')}`)
-            return
-        }
         this.preExecute(context, message).then(() => {
             Logger.d(context, Command.name, `Executing command ${args.get('keyword')}`)
             this.execute(context, source, args, message)
@@ -28,45 +24,13 @@ export abstract class Command {
     }
 }
 
-//TODO: also check user permissions
-function checkPrivileges(context: GuildContext, user: User, keyword: string): boolean {
-    const privilege = context.getConfig().getPrivilege(keyword)
-    if (!privilege ||
-        privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
-        privilege.deniedRoles.size === 0 && privilege.deniedUsers.size === 0) {
-        return context.getConfig().getDefaultPrivilege()
-    }
-    if (privilege.grantedUsers.has(user.id)) {
-        return true
-    }
-    if (privilege.deniedUsers.has(user.id)) {
-        return false
-    }
-    for (let role of Object.keys(context.getGuild().member(user).roles.cache)) {
-        if (privilege.grantedRoles.has(role)) {
-            return true
-        }
-        if (privilege.deniedRoles.has(role)) {
-            return false
-        }
-    }
-    if (privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
-        privilege.deniedRoles.size !== 0 && privilege.deniedUsers.size !== 0) {
-        return true
-    }
-    if (privilege.grantedRoles.size !== 0 && privilege.grantedUsers.size !== 0 &&
-        privilege.deniedRoles.size === 0 && privilege.deniedUsers.size === 0) {
-        return false
-    }
-    return false
-}
-
 export interface CommandOptions {
     name: string
     keywords: string[]
     group: string
     descriptions: string[]
     arguments: CommandArgument[]
+    permissions?: Permissions
     examples?: string[]
 }
 

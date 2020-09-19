@@ -11,8 +11,14 @@ const TAG = 'CommandParser'
 
 export namespace CommandParser {
     export function parseKeyword(context: GuildContext, message: string): KeywordResult {
-        // TODO: parse message to see if a command exists
-        const regexString = `(?<=^\\${context.getPrefix()})[^\\s]*`
+        let array = []
+        context.getPrefix().split('').forEach(char => {
+            if (['[', '\\', '^', '$', '.', '|', '?', '*', '+', '(', ')'].includes(char)) {
+                char = '\\' + char
+            }
+            array.push(char)
+        })
+        const regexString = `(?<=^${array.join('')})[^\\s]*`
         const regex = new RegExp(regexString, 'i')
         const keyword = message.match(regex)
         const parsedMessage = message.replace(`${context.getPrefix()}${keyword}`, '')
