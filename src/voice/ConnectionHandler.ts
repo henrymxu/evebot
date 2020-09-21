@@ -33,6 +33,7 @@ export default class VoiceConnectionHandler {
             this.context.getVoiceConnection().on('disconnect', () => {
                 res()
             })
+            this.context.getProvider().getDJ().stop()
             this.context.getVoiceConnection().disconnect()
         })
     }

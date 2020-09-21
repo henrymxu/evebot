@@ -3,6 +3,7 @@ import {Readable} from "stream"
 import ytdl from "ytdl-core-discord"
 import {GuildContext} from "../../guild/Context"
 import {StreamUtils} from "../../utils/StreamUtils"
+import {Logger} from "../../Logger"
 
 export default class YoutubeTrack extends Track {
     private stream: Readable
@@ -45,6 +46,9 @@ export default class YoutubeTrack extends Track {
                 this.stream = StreamUtils.mergeAsync(...streams)
                 this.state = TrackState.LOADED
                 res(this.stream)
+            }).catch(err => {
+                Logger.e(context, YoutubeTrack.name, err)
+                rej(err)
             })
         })
     }
