@@ -1,10 +1,10 @@
 import "aws-sdk/lib/node_loader"
-import {Storage} from "./Storage"
+import {Storage} from "../Storage"
 import AWS from "aws-sdk/global"
-import {Logger} from "../Logger"
+import {Logger} from "../../Logger"
 import DynamoDB, {DocumentClient} from "aws-sdk/clients/dynamodb"
-import {FileUtils} from "../utils/FileUtils"
-import {Keys} from "../Keys"
+import {FileUtils} from "../../utils/FileUtils"
+import {Keys} from "../../Keys"
 
 const TAG = 'AWSDynamoDB'
 const TABLE_NAME = 'Configs'

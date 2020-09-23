@@ -4,6 +4,7 @@ import ytdl from "ytdl-core-discord"
 import {GuildContext} from "../../guild/Context"
 import {StreamUtils} from "../../utils/StreamUtils"
 import {Logger} from "../../Logger"
+import {Keys} from "../../Keys"
 
 export default class YoutubeTrack extends Track {
     private stream: Readable
@@ -39,7 +40,9 @@ export default class YoutubeTrack extends Track {
         this.state = TrackState.LOADING
         const announceStream = context.getVoiceDependencyProvider()
             .getSpeechGenerator().asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
-        const songStream = ytdl(this.youtubeInfo.url, {quality: 'highestaudio', highWaterMark: 1024 * 1024 * 10})
+        const songStream = ytdl(this.youtubeInfo.url,
+            {quality: 'highestaudio', highWaterMark: 1024 * 1024 * 10, requestOptions: {
+                headers: {'cookie': Keys.get('youtube_cookie')}}})
 
         return new Promise<Readable>((res, rej) => {
             Promise.all([announceStream, songStream]).then((streams: Readable[]) => {

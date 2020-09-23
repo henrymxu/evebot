@@ -1,7 +1,7 @@
-import {Storage} from "./Storage"
+import {Storage} from "../Storage"
 import fs from "fs"
-import {FileUtils} from "../utils/FileUtils"
-import {Logger} from "../Logger"
+import {FileUtils} from "../../utils/FileUtils"
+import {Logger} from "../../Logger"
 
 const TAG = 'LocalStorage'
 

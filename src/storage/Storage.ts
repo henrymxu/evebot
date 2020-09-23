@@ -1,6 +1,6 @@
-import AWSStorage from "./AWSStorage"
+import AWSStorage from "./providers/AWSStorage"
 import {Keys} from "../Keys"
-import LocalStorage from "./LocalStorage"
+import LocalStorage from "./providers/LocalStorage"
 
 export interface Storage {
     load(guildID: string): Promise<any>
