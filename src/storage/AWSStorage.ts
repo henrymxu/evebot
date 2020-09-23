@@ -1,7 +1,8 @@
+import "aws-sdk/lib/node_loader"
 import {Storage} from "./Storage"
-import AWS from "aws-sdk"
+import AWS from "aws-sdk/global"
 import {Logger} from "../Logger"
-import {DocumentClient} from "aws-sdk/clients/dynamodb"
+import DynamoDB, {DocumentClient} from "aws-sdk/clients/dynamodb"
 import {FileUtils} from "../utils/FileUtils"
 import {Keys} from "../Keys"
 
@@ -18,7 +19,7 @@ export default class AWSStorage implements Storage {
             accessKeyId: Keys.get('AWS_ACCESS_KEY_ID'),
             secretAccessKey: Keys.get('AWS_SECRET_ACCESS_KEY')
         });
-        this.client = new AWS.DynamoDB.DocumentClient()
+        this.client = new DynamoDB.DocumentClient()
     }
 
     load(guildID: string): Promise<any> {
@@ -37,7 +38,7 @@ export default class AWSStorage implements Storage {
                         res(FileUtils.openJsonFile('./default_config.json'))
                         return
                     }
-                    res(data.Item)
+                    res(data.Item.config)
                 }
             })
         })
