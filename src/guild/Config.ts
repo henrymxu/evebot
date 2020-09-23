@@ -1,22 +1,24 @@
-import fs from "fs"
-import {FileUtils} from "../utils/FileUtils"
 import {Role, User} from "discord.js"
+import {Storage} from "../storage/Storage"
 
 export class Config {
-    private readonly guildId: string
-    private readonly json: any
+    private readonly guildID: string
+    private json: any
 
-    constructor(guildId: string) {
-        this.guildId = guildId
-        const path = `./configs/config_${guildId}.json`
-        if (!fs.existsSync(path)) {
-            if (!fs.existsSync('./configs')){
-                fs.mkdirSync('./configs')
-            }
-            fs.copyFileSync('./default_config.json', path)
-        }
-        //throw ('Attempted to load an invalid config file')
-        this.json = (FileUtils.openJsonFile(path))
+    constructor(guildID: string) {
+        this.guildID = guildID
+    }
+
+    public async load() {
+        this.json = await Storage.loadConfig(this.guildID)
+    }
+
+    public save() {
+        Storage.saveConfig(this.guildID, this.json)
+    }
+
+    getJSON(): string {
+        return JSON.stringify(this.json, null, 4)
     }
 
     getPrefix(): string {
@@ -124,15 +126,6 @@ export class Config {
             privilege.grantedUsers = removeArrayFromArray(privilege.grantedUsers, ids)
             privilege.deniedUsers = removeArrayFromArray(privilege.deniedUsers, ids)
         }
-    }
-
-    private save() {
-        const path = `./configs/config_${this.guildId}.json`
-        fs.writeFile(path, JSON.stringify(this.json, null, '\t'), err => {
-            if (err) {
-                console.log(`An error occured when saving guild ${this.guildId} config: ${err}`)
-            }
-        })
     }
 
     private static modifyEntityPrivilege(config: Config, privilegeName: string, entity: User | Role, isGranting: boolean) {

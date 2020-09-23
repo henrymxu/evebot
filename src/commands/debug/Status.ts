@@ -8,9 +8,9 @@ import {GuildUtils} from "../../utils/GuildUtils"
 export default class StatusCommand extends Command {
     readonly options: CommandOptions = {
         name: 'Status',
-        keywords: ['status', 'memory'],
+        keywords: ['status', 'memory', 'config'],
         group: 'debug',
-        descriptions: ['Show various information of the bot\s status', 'Show current memory usage of the bot'],
+        descriptions: ['Show various information of the bot\s status', 'Show current memory usage of the bot', 'Show raw config of the bot'],
         arguments: []
     }
 
@@ -28,6 +28,9 @@ export default class StatusCommand extends Command {
                     response = response + '\n' + getMemoryResponse()
                 }
                 break
+            }
+            case 'config': {
+                response = context.getConfig().getJSON()
             }
         }
         context.getProvider().getResponder().send({content: response, id: args.get('keyword'), message: message, options: {code: 'Markdown'}}, 15)

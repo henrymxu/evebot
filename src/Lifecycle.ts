@@ -12,15 +12,21 @@ export namespace Lifecycle {
                     // if (isItself(client, newState)) {
                     //     GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().reset()
                     // }
-                    GlobalContext.get(oldState.guild.id).getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member.user)
+                    GlobalContext.get(oldState.guild.id).then(context => {
+                        context.getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member.user)
+                    })
                 }
                 if (hasUserChangedChannel(oldState, newState)) {
                     if (isItself(client, newState)) {
-                        Logger.w(GlobalContext.get(oldState.guild.id), TAG, `Bot was moved from ${oldState.channel.name} to ${newState.channel.name} | New connection = ${newState.connection}`)
-                        GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
+                        Logger.w(null, TAG, `Bot was moved from ${oldState.channel.name} to ${newState.channel.name} | New connection = ${newState.connection}`)
+                        GlobalContext.get(newState.guild.id).then(context => {
+                            context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
+                        })
                         return
                     }
-                    GlobalContext.get(oldState.guild.id).getProvider().getVoiceConnectionHandler().userChangedChannel(oldState)
+                    GlobalContext.get(oldState.guild.id).then(context => {
+                        context.getProvider().getVoiceConnectionHandler().userChangedChannel(oldState)
+                    })
                 }
                 return
             }
@@ -30,7 +36,9 @@ export namespace Lifecycle {
                 }
                 return
             }
-            GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
+            GlobalContext.get(newState.guild.id).then(context => {
+                context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
+            })
         })
     }
 

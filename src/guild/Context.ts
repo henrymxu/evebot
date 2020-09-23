@@ -23,6 +23,10 @@ export class GuildContext {
         this.config = new Config(id)
     }
 
+    async initialize() {
+        await this.config.load()
+    }
+
     setVoiceConnection(voiceConnection: VoiceConnection) {
         this.voiceConnection = voiceConnection
     }

@@ -2,6 +2,9 @@ import {Message} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {Spotify} from "../sources/Spotify/Spotify"
 import {Radio, RadioContext} from "./Radio"
+import {Logger} from "../../Logger"
+
+const TAG = 'SpotifyRadio'
 
 export default class SpotifyRadio extends Radio {
     constructor(context: GuildContext, play: (query: string, requesterId: string, message?: Message) => void) {
@@ -30,7 +33,7 @@ export default class SpotifyRadio extends Radio {
                 this.resume()
             })
         }).catch(err => {
-            console.log(err)
+            Logger.e(null, TAG, err)
         })
     }
 }
