@@ -58,6 +58,7 @@ export namespace Search {
                     length: +basicInfo.videoDetails.lengthSeconds,
                     title: basicInfo.videoDetails.title,
                     url: info.url,
+                    channel: basicInfo.videoDetails.ownerChannelName,
                     thumbnailURL: basicInfo.thumbnail_url
                 }
                 if (!extraInfo) {

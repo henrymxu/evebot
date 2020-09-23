@@ -25,7 +25,7 @@ export default class YoutubeTrack extends Track {
     }
 
     getArtist(): string {
-        return ' - '
+        return this.youtubeInfo.channel
     }
 
     getLength(): number {
@@ -40,9 +40,10 @@ export default class YoutubeTrack extends Track {
         this.state = TrackState.LOADING
         const announceStream = context.getVoiceDependencyProvider()
             .getSpeechGenerator().asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
+        console.log(Keys.get('youtube_cookie'))
         const songStream = ytdl(this.youtubeInfo.url,
             {quality: 'highestaudio', highWaterMark: 1024 * 1024 * 10, requestOptions: {
-                headers: {'cookie': Keys.get('youtube_cookie')}}})
+                headers: {'Cookie': Keys.get('youtube_cookie')}}})
 
         return new Promise<Readable>((res, rej) => {
             Promise.all([announceStream, songStream]).then((streams: Readable[]) => {
@@ -60,6 +61,7 @@ export default class YoutubeTrack extends Track {
 export interface YoutubeTrackInfo {
     url: string
     title: string
+    channel: string
     length: number
     description: string
     thumbnailURL: string
