@@ -11,7 +11,8 @@ export default class StatusCommand extends Command {
         keywords: ['status', 'memory', 'config'],
         group: 'debug',
         descriptions: ['Show various information of the bot\s status', 'Show current memory usage of the bot', 'Show raw config of the bot'],
-        arguments: []
+        arguments: [],
+        permissions: ['ADMINISTRATOR']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

@@ -1,4 +1,4 @@
-import {Message, User, Permissions} from "discord.js"
+import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, Command, CommandOptions} from "../Command"
 import {Nicknames} from "../../guild/Config"
@@ -41,7 +41,7 @@ export default class NicknamesCommand extends Command {
                 type: ArgumentType.FLAG
             }
         ],
-        permissions: new Permissions(['MANAGE_NICKNAMES', 'CHANGE_NICKNAME']),
+        permissions: ['MANAGE_NICKNAMES', 'CHANGE_NICKNAME'],
         examples: ['nicknames @Jonathan -a Johnny John', 'nicknames @Jonathan -l']
     }
 

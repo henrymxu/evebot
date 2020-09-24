@@ -1,4 +1,4 @@
-import {Message, MessageEmbed, Permissions, User} from "discord.js"
+import {Message, MessageEmbed, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, Command, CommandOptions} from "../Command"
 import {GuildUtils} from "../../utils/GuildUtils"
@@ -20,7 +20,7 @@ export default class DefaultTextChannelCommand extends Command {
                 validate: (context, arg) => GuildUtils.findTextChannelByName(context, arg) != null
             }
         ],
-        permissions: new Permissions(['MANAGE_CHANNELS']),
+        permissions: ['MANAGE_CHANNELS'],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

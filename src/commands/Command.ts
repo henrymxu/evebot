@@ -1,5 +1,5 @@
 import {GuildContext} from "../guild/Context"
-import {Message, Permissions, User} from "discord.js"
+import {Message, User} from "discord.js"
 import {Logger} from "../Logger"
 
 export abstract class Command {
@@ -30,7 +30,7 @@ export interface CommandOptions {
     group: string
     descriptions: string[]
     arguments: CommandArgument[]
-    permissions?: Permissions
+    permissions?: string[]
     examples?: string[]
 }
 

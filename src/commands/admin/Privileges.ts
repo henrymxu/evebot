@@ -1,4 +1,4 @@
-import {Message, Role, User, Permissions} from "discord.js"
+import {Message, Role, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import {ArgumentType, Command, CommandOptions} from "../Command"
 import {Privilege} from "../../guild/Config"
@@ -52,7 +52,7 @@ export default class PrivilegesCommand extends Command {
                 type: ArgumentType.FLAG,
             }
         ],
-        permissions: new Permissions(['MANAGE_ROLES']),
+        permissions: ['MANAGE_ROLES'],
         examples: ['privileges play -allow Liam @Olivia Admins -disallow @Kevin Newcomers']
     }
 

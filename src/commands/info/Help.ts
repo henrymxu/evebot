@@ -77,27 +77,32 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     const descriptionIndex = command.options.keywords.indexOf(keyword)
     description += `Description: ${command.options.descriptions[descriptionIndex]}\n`
     description += `Group: ${command.options.group}\n`
-    const aliases = [...context.getConfig().getAliases(command.options.name)]?.reduce((result, alias) => `${result}, ${alias}`)
-    description += `Keyword: <${keyword}${aliases || ''}>\n`
+    const aliases = [...context.getConfig().getAliases(command.options.name)]
+    const aliasesString = aliases.length > 0 ? aliases.reduce((result, alias) => `${result}, ${alias}`) : ''
+    description += `Keyword: <${keyword}${aliasesString}>\n`
     if (command.options.arguments.length > 0) {
         const tableData = []
-        const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Array', 'Default']
+        const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Default']
         command.options.arguments.forEach((argument) => {
             const flag = argument.flag != '_' ? argument.flag : ''
             const defaultValue = argument.default ? argument.default : ''
             const required =  argument.required ? 'yes': 'no'
-            const array = argument.array ? 'yes': 'no'
-            tableData.push([argument.key, argument.description, flag , required, ArgumentType[argument.type], array, defaultValue])
+            const type = `${ArgumentType[argument.type]}${argument.array ? ' [ Multiple ]' : ''}`
+            tableData.push([argument.key, argument.description, flag , required, type, defaultValue])
         })
         description += TableGenerator.createTable(tableHeaders, tableData)
     } else {
         description += `Arguments: None\n`
     }
     if (command.options.examples) {
-        description += `<Examples>\n`
+        description += `# Examples\n`
         command.options.examples.forEach(command => {
            description += `< ${command} >\n`
         })
+    }
+    if (command.options.permissions) {
+        const permissionsString = command.options.permissions.reduce((result, permission) => `${result} ${permission}`)
+        description += `<Permissions ${permissionsString}>`
     }
     return description.trimRight()
 }

@@ -1,4 +1,4 @@
-import {Client, DMChannel, Message, TextChannel, User} from "discord.js"
+import {Client, DMChannel, Message, Permissions, TextChannel, User} from "discord.js"
 import {CommandParser} from "./Parser"
 import {GlobalContext} from "../GlobalContext"
 import {GuildContext} from "../guild/Context"
@@ -75,10 +75,14 @@ function checkPermissions(context: GuildContext, user: User, command: Command): 
     if (!permission) {
         return true
     }
-    return context.getGuild().member(user).permissions.has(permission)
+    // @ts-ignore
+    return context.getGuild().member(user).permissions.has(new Permissions(permission))
 }
 
 function checkPrivileges(context: GuildContext, user: User, keyword: string): boolean {
+    if (context.getGuild().member(user).permissions.has('ADMINISTRATOR')) {
+        return true
+    }
     const privilege = context.getConfig().getPrivilege(keyword)
     if (!privilege ||
         privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
