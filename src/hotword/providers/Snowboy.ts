@@ -2,9 +2,9 @@
 
 import {HotwordModels, Models, SnowboyDetect} from "snowboy"
 
-import {AudioUtils} from "../utils/AudioUtils"
+import {AudioUtils} from "../../utils/AudioUtils"
 import {Transform} from "stream"
-import {HotwordEngine} from "./Engine"
+import {HotwordEngine} from "../Engine"
 
 export default class Snowboy extends HotwordEngine {
     protected createDetector(userID: string, input: Transform, callback: (trigger: string) => void): any {

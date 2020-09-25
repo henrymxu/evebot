@@ -1,8 +1,7 @@
 import {HotwordEngine} from "../hotword/Engine"
 import {SpeechGenerator, SpeechRecognizer} from "../speech/Interfaces"
-import Snowboy from "../hotword/Snowboy"
+import Snowboy from "../hotword/providers/Snowboy"
 import {SpeechEngine} from "../speech/Engine"
-import Porcupine from "../hotword/Porcupine"
 
 export class VoiceDependencyProvider {
     private readonly hotwordEngine: HotwordEngine

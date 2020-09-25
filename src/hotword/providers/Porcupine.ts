@@ -1,8 +1,8 @@
-import {HotwordEngine} from "./Engine"
+import {HotwordEngine} from "../Engine"
 import {Transform} from "stream"
 import PorcupineEngine from "@picovoice/porcupine-node"
 import {PORCUPINE, BUMBLEBEE, GRASSHOPPER} from "@picovoice/porcupine-node/builtin_keywords"
-import {AudioUtils} from "../utils/AudioUtils"
+import {AudioUtils} from "../../utils/AudioUtils"
 
 export default class Porcupine extends HotwordEngine {
     protected createDetector(userID: string, input: Transform, callback: (trigger: string) => void): any {
