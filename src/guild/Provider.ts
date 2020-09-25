@@ -4,6 +4,7 @@ import AudioPlayer from "../voice/AudioPlayer"
 import DJ from "../music/DJ"
 import InterruptService from "../music/InterruptService"
 import Responder from "../communication/Responder"
+import Throttler from "./Throttler"
 
 export default class GuildProvider {
     private readonly voiceConnectionHandler: VoiceConnectionHandler
@@ -11,6 +12,7 @@ export default class GuildProvider {
     private readonly dj: DJ
     private readonly interruptService: InterruptService
     private readonly responder: Responder
+    private readonly throttler: Throttler
 
     constructor(guildContext: GuildContext) {
         this.voiceConnectionHandler = new VoiceConnectionHandler(guildContext)
@@ -18,6 +20,7 @@ export default class GuildProvider {
         this.dj = new DJ(guildContext)
         this.interruptService = new InterruptService(guildContext)
         this.responder = new Responder(guildContext)
+        this.throttler = new Throttler()
     }
 
     getVoiceConnectionHandler(): VoiceConnectionHandler {
@@ -38,5 +41,9 @@ export default class GuildProvider {
 
     getResponder(): Responder {
         return this.responder
+    }
+
+    getThrottler(): Throttler {
+        return this.throttler
     }
 }

@@ -40,14 +40,6 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
         Logger.w(context, TAG,`No command found for ${keywordResult.keyword}`)
         return
     }
-    const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
-    if (result.error) {
-        Logger.w(context, TAG, `Could not parse arguments for ${commandString}, reason ${result.error}`)
-        return
-    }
-    if (result.help) {
-        // TODO: send help command instead of executing
-    }
     if (!checkPermissions(context, source, command)) {
         Logger.w(context, command.options.name, `${source.username} does not have permissions to execute ${keywordResult.keyword}`)
         return
@@ -55,6 +47,18 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
     if (!checkPrivileges(context, source, keywordResult.keyword)) {
         Logger.w(context, command.options.name, `${source.username} does not have privileges to execute ${keywordResult.keyword}`)
         return
+    }
+    if (context.getProvider().getThrottler().shouldThrottleCommand(source, command)) {
+        Logger.w(context, command.options.name, `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`)
+        return
+    }
+    const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
+    if (result.error) {
+        Logger.w(context, TAG, `Could not parse arguments for ${commandString}, reason ${result.error}`)
+        return
+    }
+    if (result.help) {
+        // TODO: send help command instead of executing
     }
     command.run(context, source, result.args, message)
 }

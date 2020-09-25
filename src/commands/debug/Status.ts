@@ -32,6 +32,7 @@ export default class StatusCommand extends Command {
             }
             case 'config': {
                 response = context.getConfig().getJSON()
+                break
             }
         }
         context.getProvider().getResponder().send({content: response, id: args.get('keyword'), message: message, options: {code: 'Markdown'}}, 15)

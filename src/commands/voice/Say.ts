@@ -24,6 +24,7 @@ export default class SayCommand extends VoiceCommand {
                 type: ArgumentType.STRING
             }
         ],
+        throttleRate: {count: 3, seconds: 60},
         examples: ['say hello my name is eve -v en-IN-Heera-Apollo']
     }
 

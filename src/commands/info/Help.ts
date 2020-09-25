@@ -102,7 +102,10 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     }
     if (command.options.permissions) {
         const permissionsString = command.options.permissions.reduce((result, permission) => `${result} ${permission}`)
-        description += `<Permissions ${permissionsString}>`
+        description += `<Permissions ${permissionsString}>\n`
+    }
+    if (command.options.throttleRate) {
+        description += `<ThrottleRate ${command.options.throttleRate.count} every ${command.options.throttleRate.seconds} seconds>`
     }
     return description.trimRight()
 }

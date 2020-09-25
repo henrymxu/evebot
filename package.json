@@ -24,6 +24,7 @@
     "ibm-watson": "^5.7.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.13.1",
     "nan": "^2.14.1",
+    "node-cache": "^5.1.2",
     "node-lame": "^1.2.2",
     "pcm-convert": "^1.6.5",
     "priorityqueuejs": "^2.0.0",

@@ -31,6 +31,7 @@ export interface CommandOptions {
     descriptions: string[]
     arguments: CommandArgument[]
     permissions?: string[]
+    throttleRate?: { count: number, seconds: number}
     examples?: string[]
 }
 
