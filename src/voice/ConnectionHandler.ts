@@ -46,14 +46,16 @@ export default class VoiceConnectionHandler {
         })
         this.removedTimeouts.clear()
         this.isListeningToCommand.clear()
-        this.context.setVoiceConnection(null)
     }
 
     joinVoiceChannel(voiceChannel: VoiceChannel): Promise<any> {
         return new Promise((res, rej) => {
             voiceChannel.join().then((connection) => {
-                this.context.setVoiceConnection(connection)
-                this.initializeConnection()
+                console.log(`Joining connection ${connection}`)
+                if (!this.context.getVoiceConnection()) {
+                    this.context.setVoiceConnection(connection)
+                    this.initializeConnection()
+                }
                 res()
             }).catch(err => {
                 rej(err)
@@ -115,6 +117,7 @@ export default class VoiceConnectionHandler {
         connection.on('disconnect', () => {
             console.log(`Disconnecting from ${connection.channel.guild.name}`)
             this.reset()
+            this.context.setVoiceConnection(null)
         })
     }
 
