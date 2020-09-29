@@ -51,7 +51,6 @@ export default class VoiceConnectionHandler {
     joinVoiceChannel(voiceChannel: VoiceChannel): Promise<any> {
         return new Promise((res, rej) => {
             voiceChannel.join().then((connection) => {
-                console.log(`Joining connection ${connection}`)
                 if (!this.context.getVoiceConnection()) {
                     this.context.setVoiceConnection(connection)
                     this.initializeConnection()

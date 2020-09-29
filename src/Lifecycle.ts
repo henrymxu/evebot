@@ -10,7 +10,9 @@ export namespace Lifecycle {
             if (!hasUserJoinedChannel(oldState, newState)) {
                 if (hasUserLeftChannel(oldState, newState)) {
                     // if (isItself(client, newState)) {
-                    //     GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().reset()
+                    //     GlobalContext.get(newState.guild.id).then(context => {
+                    //         context.getProvider().getVoiceConnectionHandler().disconnect()
+                    //     })
                     // }
                     GlobalContext.get(oldState.guild.id).then(context => {
                         context.getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member.user)

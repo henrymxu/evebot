@@ -6,8 +6,8 @@ import {Logger} from "../../Logger"
 const TAG = 'LocalStorage'
 
 export default class LocalStorage implements Storage {
-    load(guildID: string): Promise<any> {
-        const path = `./configs/config_${guildID}.json`
+    load(params: any, defaultValue?: any): Promise<any> {
+        const path = `./configs/config_${params.Key.id}.json`
         if (!fs.existsSync(path)) {
             if (!fs.existsSync('./configs')){
                 fs.mkdirSync('./configs')
@@ -18,12 +18,12 @@ export default class LocalStorage implements Storage {
         return Promise.resolve(FileUtils.openJsonFile(path))
     }
 
-    save(guildID: string, object: any): Promise<void> {
+    save(params: any): Promise<void> {
         return new Promise((res, rej) => {
-            const path = `./configs/config_${guildID}.json`
-            fs.writeFile(path, JSON.stringify(object, null, '\t'), err => {
+            const path = `./configs/config_${params.Item.id}.json`
+            fs.writeFile(path, JSON.stringify(params.Item.config, null, '\t'), err => {
                 if (err) {
-                    Logger.e(null, TAG, `Unable to write ${guildID}, reason: ${err}`)
+                    Logger.e(null, TAG, `Unable to write ${params.Item.id}, reason: ${err}`)
                     rej(err)
                 }
                 res()

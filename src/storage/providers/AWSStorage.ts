@@ -3,11 +3,9 @@ import {Storage} from "../Storage"
 import AWS from "aws-sdk/global"
 import {Logger} from "../../Logger"
 import DynamoDB, {DocumentClient} from "aws-sdk/clients/dynamodb"
-import {FileUtils} from "../../utils/FileUtils"
 import {Keys} from "../../Keys"
 
 const TAG = 'AWSDynamoDB'
-const TABLE_NAME = 'Configs'
 
 export default class AWSStorage implements Storage {
     private client: DocumentClient
@@ -22,11 +20,7 @@ export default class AWSStorage implements Storage {
         this.client = new DynamoDB.DocumentClient()
     }
 
-    load(guildID: string): Promise<any> {
-        const params = {
-            TableName: TABLE_NAME,
-            Key: { 'id': guildID }
-        }
+    load(params: any, defaultValue?: any): Promise<any> {
         return new Promise((res, rej) => {
             this.client.get(params, (err, data) => {
                 if (err) {
@@ -35,7 +29,7 @@ export default class AWSStorage implements Storage {
                 } else {
                     Logger.d(null, TAG, `Get succeeded for ${params.Key.id}`)
                     if (!data.Item) {
-                        res(FileUtils.openJsonFile('./default_config.json'))
+                        res(defaultValue)
                         return
                     }
                     res(data.Item.config)
@@ -44,12 +38,8 @@ export default class AWSStorage implements Storage {
         })
     }
 
-    save(guildID: string, object: any): Promise<void> {
+    save(params: any): Promise<void> {
         // TODO: implement update?
-        const params = {
-            TableName: TABLE_NAME,
-            Item: { 'id': guildID, 'config': object }
-        }
         return new Promise((res, rej) => {
             this.client.put(params, (err, data) => {
                 if (err) {
