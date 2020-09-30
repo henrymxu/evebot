@@ -132,5 +132,12 @@ function checkPrivileges(context: GuildContext, user: User, keyword: string): bo
 }
 
 function checkFileType(attachment: MessageAttachment, type: FileType): boolean {
+    if (attachment) {
+        switch(type) {
+            case FileType.AUDIO : {
+                return attachment.url.endsWith('mp3') || attachment.url.endsWith('opus') || attachment.url.endsWith('ogg') || attachment.url.endsWith('wav')
+            }
+        }
+    }
     return true
 }

@@ -29,4 +29,12 @@ export default class InterruptService {
     playOpusStream(stream: Readable) {
         this.context.getProvider().getAudioPlayer().queueInterrupt(stream, 'opus', 0)
     }
+
+    playOggStream(stream: Readable) {
+        this.context.getProvider().getAudioPlayer().queueInterrupt(stream, 'ogg/opus', 0)
+    }
+
+    playUnknownStream(stream: Readable) {
+        this.context.getProvider().getAudioPlayer().queueInterrupt(stream, undefined, 0)
+    }
 }

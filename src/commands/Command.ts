@@ -56,5 +56,5 @@ export enum ArgumentType {
 }
 
 export enum FileType {
-    MP3
+    AUDIO
 }

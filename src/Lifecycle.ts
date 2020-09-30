@@ -34,7 +34,9 @@ export namespace Lifecycle {
             }
             if (isAlreadyInChannel(newState.channel, client.user.id)) {
                 if (hasUserJoinedChannel(oldState, newState)) {
-                    // GlobalContext.get(newState.guild.id).getProvider().getVoiceConnectionHandler().userJoinedChannel(newState)
+                    GlobalContext.get(newState.guild.id).then(context => {
+                        context.getProvider().getVoiceConnectionHandler().userJoinedChannel(newState)
+                    })
                 }
                 return
             }

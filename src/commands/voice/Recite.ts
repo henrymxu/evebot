@@ -35,7 +35,6 @@ export default class ReciteCommand extends VoiceCommand {
                 type: ArgumentType.FLAG,
             }
         ],
-        file: FileType.MP3,
         examples: ['recite @Eve -l 8']
     }
 
