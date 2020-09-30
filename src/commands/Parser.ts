@@ -66,7 +66,6 @@ export namespace CommandParser {
                 parsedValue = argument.default
             }
             if (argument.type === ArgumentType.FLAG) {
-                console.log(value)
                 parsedValue = value !== undefined
             }
             args.set(key, parsedValue)

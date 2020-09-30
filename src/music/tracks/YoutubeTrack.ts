@@ -40,7 +40,6 @@ export default class YoutubeTrack extends Track {
         this.state = TrackState.LOADING
         const announceStream = context.getVoiceDependencyProvider()
             .getSpeechGenerator().asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
-        console.log(Keys.get('youtube_cookie'))
         const songStream = ytdl(this.youtubeInfo.url,
             {quality: 'highestaudio', highWaterMark: 1024 * 1024 * 10, requestOptions: {
                 headers: {'Cookie': Keys.get('youtube_cookie')}}})
