@@ -46,10 +46,10 @@ export default class MacrosCommand extends Command {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        if (!args.get('list') && (args.get('add') || args.get('remove'))) {
-            if (args.get('add')) {
-                context.getConfig().addMacro(args.get('macro'), {command: args.get('add'), creator: source.id})
-            } else if (args.get('remove')) {
+        if (!args.get('list') && (args.get('create') || args.get('delete'))) {
+            if (args.get('create')) {
+                context.getConfig().addMacro(args.get('macro'), {command: args.get('create'), creator: source.id})
+            } else if (args.get('delete')) {
                 context.getConfig().removeMacro(args.get('macro'))
             }
         }
