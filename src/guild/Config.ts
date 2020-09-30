@@ -89,7 +89,7 @@ export class Config {
     }
 
     removeMacro(macroKey: string) {
-        this.json['macros'].delete(macroKey)
+        delete this.json['macros'][macroKey]
         this.save()
     }
 
