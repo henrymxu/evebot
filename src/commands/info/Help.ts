@@ -1,6 +1,6 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandOptions, FileType} from '../Command'
 import {CommandRegistry} from '../Registry'
 import {TableGenerator} from '../../communication/TableGenerator'
 import {GuildUtils} from "../../utils/GuildUtils"
@@ -94,18 +94,21 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     } else {
         description += `Arguments: None\n`
     }
-    if (command.options.examples) {
-        description += `# Examples\n`
-        command.options.examples.forEach(command => {
-           description += `< ${command} >\n`
-        })
+    if (command.options.file != null) {
+        description += `<File Attaching a ${FileType[command.options.file]} File is supported>`
+    }
+    if (command.options.throttleRate) {
+        description += `<ThrottleRate ${command.options.throttleRate.count} every ${command.options.throttleRate.seconds} seconds>`
     }
     if (command.options.permissions) {
         const permissionsString = command.options.permissions.reduce((result, permission) => `${result} ${permission}`)
         description += `<Permissions ${permissionsString}>\n`
     }
-    if (command.options.throttleRate) {
-        description += `<ThrottleRate ${command.options.throttleRate.count} every ${command.options.throttleRate.seconds} seconds>`
+    if (command.options.examples) {
+        description += `# Examples\n`
+        command.options.examples.forEach(example => {
+            description += `< ${context.getConfig().getPrefix()}${example} >\n`
+        })
     }
     return description.trimRight()
 }

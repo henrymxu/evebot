@@ -32,6 +32,7 @@ export interface CommandOptions {
     arguments: CommandArgument[]
     permissions?: string[]
     throttleRate?: { count: number, seconds: number}
+    file?: FileType
     examples?: string[]
 }
 
@@ -52,4 +53,8 @@ export enum ArgumentType {
     NUMBER,
     USER,
     FLAG
+}
+
+export enum FileType {
+    MP3
 }

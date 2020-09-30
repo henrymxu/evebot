@@ -1,4 +1,7 @@
 import fs from "fs";
+import {Readable} from "stream"
+
+import https from "https"
 
 export namespace FileUtils {
     export function openJsonFile(filePath: string): object {
@@ -20,5 +23,13 @@ export namespace FileUtils {
                 fs.unlink(filePath, callback)
             }
         }
+    }
+
+    export function downloadFile(url: string): Promise<Readable> {
+        return new Promise((res, rej) => {
+            https.get(url, function(response) {
+                res(response)
+            })
+        })
     }
 }

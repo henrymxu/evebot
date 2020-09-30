@@ -51,8 +51,8 @@ export default class AliasesCommand extends Command {
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         const command = CommandRegistry.getCommand(context, args.get('command'))
         if (!args.get('list') && (args.get('add') || args.get('remove'))) {
-            context.getConfig().addAliases(command.options.name, args.get('add') || [])
-            context.getConfig().removeAliases(command.options.name, args.get('remove') || [])
+            context.getConfig().addAliases(command.options.name.toLowerCase(), args.get('add') || [])
+            context.getConfig().removeAliases(command.options.name.toLowerCase(), args.get('remove') || [])
         }
         const embed = TableGenerator.createBasicListEmbed(command.options.name, context.getConfig().getAliases(command.options.name), 'Aliases')
         context.getProvider().getResponder().send({content: embed, message: message}, 20)

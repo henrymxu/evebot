@@ -1,10 +1,10 @@
-import {Client, DMChannel, Message, Permissions, TextChannel, User} from "discord.js"
+import {Client, DMChannel, Message, MessageAttachment, Permissions, TextChannel, User} from "discord.js"
 import {CommandParser} from "./Parser"
 import {GlobalContext} from "../GlobalContext"
 import {GuildContext} from "../guild/Context"
 import {CommandRegistry} from "./Registry"
 import {Logger} from "../Logger"
-import {Command} from "./Command"
+import {Command, FileType} from "./Command"
 
 const TAG = "CommandDispatcher"
 
@@ -59,6 +59,11 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
     }
     if (result.help) {
         // TODO: send help command instead of executing
+    }
+    if (command.options.file != null) {
+        if (checkFileType(message.attachments.first(), command.options.file)) {
+            result.args.set('file', message.attachments.first())
+        }
     }
     command.run(context, source, result.args, message)
 }
@@ -116,4 +121,8 @@ function checkPrivileges(context: GuildContext, user: User, keyword: string): bo
         return false
     }
     return false
+}
+
+function checkFileType(attachment: MessageAttachment, type: FileType): boolean {
+    return true
 }

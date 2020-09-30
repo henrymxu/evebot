@@ -2,9 +2,7 @@ import {GuildContext} from "../guild/Context"
 import {ArgumentType, Command} from "./Command"
 
 import parser from "yargs-parser"
-import {User} from "discord.js"
 import {GuildUtils} from "../utils/GuildUtils"
-import {CommandRegistry} from "./Registry"
 import {Logger} from "../Logger"
 
 const TAG = 'CommandParser'
@@ -22,7 +20,7 @@ export namespace CommandParser {
         const regex = new RegExp(regexString, 'i')
         const keyword = message.match(regex)
         const parsedMessage = message.replace(`${context.getPrefix()}${keyword}`, '')
-        return {keyword: keyword?.[0], parsedCommandString: parsedMessage}
+        return {keyword: keyword?.[0], parsedCommandString: parsedMessage.trim()}
     }
 
     export function parseArguments(context: GuildContext, command: Command, keyword: string, message: string): ParserResult {
@@ -66,6 +64,9 @@ export namespace CommandParser {
                 }
             } else { // Resort to the default value (if exists)
                 parsedValue = argument.default
+            }
+            if (argument.type === ArgumentType.FLAG) {
+                parsedValue = true
             }
             args.set(key, parsedValue)
         }

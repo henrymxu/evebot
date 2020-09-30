@@ -9,12 +9,14 @@ import {Logger} from "../Logger"
 
 const USER_REJOIN_THRESHOLD = 5000
 const VOICE_COMMAND_LENGTH = 3000
+const NO_USER_LEAVE_WAIT = 15000
 
 export default class VoiceConnectionHandler {
     private readonly context: GuildContext
     private voiceStreams: Map<string, RecorderStream> = new Map()
     private removedTimeouts: Map<string, NodeJS.Timeout> = new Map()
     private isListeningToCommand: Map<string, boolean> = new Map()
+    private noUsersInVoiceChannelTimeout: NodeJS.Timeout
 
     constructor(guildContext: GuildContext) {
         this.context = guildContext
@@ -52,6 +54,10 @@ export default class VoiceConnectionHandler {
         return new Promise((res, rej) => {
             voiceChannel.join().then((connection) => {
                 if (!this.context.getVoiceConnection()) {
+                    if (this.noUsersInVoiceChannelTimeout) {
+                        clearTimeout(this.noUsersInVoiceChannelTimeout)
+                        this.noUsersInVoiceChannelTimeout = null
+                    }
                     this.context.setVoiceConnection(connection)
                     this.initializeConnection()
                 }
@@ -64,6 +70,14 @@ export default class VoiceConnectionHandler {
 
     userLeftChannel(user: User) {
         this.removeVoiceStreamForUser(user)
+        if (this.context.getVoiceConnection()) {
+            if (this.context.getVoiceConnection().channel.members
+                .filter(member => member.id != GlobalContext.getClient().user.id).size == 0) {
+                this.noUsersInVoiceChannelTimeout = setTimeout(() => {
+                    this.disconnect()
+                }, NO_USER_LEAVE_WAIT)
+            }
+        }
     }
 
     userChangedChannel(oldState: VoiceState) {

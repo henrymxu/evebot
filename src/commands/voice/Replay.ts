@@ -1,48 +1,48 @@
-import {Message, User} from "discord.js"
+import {Message, MessageAttachment, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
 import VoiceCommand from "../../voice/VoiceCommand"
-import {ArgumentType, CommandOptions} from "../Command"
+import {ArgumentType, CommandOptions, FileType} from "../Command"
 import {Logger} from "../../Logger"
+import {FileUtils} from "../../utils/FileUtils"
+import {AudioUtils} from "../../utils/AudioUtils"
 
 export default class ReplayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Replay',
         keywords: ['replay'],
         group: 'voice',
-        descriptions: ['Replay what a user has said'],
+        descriptions: ['Replay from an uploaded file or url'],
         arguments: [
             {
-                key: 'user',
-                description: 'User you would like to replay',
-                required: true,
-                type: ArgumentType.USER
-            },
-            {
-                key: 'length',
-                flag: 'l',
-                description: 'Length of replay (seconds)',
+                key: 'url',
+                description: 'URL of file you would like to replay',
                 required: false,
-                type: ArgumentType.INTEGER,
-                default: 10,
-                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
+                type: ArgumentType.STRING
             },
         ],
-        examples: ['clip @Eve -l 8']
+        file: FileType.MP3,
+        examples: ['replay']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        const user: User = args.get('user')
-        const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
-        if (!voiceStream) {
-            Logger.w(context, ReplayCommand.name, `No audioStream for ${user.tag} [${user.id}]`)
-            context.getProvider().getResponder().error('No listening stream registered for user', message)
+        let url = ''
+        if (args.get('file')) {
+            const messageAttachment: MessageAttachment = args.get('file')
+            url = messageAttachment.url
+        } else if (args.get('url')) {
+            url = args.get('url')
+        } else {
+            Logger.e(context, ReplayCommand.name, 'no file provided for replay')
             return
         }
-        context.getProvider().getInterruptService().playVoiceStream(voiceStream.getRecordedStream(args.get('length')))
+        FileUtils.downloadFile(url).then((result) => {
+            context.getProvider().getInterruptService().playOpusStream(AudioUtils.convertMp3StreamToOpusStream(result))
+            context.getProvider().getResponder().acknowledge(0, message)
+        })
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {
-        return true;
+        return false;
     }
 
     botMustBeInSameVoiceChannel(): boolean {
@@ -51,9 +51,5 @@ export default class ReplayCommand extends VoiceCommand {
 
     userMustBeInVoiceChannel(): boolean {
         return false;
-    }
-
-    botShouldNotJoinVoiceChannelIfNotReady(): boolean {
-        return true
     }
 }

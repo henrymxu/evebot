@@ -22,11 +22,11 @@ export default class InterruptService {
         this.context.getProvider().getAudioPlayer().queueInterrupt(hotwordAckStream, 'opus', 5)
     }
 
-    playVoiceStream(stream: Readable) {
+    playRawStream(stream: Readable) {
         this.context.getProvider().getAudioPlayer().queueInterrupt(stream, 'converted', 0)
     }
 
-    playTTSStream(stream: Readable) {
+    playOpusStream(stream: Readable) {
         this.context.getProvider().getAudioPlayer().queueInterrupt(stream, 'opus', 0)
     }
 }
