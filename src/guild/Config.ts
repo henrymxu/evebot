@@ -1,5 +1,6 @@
 import {Role, User} from "discord.js"
 import {Storage} from "../storage/Storage"
+import {CommandRegistry} from "../commands/Registry"
 
 export class Config {
     private readonly guildID: string
@@ -58,10 +59,12 @@ export class Config {
     }
 
     addNicknames(userID: string, nicknames: string[]): Error {
-        return Config.addUniqueKeyToMap(this, 'nicknames', nicknames, userID)
+        return Config.addUniqueKeyToMap(this, 'nicknames', nicknames, userID, (config, key) => {
+            return config.json['nicknames'][key]
+        })
     }
 
-    getCommandNameForAlias(alias: string): string {
+    getCommandNameFromAlias(alias: string): string {
         return this.json.aliases[alias]
     }
 
@@ -74,7 +77,28 @@ export class Config {
     }
 
     addAliases(command: string, aliases: string[]): Error {
-        return Config.addUniqueKeyToMap(this, 'aliases', aliases, command)
+        return Config.addUniqueKeyToMap(this, 'aliases', aliases, command, Config.isAlreadyProtectedKeyword)
+    }
+
+    getMacro(macroKey: string): Macro {
+        return this.json['macros'][macroKey]
+    }
+
+    getMacros(): Map<string, Macro> {
+        return new Map<string, Macro>(Object.entries(this.json['macros']))
+    }
+
+    removeMacro(macroKey: string) {
+        this.json['macros'].delete(macroKey)
+        this.save()
+    }
+
+    addMacro(macroKey: string, macro: Macro): Error {
+        if (Config.isAlreadyProtectedKeyword(this, macroKey)) {
+            return Error('Keyword already exists as Macro / Alias / Command')
+        }
+        this.json['macros'][macroKey] = macro
+        this.save()
     }
 
     getPrivileges(): Privilege[] {
@@ -144,10 +168,10 @@ export class Config {
         config.save()
     }
 
-    private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string): Error {
+    private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string, validate?: (Config, string) => boolean): Error {
         const alreadyHad = []
         keys.forEach(key => {
-            if (config.json[entry][key]) {
+            if (validate(Config, key)) {
                 alreadyHad.push(`${key} => ${config.json[entry][key]}`)
             }
             config.json[entry][key] = value
@@ -166,6 +190,11 @@ export class Config {
     private static getValuesOfUniqueKeyAsSet(config: Config, entry: string, value: string): Set<string> {
         let values: string[] = Object.values(config.json[entry]).filter(val => val === value) as string[]
         return new Set(values || [])
+    }
+
+    private static isAlreadyProtectedKeyword(config: Config, keyword: string): boolean {
+        return !!(config.getMacro(keyword) || config.getCommandNameFromAlias(keyword) || CommandRegistry.getCommands().has(keyword))
+
     }
 }
 
@@ -192,6 +221,11 @@ function removeArrayFromArray(current: string[] ,removes: string[]): string[] {
 export type Nicknames = Set<string>
 
 export type Aliases = Set<string>
+
+export type Macro = {
+    command: string
+    creator: string
+}
 
 export interface Privilege {
     command: string

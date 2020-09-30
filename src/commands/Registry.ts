@@ -10,7 +10,7 @@ export namespace CommandRegistry {
     export function getCommand(context: GuildContext, keyword: string) {
         let command = commands.get(keyword.toLowerCase())
         if (!command) {
-            command = commands.get(context.getConfig().getCommandNameForAlias(keyword.toLowerCase()))
+            command = commands.get(context.getConfig().getCommandNameFromAlias(keyword.toLowerCase()))
         }
         return command
     }

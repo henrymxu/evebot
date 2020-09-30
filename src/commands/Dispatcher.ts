@@ -31,9 +31,17 @@ export namespace CommandDispatcher {
 }
 
 function handleGuildCommand(context: GuildContext, commandString: string, source: User, message?: Message) {
-    const keywordResult = CommandParser.parseKeyword(context, commandString)
+    let keywordResult = CommandParser.parseKeyword(context, commandString)
     if (!keywordResult.keyword) {
         return
+    }
+    if (context.getConfig().getMacro(keywordResult.keyword)) {
+        commandString = `${context.getPrefix()}${context.getConfig().getMacro(keywordResult.keyword).command}`
+        keywordResult = CommandParser.parseKeyword(context, commandString)
+        if (!keywordResult.keyword) {
+            Logger.w(context, TAG, `${keywordResult.keyword} macro has an invalid keyword`)
+            return
+        }
     }
     const command = CommandRegistry.getCommand(context, keywordResult.keyword)
     if (!command) {
