@@ -4,6 +4,7 @@ import VoiceCommand from "../../voice/VoiceCommand"
 import {ArgumentType, CommandOptions, FileType} from "../Command"
 import {Logger} from "../../Logger"
 import {FileUtils} from "../../utils/FileUtils"
+import {AudioUtils} from "../../utils/AudioUtils"
 
 export default class ReplayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -36,10 +37,11 @@ export default class ReplayCommand extends VoiceCommand {
         }
         FileUtils.downloadFile(url).then((result) => {
             // TODO: check file types?
-            // if (url.endsWith('mp3') || url.endsWith('ogg')) {
-            //
-            // }
-            context.getProvider().getInterruptService().playUnknownStream(result)
+            if (url.endsWith('mp3')) {
+                context.getProvider().getInterruptService().playOpusStream(AudioUtils.convertMp3StreamToOpusStream(result))
+            } else {
+                context.getProvider().getInterruptService().playUnknownStream(result)
+            }
             context.getProvider().getResponder().acknowledge(0, message)
         })
     }
