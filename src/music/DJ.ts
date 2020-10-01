@@ -67,7 +67,7 @@ export default class DJ {
         })
     }
 
-    getRadio(): SpotifyRadio {
+    getRadio(): Radio {
         return this.radio
     }
 

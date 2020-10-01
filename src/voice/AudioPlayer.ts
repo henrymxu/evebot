@@ -6,7 +6,7 @@ import {Track, TrackState} from "../music/tracks/Track"
 import {Logger} from "../Logger"
 
 export default class AudioPlayer {
-    private context: GuildContext
+    private readonly context: GuildContext
     private interruptQueue: PriorityQueue<InterruptItem>
 
     private currentInterrupt: InterruptItem

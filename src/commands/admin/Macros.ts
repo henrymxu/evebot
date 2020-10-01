@@ -11,7 +11,7 @@ export default class MacrosCommand extends Command {
         name: 'Macros',
         keywords: ['macros'],
         group: 'admin',
-        descriptions: ['Modify macros for commands'],
+        descriptions: ['Modify channel macros'],
         arguments: [
             {
                 key: 'macro',
@@ -22,14 +22,14 @@ export default class MacrosCommand extends Command {
             {
                 key: 'create',
                 flag: 'c',
-                description: 'Macro of the command you would like to add',
+                description: 'Command you would like to create a macro for',
                 required: false,
                 type: ArgumentType.STRING,
             },
             {
                 key: 'delete',
                 flag: 'd',
-                description: 'Name of macro you would like to delete',
+                description: 'Name of the macro you would like to delete',
                 required: false,
                 type: ArgumentType.FLAG,
             },
@@ -42,7 +42,7 @@ export default class MacrosCommand extends Command {
             }
         ],
         permissions: ['MANAGE_GUILD'],
-        examples: ['macros play closer', 'macros replay @Eve']
+        examples: ['macros play closer', 'macros recite @Eve']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

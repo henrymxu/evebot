@@ -12,7 +12,7 @@ export abstract class Radio {
         this.play = play
     }
 
-    abstract start(context: RadioContext)
+    abstract start(context: RadioContext, message?: Message)
 
     isPlaying(): boolean {
         return this.radioConfiguration !== null

@@ -1,5 +1,3 @@
-'use strict'
-
 import {Keys} from "./Keys"
 import {Lifecycle} from "./Lifecycle"
 import {GlobalContext} from "./GlobalContext"

@@ -1,5 +1,3 @@
-'use strict'
-
 import {HotwordModels, Models, SnowboyDetect} from "snowboy"
 
 import {AudioUtils} from "../../utils/AudioUtils"

@@ -1,5 +1,3 @@
-'use strict'
-
 import pcm_convert from "pcm-convert";
 import defaults from "defaults";
 import util from "util";
