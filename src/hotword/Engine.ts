@@ -24,4 +24,5 @@ export abstract class HotwordEngine {
     protected abstract createDetector(userID: string, input: Transform, callback: (trigger: string) => void): any
     protected abstract deleteDetector(userID)
     abstract getStatus(): string
+    abstract getHotwords(): string[]
 }

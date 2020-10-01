@@ -19,7 +19,11 @@ export default class Porcupine extends HotwordEngine {
     }
 
     getStatus(): string {
-        return "Porcupine"
+        return 'Porcupine'
+    }
+
+    getHotwords(): string[] {
+        return ['Porcupine', 'Grasshopper', 'Bumblebee']
     }
 }
 

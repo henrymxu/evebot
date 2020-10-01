@@ -16,7 +16,11 @@ export default class Snowboy extends HotwordEngine {
     }
 
     getStatus(): string {
-        return "Snowboy"
+        return 'Snowboy'
+    }
+
+    getHotwords(): string[] {
+        return ['Alexa']
     }
 }
 
