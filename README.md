@@ -2,7 +2,7 @@
 
 ![E.V.E](https://ih1.redbubble.net/image.646644893.4779/st,small,507x507-pad,600x600,f8f8f8.u1.jpg)
 
-E.V.E is a voice enabled discord bot!
+E.V.E is a voice enabled all in one discord bot.  Feel free to host your own instance!
 
 ## Table of Contents
 
@@ -10,12 +10,23 @@ E.V.E is a voice enabled discord bot!
 - [Usage](#usage)
 - [Installation](#installation)
 - [Configurations](#configurations)
+- [Troubleshooting](#troubleshooting)
 - [Support](#support)
 - [License](#license)
 
 ## Features
 
+- Play music!
+- Clip or recite users!
+- Say anything you want with the bot!
+
 ## Usage
+
+1. Add the bot to your Discord Server! 
+2. Use the `?help` command to all the various commands!
+    - Use the `?help` command with a command name to see the command details! (e.g `?help play`)
+3. Say a registered hotword to start a voice command!
+    - The bot will cut you off after a few seconds, so be ready to say your command!
 
 ## Installation
 
@@ -51,6 +62,14 @@ E.V.E is a voice enabled discord bot!
 |                         | AWS_SECRET_ACCESS_KEY |                                                                                    |                                                                                    |                                                            |
 
 ## Configurations
+
+## Troubleshooting
+
+- If the bot seems to be unresponsive or listening to any hotwords
+    - Try using the `rejoin` command
+    
+- If the bot is unable to find any songs to play
+    - Try adding a [`youtube_cookie`](#environment-variables) to the bot
 
 ## Support
 
