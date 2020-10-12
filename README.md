@@ -49,27 +49,43 @@ E.V.E is a voice enabled all in one discord bot.  Feel free to host your own ins
 
 ### Platform API Tokens
 
+Details on how to authenticate and configure each provider can be found in each of their individual sections.
+
 #### Summary
 
-| Name                    | Environment Variable  | Speech-to-Text                                                                     | Text-to-Speech                                                                     | Storage                                                    |
-|-------------------------|-----------------------|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|------------------------------------------------------------|
-| [IBM Watson]()          | watson_token          | [✓](https://www.ibm.com/cloud/watson-speech-to-text)                               | [✓](https://www.ibm.com/cloud/watson-text-to-speech)                               | ✗                                                          |
-|                         | watson_url            |                                                                                    |                                                                                    |                                                            |
-| [Microsoft Azure]()     | microsoft_token       | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/speech-to-text/) | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/) | ✗                                                          |
-|                         | microsoft_location    |                                                                                    |                                                                                    |                                                            |
-| [Google Cloud]()        | google_project_id     | [✓](https://cloud.google.com/speech-to-text)                                       | [✓](https://cloud.google.com/text-to-speech)                                       | ✗                                                          |
-|                         | google_keyFileName    |                                                                                    |                                                                                    |                                                            |
-|                         | google_keyFileCred    |                                                                                    |                                                                                    |                                                            |
-| [Amazon Web Services]() | AWS_ACCESS_KEY_ID     | ✗                                                                                  | ✗                                                                                  | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb) |
-|                         | AWS_SECRET_ACCESS_KEY |                                                                                    |                                                                                    |                                                            |
+| Name                                        | Speech-to-Text                                                                     | Text-to-Speech                                                                     | Storage                                                    |
+|---------------------------------------------|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|------------------------------------------------------------|
+| [IBM Watson](#IBM Watson)                   | [✓](https://www.ibm.com/cloud/watson-speech-to-text)                               | [✓](https://www.ibm.com/cloud/watson-text-to-speech)                               | ✗                                                          |
+| [Microsoft Azure](#Microsoft Azure)         | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/speech-to-text/) | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/) | ✗                                                          |
+| [Google Cloud](#Google Cloud)               | [✓](https://cloud.google.com/speech-to-text)                                       | [✓](https://cloud.google.com/text-to-speech)                                       | ✗                                                          |
+| [Amazon Web Services](#Amazon Web Services) | ✗                                                                                  | ✗                                                                                  | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb) |
 
 #### IBM Watson
 
+| Environment Variable | Description |
+|----------------------|-------------|
+| watson_token         | API Key     |
+| watson_url           | URL         |
+
 #### Microsoft Azure
+
+| Environment Variable | Description           |
+|----------------------|-----------------------|
+| microsoft_token      | KEY                   |
+| microsoft_location   | LOCATION (e.g eastus) |
 
 #### Google Cloud
 
+| Environment Variable | Description                                        |
+|----------------------|----------------------------------------------------|
+| google_keyFileCred   | Contents of the Google Cloud JSON Credentials File |
+
 #### Amazon Web Services
+
+| Environment Variable  | Description       |
+|-----------------------|-------------------|
+| AWS_ACCESS_KEY_ID     | Access Key ID     |
+| AWS_SECRET_ACCESS_KEY | Secret Access Key |
 
 ## Configurations
 
@@ -79,7 +95,7 @@ E.V.E is a voice enabled all in one discord bot.  Feel free to host your own ins
     - Try using the `rejoin` command
     
 - If the bot is unable to find any songs to play
-    - Try adding a [`youtube_cookie`](#environment-variables) to the bot
+    - Try adding / updating the [`youtube_cookie`](#environment-variables) to the bot
 
 ## Support
 
