@@ -53,12 +53,12 @@ Details on how to authenticate and configure each provider can be found in each 
 
 #### Summary
 
-| Name                                        | Speech-to-Text                                                                     | Text-to-Speech                                                                     | Storage                                                    |
+| Name                                        | Speech-to-Text                                                                     | Text-to-Speech                                                                     | Cloud Storage                                                    |
 |---------------------------------------------|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|------------------------------------------------------------|
-| [IBM Watson](#IBM Watson)                   | [✓](https://www.ibm.com/cloud/watson-speech-to-text)                               | [✓](https://www.ibm.com/cloud/watson-text-to-speech)                               | ✗                                                          |
-| [Microsoft Azure](#Microsoft Azure)         | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/speech-to-text/) | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/) | ✗                                                          |
-| [Google Cloud](#Google Cloud)               | [✓](https://cloud.google.com/speech-to-text)                                       | [✓](https://cloud.google.com/text-to-speech)                                       | ✗                                                          |
-| [Amazon Web Services](#Amazon Web Services) | ✗                                                                                  | ✗                                                                                  | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb) |
+| [IBM Watson](#ibm-watson)                   | [✓](https://www.ibm.com/cloud/watson-speech-to-text)                               | [✓](https://www.ibm.com/cloud/watson-text-to-speech)                               | ✗                                                          |
+| [Microsoft Azure](#microsoft-azure)         | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/speech-to-text/) | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/) | ✗                                                          |
+| [Google Cloud](#google-cloud)               | [✓](https://cloud.google.com/speech-to-text)                                       | [✓](https://cloud.google.com/text-to-speech)                                       | ✗                                                          |
+| [Amazon Web Services](#amazon-web-services) | ✗                                                                                  | ✗                                                                                  | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb) |
 
 #### IBM Watson
 
