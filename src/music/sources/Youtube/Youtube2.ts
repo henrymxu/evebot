@@ -1,4 +1,4 @@
-import {ResultInfo, SearchResult, TrackSource} from "../../Search"
+import {SearchResult, TrackSource} from "../../Search"
 import {Keys} from "../../../Keys"
 
 import YoutubeAPI from "simple-youtube-api"
@@ -18,7 +18,11 @@ export default class Youtube2 implements TrackSource {
                     rej(`No search results found for ${query}`)
                 }
                 const searchResult: SearchResult = {
-                    infos: mapAPIResults(results),
+                    infos: results.map(result => {
+                        return {
+                            url: result.url,
+                        }
+                    }),
                     metadata: {
                         mode: "single",
                         query: query
@@ -38,7 +42,11 @@ export default class Youtube2 implements TrackSource {
                 playlist.getVideos().then(videos => {
                     console.log(`This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
                     const searchResult: SearchResult = {
-                        infos: mapAPIResults(videos),
+                        infos: videos.map(result => {
+                            return {
+                                url: result.url,
+                            }
+                        }),
                         metadata: {
                             mode: "playlist",
                             query: playlistURL
@@ -53,15 +61,6 @@ export default class Youtube2 implements TrackSource {
             })
         })
     }
-}
-
-
-function mapAPIResults(results): ResultInfo[] {
-    return results.map(result => {
-        return {
-            url: result.url,
-        }
-    })
 }
 
 /**
