@@ -7,6 +7,9 @@ export namespace Logger {
 
     export function e(context: GuildContext, tag: string, log: string) {
         console.error(`${tag}: ${log}`)
+        if (context) {
+            context.getProvider().getResponder().error(`${tag}: ${log}`)
+        }
     }
 
     export function d(context: GuildContext, tag: string, log: string) {
