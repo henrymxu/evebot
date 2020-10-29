@@ -136,12 +136,14 @@ export class Config {
     }
 
     denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
+        console.log(`deny ${entities}`)
         entities.forEach(entity => {
             Config.modifyEntityPrivilege(this, privilegeName, entity, false)
         })
     }
 
     removeEntitiesFromPrivilege(privilegeName: string, entities: (User | Role)[]) {
+        console.log(`remove ${entities}`)
         let privilege = this.json.privileges[privilegeName]
         if (privilege) {
             const ids = entities.map(entity => entity.id)
@@ -154,7 +156,7 @@ export class Config {
 
     private static modifyEntityPrivilege(config: Config, privilegeName: string, entity: User | Role, isGranting: boolean) {
         let privilege = config.json.privileges[privilegeName] || createPrivilege()
-        let baseKey = entity instanceof User ? 'users' : 'roles'
+        let baseKey = entity instanceof User ? 'Users' : 'Roles'
         let addingToKey = `${isGranting ? 'granted' : 'denied'}${baseKey}`
         let removingFromKey = `${isGranting ? 'denied' : 'granted'}${baseKey}`
         privilege[removingFromKey] = removeArrayFromArray(privilege[removingFromKey], [entity.id])

@@ -53,7 +53,7 @@ export default class PrivilegesCommand extends Command {
             }
         ],
         permissions: ['MANAGE_ROLES'],
-        examples: ['privileges play -allow Liam @Olivia Admins -disallow @Kevin Newcomers']
+        examples: ['privileges play -grant Liam @Olivia Admins -deny @Kevin Newcomers']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
@@ -69,9 +69,9 @@ export default class PrivilegesCommand extends Command {
             context.getProvider().getResponder().acknowledge(0, message)
             return
         }
-        if (args.get('allow') || args.get('disallow') || args.get('remove')) {
-            context.getConfig().grantEntitiesPrivilege(privilegeName, (args.get('allow') || []).map(name => mapNameToUserOrRole(context, name)))
-            context.getConfig().denyEntitiesPrivilege(privilegeName, (args.get('disallow') || []).map(name => mapNameToUserOrRole(context, name)))
+        if (args.get('grant') || args.get('deny') || args.get('remove')) {
+            context.getConfig().grantEntitiesPrivilege(privilegeName, (args.get('grant') || []).map(name => mapNameToUserOrRole(context, name)))
+            context.getConfig().denyEntitiesPrivilege(privilegeName, (args.get('deny') || []).map(name => mapNameToUserOrRole(context, name)))
             context.getConfig().removeEntitiesFromPrivilege(privilegeName, (args.get('remove') || []).map(name => mapNameToUserOrRole(context, name)))
         }
         const response = createPrivilegeMessage(context, context.getConfig().getPrivilege(privilegeName))
@@ -91,10 +91,10 @@ function mapNameToUserOrRole(context: GuildContext, name: string): User | Role {
 
 function createPrivilegeMessage(context: GuildContext, privilege: Privilege): string {
     if (!privilege) {
-        return 'Privilege does not exist, use -c to create it'
+        return 'Privilege does not exist, create one first'
     }
     let response = `${privilege.command}\n---------\n`
-    const tableHeaders = ['Type', '< Allowed >']
+    const tableHeaders = ['Type', '< Grant >']
     function addRowsToTable(users: Set<string>, roles: Set<string>): string[][] {
         const rows = []
         users.forEach((userID) => {
@@ -107,14 +107,14 @@ function createPrivilegeMessage(context: GuildContext, privilege: Privilege): st
     }
     let tableData = []
     tableData.push(...addRowsToTable(privilege.grantedUsers, privilege.grantedRoles))
-    tableData.push(['Type', '< Disallowed >'])
+    tableData.push(['Type', '< Deny >'])
     tableData.push(...addRowsToTable(privilege.deniedUsers, privilege.deniedRoles))
     response += TableGenerator.createTable(tableHeaders, tableData)
     return response
 }
 
 function createPrivilegesListMessage(privileges: Privilege[]): string {
-    const tableHeaders = ['Privilege For', 'Allows', 'Disallows']
+    const tableHeaders = ['Privilege For', 'Grants', 'Denies']
     const tableData = []
     privileges.forEach((privilege) => {
         tableData.push([privilege.command, privilege.grantedRoles.size + privilege.grantedUsers.size,
