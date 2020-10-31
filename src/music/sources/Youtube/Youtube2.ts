@@ -30,7 +30,7 @@ export default class Youtube2 implements TrackSource {
                 }
                 res(searchResult)
             }).catch(err => {
-                rej(`Unable to find search results from YoutubeAPI ${err}`)
+                rej(`Unable to find search results from YoutubeAPI ${err.message}`)
             })
         })
     }
