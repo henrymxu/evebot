@@ -18,6 +18,7 @@
     "aws-sdk": "^2.758.0",
     "bufferutil": "^4.0.1",
     "defaults": "^1.0.3",
+    "discord-ytdl-core": "^4.1.3",
     "discord.js": "^12.3.1",
     "erlpack": "^0.1.3",
     "genius-lyrics-api": "^3.0.3",
@@ -38,7 +39,6 @@
     "wav": "^1.0.2",
     "yargs-parser": "^20.0.0",
     "youtube-search": "^1.1.4",
-    "ytdl-core-discord": "^1.2.1",
     "ytpl": "^1.0.0",
     "ytsr": "^1.0.1",
     "zlib-sync": "^0.1.7"
