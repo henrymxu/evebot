@@ -1,5 +1,5 @@
 import url from "url"
-import ytdl from "ytdl-core"
+import ytdl from "discord-ytdl-core"
 import Youtube from "./sources/Youtube/Youtube2"
 import {Utils} from "../utils/Utils"
 import {Readable} from "stream"

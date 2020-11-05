@@ -19,7 +19,6 @@ WORKDIR src
 RUN pwd
 RUN ls
 
-RUN npm clean
 RUN npm install typescript -g
 RUN npm install --unsafe-perm
 RUN tsc
