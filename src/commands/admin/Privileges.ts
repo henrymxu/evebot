@@ -63,7 +63,7 @@ export default class PrivilegesCommand extends Command {
                 {content: response, message: message, id: 'privileges', options: {code: 'Markdown'}}, 30)
             return
         }
-        const privilegeName = CommandRegistry.getCommand(context, args.get('privilegeName')).options.name
+        const privilegeName = CommandRegistry.getCommand(context, args.get('privilegeName')).options.name.toLowerCase()
         if (args.get('delete')) {
             context.getConfig().deletePrivilege(privilegeName)
             context.getProvider().getResponder().acknowledge(0, message)

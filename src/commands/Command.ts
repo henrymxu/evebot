@@ -15,7 +15,7 @@ export abstract class Command {
 
     public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         this.preExecute(context, message).then(() => {
-            Logger.d(context, Command.name, `Executing command ${args.get('keyword')}`)
+            Logger.d(context, Command.name, `Executing command ${args.get('keyword')} with args ${JSON.stringify(Array.from(args.entries()))}`)
             this.execute(context, source, args, message)
         }).catch(err => {
             Logger.w(context, Command.name, `Execution failed for command ${args.get('keyword')}, reason ${err}`)
