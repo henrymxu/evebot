@@ -76,7 +76,7 @@ export default class PrivilegesCommand extends Command {
         }
         const response = createPrivilegeMessage(context, context.getConfig().getPrivilege(privilegeName))
         context.getProvider().getResponder().send(
-            {content: response, message: message, id: 'privilege', options: {code: 'Markdown'}}, 30)
+            {content: response, message: message, id: 'privilege', options: {code: true}}, 30)
         return
     }
 }
