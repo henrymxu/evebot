@@ -1,9 +1,9 @@
-import {Message, User} from 'discord.js'
-import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions, FileType} from '../Command'
-import {CommandRegistry} from '../Registry'
-import {TableGenerator} from '../../communication/TableGenerator'
-import {GuildUtils} from "../../utils/GuildUtils"
+import { Message, User } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import { ArgumentType, Command, CommandOptions, FileType } from '../Command'
+import { CommandRegistry } from '../Registry'
+import { TableGenerator } from '../../communication/TableGenerator'
+import { GuildUtils } from '../../utils/GuildUtils'
 
 export default class HelpCommand extends Command {
     readonly options: CommandOptions = {
@@ -17,10 +17,10 @@ export default class HelpCommand extends Command {
                 description: 'Group or specific command',
                 required: false,
                 type: ArgumentType.STRING,
-                validate: GuildUtils.isStringACommandOrCommandGroup
-            }
+                validate: GuildUtils.isStringACommandOrCommandGroup,
+            },
         ],
-        examples: ['help voice']
+        examples: ['help voice'],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
@@ -37,19 +37,26 @@ export default class HelpCommand extends Command {
                     response = createMultipleCommandHelpMessage(context, map)[0]
                 }
             }
-            context.getProvider().getResponder()
-                .send({content: response, message: message, options: {code: 'Markdown'}}, 30)
+            context
+                .getProvider()
+                .getResponder()
+                .send({ content: response, message: message, options: { code: 'Markdown' } }, 30)
         } else {
             const responses = createMultipleCommandHelpMessage(context, CommandRegistry.getCommandsByGroup())
             responses.forEach((response) => {
-                context.getProvider().getResponder()
-                    .send({content: response, message: message, options: {code: 'Markdown'}}, 30)
+                context
+                    .getProvider()
+                    .getResponder()
+                    .send({ content: response, message: message, options: { code: 'Markdown' } }, 30)
             })
         }
     }
 }
 
-function createMultipleCommandHelpMessage(context: GuildContext, commandsByGroup: Map<string, Map<string, Command>>): string[] {
+function createMultipleCommandHelpMessage(
+    context: GuildContext,
+    commandsByGroup: Map<string, Map<string, Command>>
+): string[] {
     const descriptions: string[] = []
     let description = `Commands\n=========\n`
     description += `For more information on a single command or group, use <${context.getPrefix()}help keyword/group>\n`
@@ -69,8 +76,11 @@ function createGroupCommandTable(commands: Map<string, Command>): string {
     const tableData = []
     const tableHeaders = ['Group', 'Keyword', 'Description']
     commands.forEach((command, keyword) => {
-        tableData.push([command.options.group, keyword,
-            command.options.descriptions[command.options.keywords.indexOf(keyword)]])
+        tableData.push([
+            command.options.group,
+            keyword,
+            command.options.descriptions[command.options.keywords.indexOf(keyword)],
+        ])
     })
     return TableGenerator.createTable(tableHeaders, tableData)
 }
@@ -89,9 +99,9 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
         command.options.arguments.forEach((argument) => {
             const flag = argument.flag != '_' ? argument.flag : ''
             const defaultValue = argument.default ? argument.default : ''
-            const required =  argument.required ? 'yes': 'no'
+            const required = argument.required ? 'yes' : 'no'
             const type = `${ArgumentType[argument.type]}${argument.array ? ' [ Multiple ]' : ''}`
-            tableData.push([argument.key, argument.description, flag , required, type, defaultValue])
+            tableData.push([argument.key, argument.description, flag, required, type, defaultValue])
         })
         description += TableGenerator.createTable(tableHeaders, tableData)
     } else {
@@ -101,17 +111,15 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
         description += `<File Attaching a ${FileType[command.options.file]} File is supported>`
     }
     if (command.options.throttleRate) {
-        description +=
-            `<ThrottleRate ${command.options.throttleRate.count} every ${command.options.throttleRate.seconds} seconds>`
+        description += `<ThrottleRate ${command.options.throttleRate.count} every ${command.options.throttleRate.seconds} seconds>`
     }
     if (command.options.permissions) {
-        const permissionsString = command.options.permissions
-            .reduce((result, permission) => `${result} ${permission}`)
+        const permissionsString = command.options.permissions.reduce((result, permission) => `${result} ${permission}`)
         description += `<Permissions ${permissionsString}>\n`
     }
     if (command.options.examples) {
         description += `# Examples\n`
-        command.options.examples.forEach(example => {
+        command.options.examples.forEach((example) => {
             description += `< ${context.getConfig().getPrefix()}${example} >\n`
         })
     }

@@ -1,10 +1,10 @@
-import {Message, Role, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {Privilege} from "../../guild/Config"
-import {TableGenerator} from "../../communication/TableGenerator"
-import {GuildUtils} from "../../utils/GuildUtils"
-import {CommandRegistry} from "../Registry"
+import { Message, Role, User } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import { ArgumentType, Command, CommandOptions } from '../Command'
+import { Privilege } from '../../guild/Config'
+import { TableGenerator } from '../../communication/TableGenerator'
+import { GuildUtils } from '../../utils/GuildUtils'
+import { CommandRegistry } from '../Registry'
 
 export default class PrivilegesCommand extends Command {
     readonly options: CommandOptions = {
@@ -18,7 +18,7 @@ export default class PrivilegesCommand extends Command {
                 description: 'Privilege you would like to modify',
                 required: false,
                 type: ArgumentType.STRING,
-                validate: GuildUtils.isStringACommandOrCommandGroup
+                validate: GuildUtils.isStringACommandOrCommandGroup,
             },
             {
                 key: 'grant',
@@ -26,7 +26,7 @@ export default class PrivilegesCommand extends Command {
                 description: 'Grant a member / role privilege to use the command',
                 required: false,
                 type: ArgumentType.STRING,
-                array: true
+                array: true,
             },
             {
                 key: 'deny',
@@ -34,7 +34,7 @@ export default class PrivilegesCommand extends Command {
                 description: 'Deny a member / role privilege to use the command',
                 required: false,
                 type: ArgumentType.STRING,
-                array: true
+                array: true,
             },
             {
                 key: 'remove',
@@ -42,7 +42,7 @@ export default class PrivilegesCommand extends Command {
                 description: 'Remove a member / role from this privilege',
                 required: false,
                 type: ArgumentType.STRING,
-                array: true
+                array: true,
             },
             {
                 key: 'delete',
@@ -50,18 +50,19 @@ export default class PrivilegesCommand extends Command {
                 description: 'Delete this privilege',
                 required: false,
                 type: ArgumentType.FLAG,
-            }
+            },
         ],
         permissions: ['MANAGE_ROLES'],
-        examples: ['privileges play -grant Liam @Olivia Admins -deny @Kevin Newcomers']
+        examples: ['privileges play -grant Liam @Olivia Admins -deny @Kevin Newcomers'],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         if (!args.get('privilegeName')) {
             const response = createPrivilegesListMessage(context.getConfig().getPrivileges())
-            context.getProvider().getResponder()
-                .send({content: response, message: message, id: 'privileges', options: {code: 'Markdown'}},
-                    30)
+            context
+                .getProvider()
+                .getResponder()
+                .send({ content: response, message: message, id: 'privileges', options: { code: 'Markdown' } }, 30)
             return
         }
         const privilegeName = CommandRegistry.getCommand(context, args.get('privilegeName')).options.name.toLowerCase()
@@ -71,16 +72,24 @@ export default class PrivilegesCommand extends Command {
             return
         }
         if (args.get('grant') || args.get('deny') || args.get('remove')) {
-            context.getConfig().grantEntitiesPrivilege(privilegeName, (args.get('grant') || [])
-                .map(name => mapNameToUserOrRole(context, name)))
-            context.getConfig().denyEntitiesPrivilege(privilegeName, (args.get('deny') || [])
-                .map(name => mapNameToUserOrRole(context, name)))
-            context.getConfig().removeEntitiesFromPrivilege(privilegeName, (args.get('remove') || [])
-                .map(name => mapNameToUserOrRole(context, name)))
+            context.getConfig().grantEntitiesPrivilege(
+                privilegeName,
+                (args.get('grant') || []).map((name) => mapNameToUserOrRole(context, name))
+            )
+            context.getConfig().denyEntitiesPrivilege(
+                privilegeName,
+                (args.get('deny') || []).map((name) => mapNameToUserOrRole(context, name))
+            )
+            context.getConfig().removeEntitiesFromPrivilege(
+                privilegeName,
+                (args.get('remove') || []).map((name) => mapNameToUserOrRole(context, name))
+            )
         }
         const response = createPrivilegeMessage(context, context.getConfig().getPrivilege(privilegeName))
-        context.getProvider().getResponder().send(
-            {content: response, message: message, id: 'privilege', options: {code: true}}, 30)
+        context
+            .getProvider()
+            .getResponder()
+            .send({ content: response, message: message, id: 'privilege', options: { code: true } }, 30)
         return
     }
 }
@@ -121,8 +130,11 @@ function createPrivilegesListMessage(privileges: Privilege[]): string {
     const tableHeaders = ['Privilege For', 'Grants', 'Denies']
     const tableData = []
     privileges.forEach((privilege) => {
-        tableData.push([privilege.command, privilege.grantedRoles.size + privilege.grantedUsers.size,
-            privilege.deniedRoles.size + privilege.deniedUsers.size])
+        tableData.push([
+            privilege.command,
+            privilege.grantedRoles.size + privilege.grantedUsers.size,
+            privilege.deniedRoles.size + privilege.deniedUsers.size,
+        ])
     })
     return TableGenerator.createTable(tableHeaders, tableData)
 }

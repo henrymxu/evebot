@@ -1,7 +1,7 @@
-import {Command} from "../commands/Command"
-import {Message, VoiceChannel} from "discord.js"
-import {GuildContext} from "../guild/Context"
-import {Logger} from "../Logger"
+import { Command } from '../commands/Command'
+import { Message, VoiceChannel } from 'discord.js'
+import { GuildContext } from '../guild/Context'
+import { Logger } from '../Logger'
 
 export default abstract class VoiceCommand extends Command {
     abstract botMustBeInSameVoiceChannel(): boolean
@@ -34,8 +34,9 @@ export default abstract class VoiceCommand extends Command {
             return Status.READY // Implies already in a voice channel
         }
         const userVoiceChannel = message.member.voice.channel
-        const botVoiceChannel = message.client.voice.connections.has(message.guild.id) ?
-            message.client.voice.connections.get(message.guild.id).channel : null
+        const botVoiceChannel = message.client.voice.connections.has(message.guild.id)
+            ? message.client.voice.connections.get(message.guild.id).channel
+            : null
         if (this.userMustBeInVoiceChannel() && !userVoiceChannel) {
             Logger.w(context, VoiceCommand.name, `${message.member.user.tag} was not in voice channel`)
             return Status.INVALID
@@ -45,8 +46,11 @@ export default abstract class VoiceCommand extends Command {
             return Status.INVALID
         }
         if (this.botMustBeInSameVoiceChannel() && userVoiceChannel.id != botVoiceChannel.id) {
-            Logger.w(context, VoiceCommand.name,
-                `Bot was not in same voice channel, ${userVoiceChannel.id} != ${botVoiceChannel.id}`)
+            Logger.w(
+                context,
+                VoiceCommand.name,
+                `Bot was not in same voice channel, ${userVoiceChannel.id} != ${botVoiceChannel.id}`
+            )
             return Status.INVALID
         }
         if (isAlreadyInVoiceChannel(context, userVoiceChannel)) {
@@ -68,7 +72,7 @@ export default abstract class VoiceCommand extends Command {
 export enum Status {
     READY,
     NEEDS_JOIN,
-    INVALID
+    INVALID,
 }
 
 function isAlreadyInVoiceChannel(context: GuildContext, voiceChannel: VoiceChannel): boolean {

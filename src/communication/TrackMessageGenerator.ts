@@ -1,28 +1,36 @@
-import {MessageEmbed} from "discord.js"
-import YoutubeTrack from "../music/tracks/YoutubeTrack"
-import {Track} from "../music/tracks/Track"
-import {MessageGenerator} from "./MessageGenerator"
-import {TableGenerator} from "./TableGenerator"
-import {GuildContext} from "../guild/Context"
-import {Album} from "../music/tracks/Album"
-import {Utils} from "../utils/Utils"
-import {GuildUtils} from "../utils/GuildUtils"
+import { MessageEmbed } from 'discord.js'
+import YoutubeTrack from '../music/tracks/YoutubeTrack'
+import { Track } from '../music/tracks/Track'
+import { MessageGenerator } from './MessageGenerator'
+import { TableGenerator } from './TableGenerator'
+import { GuildContext } from '../guild/Context'
+import { Album } from '../music/tracks/Album'
+import { Utils } from '../utils/Utils'
+import { GuildUtils } from '../utils/GuildUtils'
 
 namespace TrackMessageGenerator {
     export function createSongTrackNowPlayingEmbed(track: YoutubeTrack): MessageEmbed {
         const userMentionString = GuildUtils.createUserMentionString(track.metaData.requesterId)
-        const message = `[${track.getYoutubeTrackInfo().title}](${track.getYoutubeTrackInfo().url}) [${userMentionString}]`
-        return MessageGenerator.getBaseEmbed().setTitle('Now Playing').setDescription(message)
+        const message = `[${track.getYoutubeTrackInfo().title}](${
+            track.getYoutubeTrackInfo().url
+        }) [${userMentionString}]`
+        return MessageGenerator.getBaseEmbed()
+            .setTitle('Now Playing')
+            .setDescription(message)
             .setThumbnail(track.getYoutubeTrackInfo().thumbnailURL)
     }
 
     export function createLinkTrackCurrentlyPlayingEmbed(track: Track, url: string): MessageEmbed {
-        const message = `[${track.getTitle()}](${url}) [${GuildUtils.createUserMentionString(track.metaData.requesterId)}]`
+        const message = `[${track.getTitle()}](${url}) [${GuildUtils.createUserMentionString(
+            track.metaData.requesterId
+        )}]`
         return MessageGenerator.getBaseEmbed().setDescription(message)
     }
 
     export function createLinkTrackNewlyQueuedEmbed(track: Track, url: string): MessageEmbed {
-        const message = `${GuildUtils.createUserMentionString(track.metaData.requesterId)} queued: [${track.getTitle()}](${url})`
+        const message = `${GuildUtils.createUserMentionString(
+            track.metaData.requesterId
+        )} queued: [${track.getTitle()}](${url})`
         return MessageGenerator.getBaseEmbed().setDescription(message)
     }
 }
@@ -53,7 +61,7 @@ export namespace TrackMessageFactory {
         let currentTrackProgress: String
         tracks.forEach((track) => {
             let title = Utils.truncate(track.getTitle(), 25)
-            title = track.isPlaying() || track.isPaused() ? `< ${title} > `: title
+            title = track.isPlaying() || track.isPaused() ? `< ${title} > ` : title
             let length = Utils.convertSecondsToTimeString(track.getLength())
             tableData.push([title, track.getArtist(), track.getRequester(context), length])
             totalLength += track.getLength()
@@ -83,8 +91,11 @@ export namespace TrackMessageFactory {
         const filledLength = Math.floor(barLength * (track.getElapsedTimeInSeconds() / track.getLength()))
         const numberOfBrackets = filledLength > 2 ? 1 : 0 // Open and close brackets
         const numberOfFilled = filledLength > 2 ? filledLength - 2 : filledLength
-        const bar = '<'.repeat(numberOfBrackets) + '='.repeat(numberOfFilled) +
-                '>'.repeat(numberOfBrackets) + '-'.repeat(barLength - (numberOfFilled + 2 * numberOfBrackets))
+        const bar =
+            '<'.repeat(numberOfBrackets) +
+            '='.repeat(numberOfFilled) +
+            '>'.repeat(numberOfBrackets) +
+            '-'.repeat(barLength - (numberOfFilled + 2 * numberOfBrackets))
         const elapsedTimeString = Utils.convertSecondsToTimeString(track.getElapsedTimeInSeconds())
         const totalTimeString = Utils.convertSecondsToTimeString(track.getLength())
         return `[${bar}] < ${elapsedTimeString} > / ${totalTimeString}`

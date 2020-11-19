@@ -1,11 +1,11 @@
-import RecorderStream from "./RecorderStream"
-import {User, VoiceChannel, VoiceState} from "discord.js"
-import {GuildContext} from "../guild/Context"
-import {SilentStreamUtils} from "../utils/SilentStreamUtils"
-import {PassThrough} from "stream"
-import {CommandDispatcher} from "../commands/Dispatcher"
-import {GlobalContext} from "../GlobalContext"
-import {Logger} from "../Logger"
+import RecorderStream from './RecorderStream'
+import { User, VoiceChannel, VoiceState } from 'discord.js'
+import { GuildContext } from '../guild/Context'
+import { SilentStreamUtils } from '../utils/SilentStreamUtils'
+import { PassThrough } from 'stream'
+import { CommandDispatcher } from '../commands/Dispatcher'
+import { GlobalContext } from '../GlobalContext'
+import { Logger } from '../Logger'
 
 const USER_REJOIN_THRESHOLD = 5000
 const VOICE_COMMAND_LENGTH = 3000
@@ -54,15 +54,18 @@ export default class VoiceConnectionHandler {
 
     joinVoiceChannel(voiceChannel: VoiceChannel): Promise<any> {
         return new Promise((res, rej) => {
-            voiceChannel.join().then((connection) => {
-                if (!this.context.getVoiceConnection()) {
-                    this.context.setVoiceConnection(connection)
-                    this.initializeConnection()
-                }
-                res()
-            }).catch(err => {
-                rej(err)
-            })
+            voiceChannel
+                .join()
+                .then((connection) => {
+                    if (!this.context.getVoiceConnection()) {
+                        this.context.setVoiceConnection(connection)
+                        this.initializeConnection()
+                    }
+                    res()
+                })
+                .catch((err) => {
+                    rej(err)
+                })
         })
     }
 
@@ -77,8 +80,11 @@ export default class VoiceConnectionHandler {
     userLeftChannel(user: User) {
         this.removeVoiceStreamForUser(user)
         if (this.context.getVoiceConnection()) {
-            if (this.context.getVoiceConnection().channel.members
-                .filter(member => member.id != GlobalContext.getClient().user.id).size == 0) {
+            if (
+                this.context
+                    .getVoiceConnection()
+                    .channel.members.filter((member) => member.id != GlobalContext.getClient().user.id).size == 0
+            ) {
                 Logger.i(null, TAG, 'Starting no user timeout')
                 this.noUsersInVoiceChannelTimeout = setTimeout(() => {
                     this.disconnect()
@@ -88,8 +94,7 @@ export default class VoiceConnectionHandler {
     }
 
     userChangedChannel(oldState: VoiceState) {
-        if (this.context.getVoiceConnection() &&
-            oldState.channelID === this.context.getVoiceConnection().channel.id) {
+        if (this.context.getVoiceConnection() && oldState.channelID === this.context.getVoiceConnection().channel.id) {
             this.removeVoiceStreamForUser(oldState.member.user)
         }
     }
@@ -121,11 +126,11 @@ export default class VoiceConnectionHandler {
             console.log('New Session')
         })
 
-        connection.on('warning', warning => {
+        connection.on('warning', (warning) => {
             console.log(`Warning: ${warning}`)
         })
 
-        connection.on('error', err => {
+        connection.on('error', (err) => {
             console.log(`Error: ${err.name}, ${err.message}`)
         })
 
@@ -161,17 +166,20 @@ export default class VoiceConnectionHandler {
         const connection = this.context.getVoiceConnection()
         let audio = connection.receiver.createStream(user, {
             mode: 'pcm',
-            end: 'manual'
+            end: 'manual',
         })
         const reRegistering = this.voiceStreams.has(user.id)
-        const recorderStream = (!reRegistering) ? new RecorderStream() : this.voiceStreams.get(user.id)
-        audio.pipe(recorderStream, {end: false})
+        const recorderStream = !reRegistering ? new RecorderStream() : this.voiceStreams.get(user.id)
+        audio.pipe(recorderStream, { end: false })
         this.voiceStreams.set(user.id, recorderStream)
         const hotwordEngine = this.context.getVoiceDependencyProvider().getHotwordEngine()
-        hotwordEngine.register(user.id, recorderStream, ((trigger) => {
+        hotwordEngine.register(user.id, recorderStream, (trigger) => {
             if (this.isListeningToCommand.has(user.id)) {
-                Logger.w(this.context, 'HotwordDetector',
-                    `Already listening for a command from ${user.tag} [${user.id}]`)
+                Logger.w(
+                    this.context,
+                    'HotwordDetector',
+                    `Already listening for a command from ${user.tag} [${user.id}]`
+                )
                 return
             }
             this.isListeningToCommand.set(user.id, true)
@@ -190,6 +198,6 @@ export default class VoiceConnectionHandler {
                 this.context.getProvider().getInterruptService().playHotwordAck(1)
                 this.isListeningToCommand.delete(user.id)
             }, VOICE_COMMAND_LENGTH)
-        }))
+        })
     }
 }

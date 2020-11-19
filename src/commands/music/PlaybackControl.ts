@@ -1,7 +1,7 @@
-import VoiceCommand from "../../voice/VoiceCommand"
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {CommandOptions} from "../Command"
+import VoiceCommand from '../../voice/VoiceCommand'
+import { Message, User } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import { CommandOptions } from '../Command'
 
 export default class PlaybackControlCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -9,12 +9,12 @@ export default class PlaybackControlCommand extends VoiceCommand {
         keywords: ['resume', 'pause', 'stop'],
         group: 'music',
         descriptions: ['Resume playback', 'Pause playback', 'Stop playback'],
-        arguments: []
+        arguments: [],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         let result: boolean = false
-        switch(args.get('keyword')) {
+        switch (args.get('keyword')) {
             case 'resume':
                 result = context.getProvider().getDJ().resume()
                 break
@@ -31,15 +31,15 @@ export default class PlaybackControlCommand extends VoiceCommand {
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {
-        return true;
+        return true
     }
 
     botMustBeInSameVoiceChannel(): boolean {
-        return true;
+        return true
     }
 
     userMustBeInVoiceChannel(): boolean {
-        return true;
+        return true
     }
 
     protected botShouldNotJoinVoiceChannelIfNotReady(): boolean {

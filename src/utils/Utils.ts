@@ -1,8 +1,8 @@
-import crypto from "crypto"
+import crypto from 'crypto'
 
 export namespace Utils {
     export function generateUUID(): string {
-        return crypto.randomBytes(16).toString("hex")
+        return crypto.randomBytes(16).toString('hex')
     }
 
     export function convertSecondsToTimeString(totalSeconds: number): string {
@@ -16,39 +16,31 @@ export namespace Utils {
     }
 
     export function truncate(input: string, maxLength: number): string {
-        return (input.length > maxLength) ? input.substr(0, maxLength - 1) + ' ...' : input;
+        return input.length > maxLength ? input.substr(0, maxLength - 1) + ' ...' : input
     }
 
-    export function roughSizeOfObject( object: any): number {
+    export function roughSizeOfObject(object: any): number {
         const objectList = []
         const stack = [object]
         let bytes = 0
 
-        while ( stack.length ) {
+        while (stack.length) {
             const value = stack.pop()
 
-            if ( typeof value === 'boolean' ) {
-                bytes += 4;
-            }
-            else if ( typeof value === 'string' ) {
-                bytes += value.length * 2;
-            }
-            else if ( typeof value === 'number' ) {
-                bytes += 8;
-            }
-            else if
-            (
-                typeof value === 'object'
-                && objectList.indexOf( value ) === -1
-            )
-            {
-                objectList.push( value );
+            if (typeof value === 'boolean') {
+                bytes += 4
+            } else if (typeof value === 'string') {
+                bytes += value.length * 2
+            } else if (typeof value === 'number') {
+                bytes += 8
+            } else if (typeof value === 'object' && objectList.indexOf(value) === -1) {
+                objectList.push(value)
 
-                for(let i in value ) {
-                    stack.push( value[ i ] );
+                for (let i in value) {
+                    stack.push(value[i])
                 }
             }
         }
-        return bytes;
+        return bytes
     }
 }

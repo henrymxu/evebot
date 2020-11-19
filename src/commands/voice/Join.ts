@@ -1,7 +1,7 @@
-import VoiceCommand from "../../voice/VoiceCommand"
-import {Message, User} from "discord.js"
-import {CommandOptions} from "../Command"
-import {GuildContext} from "../../guild/Context"
+import VoiceCommand from '../../voice/VoiceCommand'
+import { Message, User } from 'discord.js'
+import { CommandOptions } from '../Command'
+import { GuildContext } from '../../guild/Context'
 
 export default class JoinCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -9,7 +9,7 @@ export default class JoinCommand extends VoiceCommand {
         keywords: ['join'],
         group: 'voice',
         descriptions: ['Join voice channel'],
-        arguments: []
+        arguments: [],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
@@ -17,14 +17,14 @@ export default class JoinCommand extends VoiceCommand {
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {
-        return false;
+        return false
     }
 
     botMustBeInSameVoiceChannel(): boolean {
-        return false;
+        return false
     }
 
     userMustBeInVoiceChannel(): boolean {
-        return true;
+        return true
     }
 }

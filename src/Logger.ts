@@ -1,7 +1,7 @@
-import {GuildContext} from "./guild/Context"
-import {TextChannel} from "discord.js"
-import {MessageGenerator} from "./communication/MessageGenerator"
-import {GlobalContext} from "./GlobalContext"
+import { GuildContext } from './guild/Context'
+import { TextChannel } from 'discord.js'
+import { MessageGenerator } from './communication/MessageGenerator'
+import { GlobalContext } from './GlobalContext'
 
 export namespace Logger {
     export function i(context: GuildContext, tag: string, log: string) {
@@ -49,7 +49,7 @@ function appropriateLevel(level: string, flag: string): boolean {
         return true
     } else if (flag == 'w' && (level == 'w' || level == 'e')) {
         return true
-    } else if (flag == 'd' && (level != 'i')) {
+    } else if (flag == 'd' && level != 'i') {
         return true
     } else if (flag == 'i' && level == 'i') {
         return true
@@ -58,7 +58,7 @@ function appropriateLevel(level: string, flag: string): boolean {
 }
 
 function levelToString(level: string): string {
-    switch(level) {
+    switch (level) {
         case 'i':
             return 'Info'
         case 'd':

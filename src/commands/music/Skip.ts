@@ -1,7 +1,7 @@
-import VoiceCommand from "../../voice/VoiceCommand"
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {CommandOptions} from "../Command"
+import VoiceCommand from '../../voice/VoiceCommand'
+import { Message, User } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import { CommandOptions } from '../Command'
 
 export default class SkipCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -9,7 +9,7 @@ export default class SkipCommand extends VoiceCommand {
         keywords: ['skip'],
         group: 'music',
         descriptions: ['Skip the current song'],
-        arguments: []
+        arguments: [],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
@@ -19,15 +19,15 @@ export default class SkipCommand extends VoiceCommand {
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {
-        return true;
+        return true
     }
 
     botMustBeInSameVoiceChannel(): boolean {
-        return true;
+        return true
     }
 
     userMustBeInVoiceChannel(): boolean {
-        return true;
+        return true
     }
 
     protected botShouldNotJoinVoiceChannelIfNotReady(): boolean {

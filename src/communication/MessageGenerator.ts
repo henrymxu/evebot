@@ -1,9 +1,8 @@
-import {MessageAttachment, MessageEmbed} from "discord.js"
+import { MessageAttachment, MessageEmbed } from 'discord.js'
 
 export namespace MessageGenerator {
     export function getBaseEmbed(): MessageEmbed {
-        return new MessageEmbed()
-            .setColor([46, 115, 189])
+        return new MessageEmbed().setColor([46, 115, 189])
     }
 
     export function createBasicEmbed(message: string, title: string = ''): MessageEmbed {

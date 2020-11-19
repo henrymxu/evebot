@@ -1,16 +1,16 @@
-import PriorityQueue from "priorityqueuejs"
-import {StreamType, VoiceConnection} from "discord.js"
-import {Readable} from "stream"
-import {GuildContext} from "../guild/Context"
-import {Track, TrackState} from "../music/tracks/Track"
-import {Logger} from "../Logger"
+import PriorityQueue from 'priorityqueuejs'
+import { StreamType, VoiceConnection } from 'discord.js'
+import { Readable } from 'stream'
+import { GuildContext } from '../guild/Context'
+import { Track, TrackState } from '../music/tracks/Track'
+import { Logger } from '../Logger'
 
 export default class AudioPlayer {
     private readonly context: GuildContext
     private interruptQueue: PriorityQueue<InterruptItem>
 
     private currentInterrupt: InterruptItem
-    private completedInterruptCallbacks: (()=>any)[]
+    private completedInterruptCallbacks: (() => any)[]
 
     private trackQueue: Track[]
 
@@ -35,7 +35,7 @@ export default class AudioPlayer {
         this.state = AudioPlayerState.IDLE
         this.volume = 25
     }
-    
+
     private getConnection(): VoiceConnection {
         return this.context.getVoiceConnection()
     }
@@ -78,7 +78,9 @@ export default class AudioPlayer {
         if (!this.getConnection().dispatcher) {
             return false
         }
-        this.getQueue().forEach(track => { track.setFinished() })
+        this.getQueue().forEach((track) => {
+            track.setFinished()
+        })
         this.getConnection().dispatcher.destroy()
         this.initialize()
         return true
@@ -89,12 +91,12 @@ export default class AudioPlayer {
         return true
     }
 
-    queueInterrupt(stream: Readable, audioType: string, priority: number, callback: ()=>any = ()=>{}) {
+    queueInterrupt(stream: Readable, audioType: string, priority: number, callback: () => any = () => {}) {
         const interruptItem: InterruptItem = {
             stream: stream,
             audioType: audioType,
             priority: priority,
-            callback: callback
+            callback: callback,
         }
         this.interruptQueue.enq(interruptItem)
         this.onInterruptQueued()
@@ -102,7 +104,7 @@ export default class AudioPlayer {
 
     private onInterruptQueued() {
         if (this.interruptQueue.isEmpty()) {
-            this.completedInterruptCallbacks.forEach(callback => {
+            this.completedInterruptCallbacks.forEach((callback) => {
                 callback()
             })
             this.completedInterruptCallbacks = []
@@ -121,17 +123,18 @@ export default class AudioPlayer {
         const interrupt: InterruptItem = this.interruptQueue.peek()
         this.currentInterrupt = interrupt
         this.getConnection().dispatcher?.destroy()
-        this.getConnection().play(
-            interrupt.stream, {type: interrupt.audioType as StreamType}
-        ).on('start', () => {
-            this.state = AudioPlayerState.INTERRUPTING
-        }).on('finish', () => {
-            this.interruptQueue.deq()
-            this.state = AudioPlayerState.IDLE
-            this.currentInterrupt = undefined
-            this.completedInterruptCallbacks.push(interrupt.callback)
-            this.onInterruptQueued()
-        })
+        this.getConnection()
+            .play(interrupt.stream, { type: interrupt.audioType as StreamType })
+            .on('start', () => {
+                this.state = AudioPlayerState.INTERRUPTING
+            })
+            .on('finish', () => {
+                this.interruptQueue.deq()
+                this.state = AudioPlayerState.IDLE
+                this.currentInterrupt = undefined
+                this.completedInterruptCallbacks.push(interrupt.callback)
+                this.onInterruptQueued()
+            })
     }
 
     queueTrack(track: Track): boolean {
@@ -149,13 +152,16 @@ export default class AudioPlayer {
         if (!track || track.isLoading()) {
             return
         }
-        if ((track.isLoaded()) && track.getStream()) {
+        if (track.isLoaded() && track.getStream()) {
             this.play(track)
         } else {
             track.loadStream(this.context).then((stream) => {
                 if (track.isFinished()) {
-                    Logger.w(this.context, AudioPlayer.name,
-                        `${track.getTitle()} was skipped before stream finished loading`)
+                    Logger.w(
+                        this.context,
+                        AudioPlayer.name,
+                        `${track.getTitle()} was skipped before stream finished loading`
+                    )
                     stream.destroy()
                     return
                 }
@@ -167,16 +173,19 @@ export default class AudioPlayer {
 
     private play(track: Track) {
         this.getConnection()?.dispatcher?.destroy()
-        this.getConnection().play(track.getStream(), {
-            type: 'opus',
-            highWaterMark: 48,
-            volume: this.getScaledVolume()
-        }).on('start', () => {
-            this.state = AudioPlayerState.PLAYING
-            track.setPlaying()
-        }).on('finish', () => {
-            this.playNext()
-        })
+        this.getConnection()
+            .play(track.getStream(), {
+                type: 'opus',
+                highWaterMark: 48,
+                volume: this.getScaledVolume(),
+            })
+            .on('start', () => {
+                this.state = AudioPlayerState.PLAYING
+                track.setPlaying()
+            })
+            .on('finish', () => {
+                this.playNext()
+            })
     }
 
     private playNext(): boolean {
@@ -205,13 +214,12 @@ enum AudioPlayerState {
     IDLE,
     PAUSED,
     PLAYING,
-    INTERRUPTING
+    INTERRUPTING,
 }
 
 interface InterruptItem {
-    stream: Readable,
-    audioType: string,
-    priority: number,
-    callback: ()=>any
+    stream: Readable
+    audioType: string
+    priority: number
+    callback: () => any
 }
-

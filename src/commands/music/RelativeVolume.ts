@@ -1,6 +1,6 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {Command, CommandOptions} from "../Command"
+import { Message, User } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import { Command, CommandOptions } from '../Command'
 
 export default class RelativeVolumeCommand extends Command {
     readonly options: CommandOptions = {
@@ -8,7 +8,7 @@ export default class RelativeVolumeCommand extends Command {
         keywords: ['higher', 'lower'],
         group: 'music',
         descriptions: ['Raise volume by 50%', 'Lower volume by 50%'],
-        arguments: []
+        arguments: [],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

@@ -1,7 +1,7 @@
-import {SearchResult, TrackSource} from "../../Search"
-import {Keys} from "../../../Keys"
+import { SearchResult, TrackSource } from '../../Search'
+import { Keys } from '../../../Keys'
 
-import YoutubeAPI from "simple-youtube-api"
+import YoutubeAPI from 'simple-youtube-api'
 
 export default class Youtube2 implements TrackSource {
     private api
@@ -11,54 +11,63 @@ export default class Youtube2 implements TrackSource {
 
     getTrackURLFromSearch(query: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
-            this.api.searchVideos(query, 3, {
-                'relevanceLanguage': 'en'
-            }).then(results => {
-                if (results.length == 0) {
-                    rej(`No search results found for ${query}`)
-                }
-                const searchResult: SearchResult = {
-                    infos: results.map(result => {
-                        return {
-                            url: result.url,
-                        }
-                    }),
-                    metadata: {
-                        mode: "single",
-                        query: query
+            this.api
+                .searchVideos(query, 3, {
+                    relevanceLanguage: 'en',
+                })
+                .then((results) => {
+                    if (results.length == 0) {
+                        rej(`No search results found for ${query}`)
                     }
-                }
-                res(searchResult)
-            }).catch(err => {
-                rej(`Unable to find search results from YoutubeAPI ${err.message}`)
-            })
-        })
-    }
-
-    getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
-        return new Promise((res, rej) => {
-            this.api.getPlaylist(playlistURL).then(playlist => {
-                console.log(`The playlist's title is ${playlist.title}`)
-                playlist.getVideos().then(videos => {
-                    console.log(`This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
                     const searchResult: SearchResult = {
-                        infos: videos.map(result => {
+                        infos: results.map((result) => {
                             return {
                                 url: result.url,
                             }
                         }),
                         metadata: {
-                            mode: "playlist",
-                            query: playlistURL
-                        }
+                            mode: 'single',
+                            query: query,
+                        },
                     }
                     res(searchResult)
-                }).catch(err => {
+                })
+                .catch((err) => {
+                    rej(`Unable to find search results from YoutubeAPI ${err.message}`)
+                })
+        })
+    }
+
+    getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
+        return new Promise((res, rej) => {
+            this.api
+                .getPlaylist(playlistURL)
+                .then((playlist) => {
+                    console.log(`The playlist's title is ${playlist.title}`)
+                    playlist
+                        .getVideos()
+                        .then((videos) => {
+                            console.log(`This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
+                            const searchResult: SearchResult = {
+                                infos: videos.map((result) => {
+                                    return {
+                                        url: result.url,
+                                    }
+                                }),
+                                metadata: {
+                                    mode: 'playlist',
+                                    query: playlistURL,
+                                },
+                            }
+                            res(searchResult)
+                        })
+                        .catch((err) => {
+                            rej(err)
+                        })
+                })
+                .catch((err) => {
                     rej(err)
                 })
-            }).catch(err => {
-                rej(err)
-            })
         })
     }
 }

@@ -1,21 +1,13 @@
 {
-  "prefix": "?",
-  "defaultTextChannel": "",
-  "logging": {
-    "channelID": "",
-    "flags": ""
-  },
-  "nicknames": {
-
-  },
-  "aliases": {
-
-  },
-  "macros": {
-
-  },
-  "defaultPrivilege": true,
-  "privileges": {
-
-  }
+    "prefix": "?",
+    "defaultTextChannel": "",
+    "logging": {
+        "channelID": "",
+        "flags": ""
+    },
+    "nicknames": {},
+    "aliases": {},
+    "macros": {},
+    "defaultPrivilege": true,
+    "privileges": {}
 }

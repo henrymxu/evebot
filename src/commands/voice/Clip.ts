@@ -1,11 +1,11 @@
-import {Message, User} from "discord.js"
-import {AudioUtils} from "../../utils/AudioUtils"
-import VoiceCommand from "../../voice/VoiceCommand"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, CommandOptions} from "../Command"
-import {MessageGenerator} from "../../communication/MessageGenerator"
-import {GuildUtils} from "../../utils/GuildUtils"
-import {Logger} from "../../Logger"
+import { Message, User } from 'discord.js'
+import { AudioUtils } from '../../utils/AudioUtils'
+import VoiceCommand from '../../voice/VoiceCommand'
+import { GuildContext } from '../../guild/Context'
+import { ArgumentType, CommandOptions } from '../Command'
+import { MessageGenerator } from '../../communication/MessageGenerator'
+import { GuildUtils } from '../../utils/GuildUtils'
+import { Logger } from '../../Logger'
 
 export default class ClipCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -18,7 +18,7 @@ export default class ClipCommand extends VoiceCommand {
                 key: 'user',
                 description: 'User you would like to clip',
                 required: true,
-                type: ArgumentType.USER
+                type: ArgumentType.USER,
             },
             {
                 key: 'length',
@@ -27,7 +27,7 @@ export default class ClipCommand extends VoiceCommand {
                 required: false,
                 type: ArgumentType.INTEGER,
                 default: 10,
-                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
+                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20,
             },
             {
                 key: 'caption',
@@ -35,10 +35,10 @@ export default class ClipCommand extends VoiceCommand {
                 description: 'Title of clip',
                 required: false,
                 type: ArgumentType.STRING,
-                default: 'Clip'
-            }
+                default: 'Clip',
+            },
         ],
-        examples: ['clip @Eve -l 5 -c Eve Funny Clip']
+        examples: ['clip @Eve -l 5 -c Eve Funny Clip'],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
@@ -52,14 +52,24 @@ export default class ClipCommand extends VoiceCommand {
         context.getProvider().getResponder().startTyping(message)
         AudioUtils.convertBufferToMp3Buffer(voiceStream.getBuffer(args.get('length')), args.get('caption'), user.tag)
             .then((buffer) => {
-                const embedMessage = MessageGenerator
-                    .createBasicEmbed(`Recording from [${GuildUtils.createUserMentionString(user.id)}]`)
+                const embedMessage = MessageGenerator.createBasicEmbed(
+                    `Recording from [${GuildUtils.createUserMentionString(user.id)}]`
+                )
                 const embed = MessageGenerator.attachFileToEmbed(embedMessage, buffer, `${args.get('caption')}.mp3`)
-                context.getProvider().getResponder().send({content: embed, message: message}).then((results) => {
-                    context.getProvider().getResponder().stopTyping(message)})
-            }).catch((err) => {
-                Logger.e(context, ClipCommand.name,
-                    `There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`)
+                context
+                    .getProvider()
+                    .getResponder()
+                    .send({ content: embed, message: message })
+                    .then((results) => {
+                        context.getProvider().getResponder().stopTyping(message)
+                    })
+            })
+            .catch((err) => {
+                Logger.e(
+                    context,
+                    ClipCommand.name,
+                    `There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`
+                )
             })
     }
 

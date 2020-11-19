@@ -1,4 +1,4 @@
-import {Transform} from "stream"
+import { Transform } from 'stream'
 
 export abstract class HotwordEngine {
     protected detectors: Map<string, any> = new Map()

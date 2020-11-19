@@ -1,7 +1,7 @@
-import {Readable} from "stream"
-import {Message} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {GuildUtils} from "../../utils/GuildUtils"
+import { Readable } from 'stream'
+import { Message } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import { GuildUtils } from '../../utils/GuildUtils'
 
 export abstract class Track {
     id: string
@@ -80,7 +80,7 @@ export enum TrackState {
     LOADED,
     PLAYING,
     FINISHED,
-    PAUSED
+    PAUSED,
 }
 
 export interface TrackItem {

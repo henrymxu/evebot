@@ -1,9 +1,9 @@
-import YoutubeTrack, {YoutubeTrackInfo} from "./YoutubeTrack"
+import YoutubeTrack, { YoutubeTrackInfo } from './YoutubeTrack'
 
 export default class ExternalTrack extends YoutubeTrack {
     private readonly externalInfo: ExternalTrackInfo
     constructor(id: string, youtubeInfo: YoutubeTrackInfo, externalTrackInfo: ExternalTrackInfo) {
-        super(id, youtubeInfo);
+        super(id, youtubeInfo)
         this.externalInfo = externalTrackInfo
     }
 

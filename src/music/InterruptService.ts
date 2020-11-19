@@ -1,6 +1,6 @@
-import {GuildContext} from "../guild/Context"
-import {AudioUtils} from "../utils/AudioUtils"
-import {Readable} from "stream"
+import { GuildContext } from '../guild/Context'
+import { AudioUtils } from '../utils/AudioUtils'
+import { Readable } from 'stream'
 
 const hotword_ack_start = './resources/siri_acknowledge.mp3'
 const hotword_ack_finish = './resources/siri_acknowledge_done.mp3'

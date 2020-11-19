@@ -1,9 +1,9 @@
-import "aws-sdk/lib/node_loader"
-import {Storage} from "../Storage"
-import AWS from "aws-sdk/global"
-import {Logger} from "../../Logger"
-import DynamoDB, {DocumentClient} from "aws-sdk/clients/dynamodb"
-import {Keys} from "../../Keys"
+import 'aws-sdk/lib/node_loader'
+import { Storage } from '../Storage'
+import AWS from 'aws-sdk/global'
+import { Logger } from '../../Logger'
+import DynamoDB, { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { Keys } from '../../Keys'
 
 const TAG = 'AWSDynamoDB'
 
@@ -15,8 +15,8 @@ export default class AWSStorage implements Storage {
             // @ts-ignore
             endpoint: Keys.get('AWS_ENDPOINT'),
             accessKeyId: Keys.get('AWS_ACCESS_KEY_ID'),
-            secretAccessKey: Keys.get('AWS_SECRET_ACCESS_KEY')
-        });
+            secretAccessKey: Keys.get('AWS_SECRET_ACCESS_KEY'),
+        })
         this.client = new DynamoDB.DocumentClient()
     }
 

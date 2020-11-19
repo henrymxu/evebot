@@ -1,12 +1,12 @@
-import {Client, DMChannel, Message, MessageAttachment, Permissions, TextChannel, User} from "discord.js"
-import {CommandParser} from "./Parser"
-import {GlobalContext} from "../GlobalContext"
-import {GuildContext} from "../guild/Context"
-import {CommandRegistry} from "./Registry"
-import {Logger} from "../Logger"
-import {Command, FileType} from "./Command"
+import { Client, DMChannel, Message, MessageAttachment, Permissions, TextChannel, User } from 'discord.js'
+import { CommandParser } from './Parser'
+import { GlobalContext } from '../GlobalContext'
+import { GuildContext } from '../guild/Context'
+import { CommandRegistry } from './Registry'
+import { Logger } from '../Logger'
+import { Command, FileType } from './Command'
 
-const TAG = "CommandDispatcher"
+const TAG = 'CommandDispatcher'
 
 export namespace CommandDispatcher {
     export function register(client: Client) {
@@ -45,22 +45,39 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
     }
     const command = CommandRegistry.getCommand(context, keywordResult.keyword)
     if (!command) {
-        Logger.w(context, TAG,`No command found for ${keywordResult.keyword}`)
+        Logger.w(context, TAG, `No command found for ${keywordResult.keyword}`)
         return
     }
     if (!checkPermissions(context, source, command)) {
-        Logger.w(context, command.options.name, `${source.username} does not have permissions to execute ${keywordResult.keyword}`)
+        Logger.w(
+            context,
+            command.options.name,
+            `${source.username} does not have permissions to execute ${keywordResult.keyword}`
+        )
         return
     }
     if (!checkPrivileges(context, source, keywordResult.keyword)) {
-        Logger.w(context, command.options.name, `${source.username} does not have privileges to execute ${keywordResult.keyword}`)
+        Logger.w(
+            context,
+            command.options.name,
+            `${source.username} does not have privileges to execute ${keywordResult.keyword}`
+        )
         return
     }
     if (context.getProvider().getThrottler().shouldThrottleCommand(source, command)) {
-        Logger.w(context, command.options.name, `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`)
+        Logger.w(
+            context,
+            command.options.name,
+            `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`
+        )
         return
     }
-    const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
+    const result = CommandParser.parseArguments(
+        context,
+        command,
+        keywordResult.keyword,
+        keywordResult.parsedCommandString
+    )
     if (result.error) {
         Logger.w(context, TAG, `Could not parse arguments for ${commandString}, reason ${result.error}`)
         return
@@ -77,15 +94,13 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
 }
 
 function handleTextChannelMessage(message: Message) {
-    GlobalContext.get(message.guild.id).then(context => {
+    GlobalContext.get(message.guild.id).then((context) => {
         context.setTextChannel(message.channel as TextChannel)
         handleGuildCommand(context, message.content, message.author, message)
     })
 }
 
-function handleDMChannelMessage(message: Message) {
-
-}
+function handleDMChannelMessage(message: Message) {}
 
 function checkPermissions(context: GuildContext, user: User, command: Command): boolean {
     const permission = command.options.permissions
@@ -101,9 +116,13 @@ function checkPrivileges(context: GuildContext, user: User, keyword: string): bo
         return true
     }
     const privilege = context.getConfig().getPrivilege(keyword)
-    if (!privilege ||
-        privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
-        privilege.deniedRoles.size === 0 && privilege.deniedUsers.size === 0) {
+    if (
+        !privilege ||
+        (privilege.grantedRoles.size === 0 &&
+            privilege.grantedUsers.size === 0 &&
+            privilege.deniedRoles.size === 0 &&
+            privilege.deniedUsers.size === 0)
+    ) {
         return context.getConfig().getDefaultPrivilege()
     }
     if (privilege.grantedUsers.has(user.id)) {
@@ -120,12 +139,20 @@ function checkPrivileges(context: GuildContext, user: User, keyword: string): bo
             return false
         }
     }
-    if (privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
-        privilege.deniedRoles.size !== 0 && privilege.deniedUsers.size !== 0) {
+    if (
+        privilege.grantedRoles.size === 0 &&
+        privilege.grantedUsers.size === 0 &&
+        privilege.deniedRoles.size !== 0 &&
+        privilege.deniedUsers.size !== 0
+    ) {
         return true
     }
-    if (privilege.grantedRoles.size !== 0 && privilege.grantedUsers.size !== 0 &&
-        privilege.deniedRoles.size === 0 && privilege.deniedUsers.size === 0) {
+    if (
+        privilege.grantedRoles.size !== 0 &&
+        privilege.grantedUsers.size !== 0 &&
+        privilege.deniedRoles.size === 0 &&
+        privilege.deniedUsers.size === 0
+    ) {
         return false
     }
     return false
@@ -133,10 +160,14 @@ function checkPrivileges(context: GuildContext, user: User, keyword: string): bo
 
 function checkFileType(attachment: MessageAttachment, type: FileType): boolean {
     if (attachment) {
-        switch(type) {
-            case FileType.AUDIO : {
-                return attachment.url.endsWith('mp3') || attachment.url.endsWith('opus') ||
-                    attachment.url.endsWith('ogg') || attachment.url.endsWith('wav')
+        switch (type) {
+            case FileType.AUDIO: {
+                return (
+                    attachment.url.endsWith('mp3') ||
+                    attachment.url.endsWith('opus') ||
+                    attachment.url.endsWith('ogg') ||
+                    attachment.url.endsWith('wav')
+                )
             }
         }
     }

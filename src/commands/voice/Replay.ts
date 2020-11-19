@@ -1,10 +1,10 @@
-import {Message, MessageAttachment, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import VoiceCommand from "../../voice/VoiceCommand"
-import {ArgumentType, CommandOptions, FileType} from "../Command"
-import {Logger} from "../../Logger"
-import {FileUtils} from "../../utils/FileUtils"
-import {AudioUtils} from "../../utils/AudioUtils"
+import { Message, MessageAttachment, User } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import VoiceCommand from '../../voice/VoiceCommand'
+import { ArgumentType, CommandOptions, FileType } from '../Command'
+import { Logger } from '../../Logger'
+import { FileUtils } from '../../utils/FileUtils'
+import { AudioUtils } from '../../utils/AudioUtils'
 
 export default class ReplayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -17,11 +17,11 @@ export default class ReplayCommand extends VoiceCommand {
                 key: 'url',
                 description: 'URL of file you would like to replay',
                 required: false,
-                type: ArgumentType.STRING
+                type: ArgumentType.STRING,
             },
         ],
         file: FileType.AUDIO,
-        examples: ['replay']
+        examples: ['replay'],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
@@ -38,7 +38,10 @@ export default class ReplayCommand extends VoiceCommand {
         FileUtils.downloadFile(url).then((result) => {
             // TODO: check file types?
             if (url.endsWith('mp3')) {
-                context.getProvider().getInterruptService().playOpusStream(AudioUtils.convertMp3StreamToOpusStream(result))
+                context
+                    .getProvider()
+                    .getInterruptService()
+                    .playOpusStream(AudioUtils.convertMp3StreamToOpusStream(result))
             } else {
                 context.getProvider().getInterruptService().playUnknownStream(result)
             }
@@ -47,14 +50,14 @@ export default class ReplayCommand extends VoiceCommand {
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {
-        return false;
+        return false
     }
 
     botMustBeInSameVoiceChannel(): boolean {
-        return false;
+        return false
     }
 
     userMustBeInVoiceChannel(): boolean {
-        return true;
+        return true
     }
 }

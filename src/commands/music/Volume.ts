@@ -1,6 +1,6 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
+import { Message, User } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import { ArgumentType, Command, CommandOptions } from '../Command'
 
 export default class VolumeCommand extends Command {
     readonly options: CommandOptions = {
@@ -16,9 +16,9 @@ export default class VolumeCommand extends Command {
                 type: ArgumentType.INTEGER,
                 validate: (context, arg) => {
                     return arg >= 0 && arg <= 100
-                }
-            }
-        ]
+                },
+            },
+        ],
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

@@ -1,6 +1,6 @@
-import {GuildChannel, Role, TextChannel, User} from "discord.js"
-import {GuildContext} from "../guild/Context"
-import {CommandRegistry} from "../commands/Registry"
+import { GuildChannel, Role, TextChannel, User } from 'discord.js'
+import { GuildContext } from '../guild/Context'
+import { CommandRegistry } from '../commands/Registry'
 
 export namespace GuildUtils {
     export function parseUserFromUserID(context: GuildContext, userID: string): User {
@@ -16,14 +16,18 @@ export namespace GuildUtils {
     }
 
     export function findTextChannelByName(context: GuildContext, name: string): TextChannel {
-        let textChannel: GuildChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text')
-            .find(channel => channel.name == name)
+        let textChannel: GuildChannel = context
+            .getGuild()
+            .channels.cache.filter((channel) => channel.type === 'text')
+            .find((channel) => channel.name == name)
         return textChannel as TextChannel
     }
 
     export function findTextChannelByID(context: GuildContext, id: string): TextChannel {
-        let textChannel: GuildChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text')
-            .find(channel => channel.id == id)
+        let textChannel: GuildChannel = context
+            .getGuild()
+            .channels.cache.filter((channel) => channel.type === 'text')
+            .find((channel) => channel.id == id)
         return textChannel as TextChannel
     }
 
@@ -48,7 +52,8 @@ export namespace GuildUtils {
         if (idFromNickname) {
             return GuildUtils.parseUserFromUserID(context, idFromNickname)
         }
-        return context.getGuild().members.cache.find(member => compareCaseInsensitive(member.displayName, input))?.user
+        return context.getGuild().members.cache.find((member) => compareCaseInsensitive(member.displayName, input))
+            ?.user
     }
 
     export function parseRoleFromString(context: GuildContext, input: string): Role {
@@ -56,9 +61,12 @@ export namespace GuildUtils {
         if (id) {
             return GuildUtils.parseRoleFromRoleID(context, id)
         }
-        return context.getGuild().roles.cache.filter((role) => {
-            return compareCaseInsensitive(role.name, input)
-        }).first()
+        return context
+            .getGuild()
+            .roles.cache.filter((role) => {
+                return compareCaseInsensitive(role.name, input)
+            })
+            .first()
     }
 }
 
@@ -68,5 +76,5 @@ function parseIdFromMention(input: string): string {
 }
 
 function compareCaseInsensitive(input1: string, input2: string): boolean {
-    return input1.localeCompare(input2, undefined, {sensitivity: 'base'}) === 0
+    return input1.localeCompare(input2, undefined, { sensitivity: 'base' }) === 0
 }
