@@ -11,9 +11,9 @@ export default class AWSStorage implements Storage {
     private client: DocumentClient
     constructor() {
         AWS.config.update({
-            region: "us-east-1",
+            region: Keys.get('AWS_REGION'),
             // @ts-ignore
-            endpoint: "https://dynamodb.us-east-1.amazonaws.com",
+            endpoint: Keys.get('AWS_ENDPOINT'),
             accessKeyId: Keys.get('AWS_ACCESS_KEY_ID'),
             secretAccessKey: Keys.get('AWS_SECRET_ACCESS_KEY')
         });
