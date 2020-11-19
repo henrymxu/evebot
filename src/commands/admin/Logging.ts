@@ -10,7 +10,7 @@ export default class LoggingCommand extends Command {
         name: 'Logging',
         keywords: ['logging'],
         group: 'admin',
-        descriptions: ['Modify logging text channel for this server'],
+        descriptions: ['Modify bot logging for this server'],
         arguments: [
             {
                 key: 'channel',
@@ -22,7 +22,7 @@ export default class LoggingCommand extends Command {
             {
                 key: 'level',
                 flag: 'l',
-                description: 'Logging level',
+                description: 'Logging level (i = info, d = debug, w = warning, e = error)',
                 required: false,
                 type: ArgumentType.STRING,
                 validate: (context, arg) => {
