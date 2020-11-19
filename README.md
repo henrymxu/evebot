@@ -30,6 +30,28 @@ E.V.E is a voice enabled all in one discord bot.  Feel free to host your own ins
 
 ## Installation
 
+The installation process for E.V.E is quite long due to all the different services it requires.
+
+#### Local Installation
+These steps are if you wish to run the bot on your local machine (i.e PC, laptop).
+
+This is the simplest way to set up the bot, but the bot will only be on while your local machine is also on.
+
+1. Retrieve all the required / desired tokens from the following tables.
+2. Clone / Download the git repository
+3. Setup the environment variables and api tokens
+    - If you know how to set up environment variables you can do that
+    - If not, you can set up a `keys.json` file in the `evebot` folder with the key value pairs
+4. Inside a terminal, navigate to the `evebot` folder
+5. Install the dependencies using `npm install`
+    - Typescript must be installed, run `npm install typescript -g` before `npm install`
+6. Compile the typescript using `tsc`
+7. Start the bot using `node dist/main.js`
+
+#### Local Installation with Docker
+
+#### Heroku Deployment
+
 ### Environment Variables
 
 | Name                                                                       | Environment Variable | Description                                                                                    | Required |
