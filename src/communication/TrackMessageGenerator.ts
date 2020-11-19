@@ -50,7 +50,7 @@ export namespace TrackMessageFactory {
         const tableHeaders = ['Track Name', 'Artist', 'Requester', 'Length']
         const tableData = []
         let totalLength = 0
-        let currentTrackProgress = ""
+        let currentTrackProgress: String
         tracks.forEach((track) => {
             let title = Utils.truncate(track.getTitle(), 25)
             title = track.isPlaying() || track.isPaused() ? `< ${title} > `: title
