@@ -54,7 +54,8 @@ export default class AliasesCommand extends Command {
             context.getConfig().addAliases(command.options.name.toLowerCase(), args.get('add') || [])
             context.getConfig().removeAliases(command.options.name.toLowerCase(), args.get('remove') || [])
         }
-        const embed = TableGenerator.createBasicListEmbed(command.options.name, context.getConfig().getAliases(command.options.name), 'Aliases')
+        const embed = TableGenerator.createBasicListEmbed(command.options.name,
+            context.getConfig().getAliases(command.options.name), 'Aliases')
         context.getProvider().getResponder().send({content: embed, message: message}, 20)
     }
 }

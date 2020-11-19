@@ -64,7 +64,8 @@ export namespace Spotify {
         })
     }
 
-    export function getTrackNamesFromSeeds(artists: string[], genres: string[], tracks: string[], length: number): Promise<ExternalTrackInfo[]> {
+    export function getTrackNamesFromSeeds(artists: string[], genres: string[], tracks: string[],
+                                           length: number): Promise<ExternalTrackInfo[]> {
         return new Promise((res, rej) => {
             spotifyApi.clientCredentialsGrant().then(data => {
                 spotifyApi.setAccessToken(data.body['access_token'])

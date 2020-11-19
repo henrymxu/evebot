@@ -181,7 +181,8 @@ export class Config {
         config.save()
     }
 
-    private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string, validate?: (Config, string) => boolean): Error {
+    private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string,
+                                     validate?: (Config, string) => boolean): Error {
         const alreadyHad = []
         keys.forEach(key => {
             if (validate(Config, key)) {

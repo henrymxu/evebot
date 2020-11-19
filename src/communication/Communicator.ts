@@ -5,7 +5,8 @@ export namespace Communicator {
         message.react(emoji)
     }
 
-    export function send(message: string | MessageEmbed, options: MessageOptions, textChannel: TextChannel): Promise<Message | Array<Message>> {
+    export function send(message: string | MessageEmbed, options: MessageOptions,
+                         textChannel: TextChannel): Promise<Message | Array<Message>> {
         if (message instanceof MessageEmbed) {
             options = undefined
         }

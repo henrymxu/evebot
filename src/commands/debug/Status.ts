@@ -10,7 +10,8 @@ export default class StatusCommand extends Command {
         name: 'Status',
         keywords: ['status', 'memory', 'config'],
         group: 'debug',
-        descriptions: ['Show various information of the bot\s status', 'Show current memory usage of the bot', 'Show raw config of the bot'],
+        descriptions: ['Show various information of the bot\s status',
+            'Show current memory usage of the bot', 'Show raw config of the bot'],
         arguments: [],
         permissions: ['ADMINISTRATOR']
     }
@@ -35,7 +36,9 @@ export default class StatusCommand extends Command {
                 break
             }
         }
-        context.getProvider().getResponder().send({content: response, id: args.get('keyword'), message: message, options: {code: 'Markdown'}}, 15)
+        context.getProvider().getResponder()
+            .send({content: response, id: args.get('keyword'), message: message, options: {code: 'Markdown'}},
+                15)
     }
 }
 
@@ -54,8 +57,10 @@ function getStatusResponse(context: GuildContext): string {
     const tableData2 = []
     tableData2.push(['HotwordEngine', context.getVoiceDependencyProvider().getHotwordEngine().getStatus()])
     tableData2.push(['Hotwords', context.getVoiceDependencyProvider().getHotwordEngine().getHotwords().join(', ')])
-    tableData2.push(['SpeechGeneration', (context.getVoiceDependencyProvider().getSpeechGenerator() as unknown as SpeechProvider).getStatus()])
-    tableData2.push(['SpeechRecognition', (context.getVoiceDependencyProvider().getSpeechRecognizer() as unknown as SpeechProvider).getStatus()])
+    tableData2.push(['SpeechGeneration',
+        (context.getVoiceDependencyProvider().getSpeechGenerator() as unknown as SpeechProvider).getStatus()])
+    tableData2.push(['SpeechRecognition',
+        (context.getVoiceDependencyProvider().getSpeechRecognizer() as unknown as SpeechProvider).getStatus()])
 
     response += `${TableGenerator.createTable(tableHeader2, tableData2)}\n`
 

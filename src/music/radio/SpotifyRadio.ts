@@ -28,10 +28,12 @@ export default class SpotifyRadio extends Radio {
             const seeds: SpotifySeeds = {
                 artists: [results[0]], genres: [results[1]], tracks: [results[2]]
             }
-            Spotify.getTrackNamesFromSeeds(seeds.artists, seeds.genres, seeds.tracks, context.length).then((trackNames) => {
-                this.radioConfiguration.recommendedTracks.push(...trackNames.map(track => `${track.artist} - ${track.name}`))
-                this.resume()
-            })
+            Spotify.getTrackNamesFromSeeds(seeds.artists, seeds.genres, seeds.tracks, context.length)
+                .then((trackNames) => {
+                    this.radioConfiguration.recommendedTracks
+                        .push(...trackNames.map(track => `${track.artist} - ${track.name}`))
+                    this.resume()
+                })
         }).catch(err => {
             Logger.e(null, TAG, err)
         })

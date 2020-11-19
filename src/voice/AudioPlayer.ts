@@ -155,7 +155,8 @@ export default class AudioPlayer {
         } else {
             track.loadStream(this.context).then((stream) => {
                 if (track.isSkipped()) {
-                    Logger.w(this.context, AudioPlayer.name, `${track.getTitle()} was skipped before stream finished loading`)
+                    Logger.w(this.context, AudioPlayer.name,
+                        `${track.getTitle()} was skipped before stream finished loading`)
                     stream.destroy()
                     return
                 }

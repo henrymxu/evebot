@@ -59,8 +59,9 @@ export default class PrivilegesCommand extends Command {
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         if (!args.get('privilegeName')) {
             const response = createPrivilegesListMessage(context.getConfig().getPrivileges())
-            context.getProvider().getResponder().send(
-                {content: response, message: message, id: 'privileges', options: {code: 'Markdown'}}, 30)
+            context.getProvider().getResponder()
+                .send({content: response, message: message, id: 'privileges', options: {code: 'Markdown'}},
+                    30)
             return
         }
         const privilegeName = CommandRegistry.getCommand(context, args.get('privilegeName')).options.name.toLowerCase()
@@ -70,9 +71,12 @@ export default class PrivilegesCommand extends Command {
             return
         }
         if (args.get('grant') || args.get('deny') || args.get('remove')) {
-            context.getConfig().grantEntitiesPrivilege(privilegeName, (args.get('grant') || []).map(name => mapNameToUserOrRole(context, name)))
-            context.getConfig().denyEntitiesPrivilege(privilegeName, (args.get('deny') || []).map(name => mapNameToUserOrRole(context, name)))
-            context.getConfig().removeEntitiesFromPrivilege(privilegeName, (args.get('remove') || []).map(name => mapNameToUserOrRole(context, name)))
+            context.getConfig().grantEntitiesPrivilege(privilegeName, (args.get('grant') || [])
+                .map(name => mapNameToUserOrRole(context, name)))
+            context.getConfig().denyEntitiesPrivilege(privilegeName, (args.get('deny') || [])
+                .map(name => mapNameToUserOrRole(context, name)))
+            context.getConfig().removeEntitiesFromPrivilege(privilegeName, (args.get('remove') || [])
+                .map(name => mapNameToUserOrRole(context, name)))
         }
         const response = createPrivilegeMessage(context, context.getConfig().getPrivilege(privilegeName))
         context.getProvider().getResponder().send(

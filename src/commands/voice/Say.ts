@@ -19,7 +19,8 @@ export default class SayCommand extends VoiceCommand {
             {
                 key: 'voice',
                 flag: 'v',
-                description: 'Voice the bot should use. Microsoft: (https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support#standard-voices)',
+                description: 'Voice the bot should use. Microsoft: ' +
+                    '(https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support#standard-voices)',
                 required: false,
                 type: ArgumentType.STRING
             }
@@ -29,10 +30,11 @@ export default class SayCommand extends VoiceCommand {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        context.getVoiceDependencyProvider().getSpeechGenerator().asyncGenerateSpeechFromText(args.get('message'), args.get('voice')).then((stream) => {
-            context.getProvider().getInterruptService().playOpusStream(stream)
-            context.getProvider().getResponder().acknowledge(0, message)
-        })
+        context.getVoiceDependencyProvider().getSpeechGenerator().asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
+            .then((stream) => {
+                context.getProvider().getInterruptService().playOpusStream(stream)
+                context.getProvider().getResponder().acknowledge(0, message)
+            })
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {

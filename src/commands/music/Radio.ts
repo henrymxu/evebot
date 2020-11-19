@@ -54,7 +54,8 @@ export default class RadioCommand extends VoiceCommand {
                     {content: createRadioMessage(radioConfiguration),
                         message: message, options: {code: 'Markdown'}}, 30)
             } else {
-                context.getProvider().getResponder().error(`There is no radio playing! Use ${context.getPrefix()}radio command to start one!`, message)
+                context.getProvider().getResponder()
+                    .error(`There is no radio playing! Use ${context.getPrefix()}radio command to start one!`, message)
             }
             return
         }
@@ -91,11 +92,13 @@ function createRadioMessage(radioConfiguration: RadioConfiguration): string {
     response += `${TableGenerator.createTable(tableHeaders, tableData)}\n`
 
     const tableHeaders2 = ['Previous Track', 'Current Track', 'Next Track']
-    const tableData2 = [[radioConfiguration.playedTracks[0], radioConfiguration.currentTrack, radioConfiguration.recommendedTracks[0]]]
+    const tableData2 = [[radioConfiguration.playedTracks[0],
+        radioConfiguration.currentTrack, radioConfiguration.recommendedTracks[0]]]
     response += `${TableGenerator.createTable(tableHeaders2, tableData2)}\n`
 
     const tableHeaders3 = ['Tracks Played', 'Tracks Remaining']
-    const tableData3 = [[radioConfiguration.playedTracks.length.toString(), radioConfiguration.recommendedTracks.length.toString()]]
+    const tableData3 = [[radioConfiguration.playedTracks.length.toString(),
+        radioConfiguration.recommendedTracks.length.toString()]]
     response += `${TableGenerator.createTable(tableHeaders3, tableData3)}`
     return response
 }

@@ -50,15 +50,17 @@ export default class ClipCommand extends VoiceCommand {
             return
         }
         context.getProvider().getResponder().startTyping(message)
-        AudioUtils.convertBufferToMp3Buffer(voiceStream.getBuffer(args.get('length')), args.get('caption'), user.tag).then((buffer) => {
-            const embed = MessageGenerator.attachFileToEmbed(MessageGenerator.createBasicEmbed(`Recording from [${GuildUtils.createUserMentionString(user.id)}]`),
-                buffer, `${args.get('caption')}.mp3`)
-            context.getProvider().getResponder().send({content: embed, message: message}).then((results) => {
-                context.getProvider().getResponder().stopTyping(message)
+        AudioUtils.convertBufferToMp3Buffer(voiceStream.getBuffer(args.get('length')), args.get('caption'), user.tag)
+            .then((buffer) => {
+                const embedMessage = MessageGenerator
+                    .createBasicEmbed(`Recording from [${GuildUtils.createUserMentionString(user.id)}]`)
+                const embed = MessageGenerator.attachFileToEmbed(embedMessage, buffer, `${args.get('caption')}.mp3`)
+                context.getProvider().getResponder().send({content: embed, message: message}).then((results) => {
+                    context.getProvider().getResponder().stopTyping(message)})
+            }).catch((err) => {
+                Logger.e(context, ClipCommand.name,
+                    `There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`)
             })
-        }).catch((err) => {
-            Logger.e(context, ClipCommand.name, `There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`)
-        })
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {

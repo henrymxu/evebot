@@ -48,10 +48,11 @@ export default class ReciteCommand extends VoiceCommand {
         }
         context.getProvider().getInterruptService().playRawStream(voiceStream.getRecordedStream(args.get('length')))
         if (args.get('transcribe')) {
-            context.getVoiceDependencyProvider().getSpeechRecognizer().recognizeTextFromSpeech(voiceStream).then((transcribed) => {
-                const transcribedMessage = `${GuildUtils.createUserMentionString(user.id)} said ${transcribed}`
-                context.getProvider().getResponder().send({content: transcribedMessage, message: message})
-            })
+            context.getVoiceDependencyProvider().getSpeechRecognizer().recognizeTextFromSpeech(voiceStream)
+                .then((transcribed) => {
+                    const transcribedMessage = `${GuildUtils.createUserMentionString(user.id)} said ${transcribed}`
+                    context.getProvider().getResponder().send({content: transcribedMessage, message: message})
+                })
         }
     }
 

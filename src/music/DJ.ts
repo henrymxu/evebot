@@ -118,7 +118,8 @@ export default class DJ {
 
     private onTracksQueued(tracks: Track[]) {
         const message = TrackMessageFactory.createQueuedTracksMessage(this.context, tracks)
-        this.context.getProvider().getResponder().send({content: message, id: 'queue', message: tracks[0].metaData.source, options: {code: 'Markdown'}})
+        this.context.getProvider().getResponder()
+            .send({content: message, id: 'queue', message: tracks[0].metaData.source, options: {code: 'Markdown'}})
     }
 
     private onTrackQueued(track: Track) {

@@ -10,20 +10,20 @@ import {GuildUtils} from "../utils/GuildUtils"
 
 namespace TrackMessageGenerator {
     export function createSongTrackNowPlayingEmbed(track: YoutubeTrack): MessageEmbed {
-        return MessageGenerator.getBaseEmbed()
-            .setTitle('Now Playing')
-            .setDescription(`[${track.getYoutubeTrackInfo().title}](${track.getYoutubeTrackInfo().url}) [${GuildUtils.createUserMentionString(track.metaData.requesterId)}]`)
+        const userMentionString = GuildUtils.createUserMentionString(track.metaData.requesterId)
+        const message = `[${track.getYoutubeTrackInfo().title}](${track.getYoutubeTrackInfo().url}) [${userMentionString}]`
+        return MessageGenerator.getBaseEmbed().setTitle('Now Playing').setDescription(message)
             .setThumbnail(track.getYoutubeTrackInfo().thumbnailURL)
     }
 
     export function createLinkTrackCurrentlyPlayingEmbed(track: Track, url: string): MessageEmbed {
-        return MessageGenerator.getBaseEmbed()
-            .setDescription(`[${track.getTitle()}](${url}) [${GuildUtils.createUserMentionString(track.metaData.requesterId)}]`)
+        const message = `[${track.getTitle()}](${url}) [${GuildUtils.createUserMentionString(track.metaData.requesterId)}]`
+        return MessageGenerator.getBaseEmbed().setDescription(message)
     }
 
     export function createLinkTrackNewlyQueuedEmbed(track: Track, url: string): MessageEmbed {
-        return MessageGenerator.getBaseEmbed()
-            .setDescription(`${GuildUtils.createUserMentionString(track.metaData.requesterId)} queued: [${track.getTitle()}](${url})`)
+        const message = `${GuildUtils.createUserMentionString(track.metaData.requesterId)} queued: [${track.getTitle()}](${url})`
+        return MessageGenerator.getBaseEmbed().setDescription(message)
     }
 }
 

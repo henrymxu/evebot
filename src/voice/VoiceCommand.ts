@@ -45,7 +45,8 @@ export default abstract class VoiceCommand extends Command {
             return Status.INVALID
         }
         if (this.botMustBeInSameVoiceChannel() && userVoiceChannel.id != botVoiceChannel.id) {
-            Logger.w(context, VoiceCommand.name, `Bot was not in same voice channel, ${userVoiceChannel.id} != ${botVoiceChannel.id}`)
+            Logger.w(context, VoiceCommand.name,
+                `Bot was not in same voice channel, ${userVoiceChannel.id} != ${botVoiceChannel.id}`)
             return Status.INVALID
         }
         if (isAlreadyInVoiceChannel(context, userVoiceChannel)) {

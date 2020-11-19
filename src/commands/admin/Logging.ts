@@ -42,7 +42,8 @@ export default class LoggingCommand extends Command {
         const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))
         const flag = args.get('flag') || 'e'
         context.getConfig().setLogging(textChannel.id, flag)
-        Logger.i(context, LoggingCommand.name, `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`)
+        Logger.i(context, LoggingCommand.name,
+            `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`)
         context.getProvider().getResponder().acknowledge(0, message)
     }
 }
@@ -50,7 +51,8 @@ export default class LoggingCommand extends Command {
 function createCurrentLoggingTextChannelEmbed(context: GuildContext): MessageEmbed {
     const logging = context.getConfig().getLogging()
     const currentTextChannel = GuildUtils.findTextChannelByID(context, logging.channelID)
-    const message = currentTextChannel ? `${currentTextChannel.name} | ${currentTextChannel.id} | ${logging.flag}` : 'No Logging Text Channel set'
+    const message = currentTextChannel ? `${currentTextChannel.name} | ${currentTextChannel.id} | ${logging.flag}` :
+        'No Logging Text Channel set'
     const embed = MessageGenerator.createBasicEmbed(message)
     embed.setTitle('Current Logging Text Channel')
     return embed

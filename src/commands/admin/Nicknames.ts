@@ -51,7 +51,8 @@ export default class NicknamesCommand extends Command {
             context.getConfig().addNicknames(user.id, args.get('add') || [])
             context.getConfig().removeNicknames(user.id, args.get('remove') || [])
         }
-        const embed = TableGenerator.createBasicListEmbed(user.tag, context.getConfig().getNicknames(user.id), 'Nicknames')
+        const embed = TableGenerator.createBasicListEmbed(user.tag, context.getConfig().getNicknames(user.id),
+            'Nicknames')
         context.getProvider().getResponder().send({content: embed, message: message}, 20)
     }
 }

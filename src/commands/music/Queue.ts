@@ -22,7 +22,8 @@ export default class QueueCommand extends Command {
                 if (!(response instanceof MessageEmbed)) {
                     options = {code: 'Markdown'}
                 }
-                context.getProvider().getResponder().send({content: response, id: 'queue', message: message, options: options}, 30)
+                context.getProvider().getResponder()
+                    .send({content: response, id: 'queue', message: message, options: options}, 30)
                 return
             }
             case 'song': {

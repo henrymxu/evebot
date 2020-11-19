@@ -170,7 +170,8 @@ export default class VoiceConnectionHandler {
         const hotwordEngine = this.context.getVoiceDependencyProvider().getHotwordEngine()
         hotwordEngine.register(user.id, recorderStream, ((trigger) => {
             if (this.isListeningToCommand.has(user.id)) {
-                Logger.w(this.context, 'HotwordDetector', `Already listening for a command from ${user.tag} [${user.id}]`)
+                Logger.w(this.context, 'HotwordDetector',
+                    `Already listening for a command from ${user.tag} [${user.id}]`)
                 return
             }
             this.isListeningToCommand.set(user.id, true)

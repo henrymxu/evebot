@@ -49,7 +49,8 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
     }
 
     recognizeTextFromSpeech(audioStream: Readable): Promise<string> {
-        const pushStream = SpeechSDK.AudioInputStream.createPushStream(SpeechSDK.AudioStreamFormat.getWaveFormatPCM(48000, 16, 2))
+        const pushStream = SpeechSDK.AudioInputStream
+            .createPushStream(SpeechSDK.AudioStreamFormat.getWaveFormatPCM(48000, 16, 2))
         audioStream.on('data', arrayBuffer => {
             pushStream.write(arrayBuffer.buffer)
         }).on('end', () => {
@@ -64,7 +65,8 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
 
         return new Promise((res, rej) => {
             recognizer.recognized = function (s, e) {
-                const result = e.result.reason === SpeechSDK.ResultReason.NoMatch ? 'Unknown Value' : e.result.text.replace('.', '')
+                const result = e.result.reason === SpeechSDK.ResultReason.NoMatch ?
+                    'Unknown Value' : e.result.text.replace('.', '')
                 res(result)
             }
 
