@@ -71,7 +71,7 @@ export default class DJ {
         return this.radio
     }
 
-    getQueueMessage(): Track[]  {
+    getQueue(): Track[]  {
         return this.context.getProvider().getAudioPlayer().getQueue()
     }
 

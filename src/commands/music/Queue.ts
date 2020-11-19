@@ -17,7 +17,7 @@ export default class QueueCommand extends Command {
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         switch(args.get('keyword')) {
             case 'queue': {
-                const response = createQueueMessage(context, context.getProvider().getDJ().getQueueMessage())
+                const response = createQueueMessage(context, context.getProvider().getDJ().getQueue())
                 let options = undefined
                 if (!(response instanceof MessageEmbed)) {
                     options = {code: 'Markdown'}

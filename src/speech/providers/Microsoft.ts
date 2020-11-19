@@ -1,4 +1,4 @@
-import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from "../Interfaces"
+import {SpeechGenerator, SpeechGeneratorResult, SpeechProvider, SpeechRecognizer} from "../Interfaces"
 import {Duplex, Readable} from "stream"
 import {AudioUtils} from "../../utils/AudioUtils"
 const SpeechSDK = require('microsoft-cognitiveservices-speech-sdk')
@@ -24,19 +24,19 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
         return this
     }
 
-    asyncGenerateSpeechFromText(message: string, voice: string = "en-CA-Linda"): Promise<Readable> {
+    asyncGenerateSpeechFromText(message: string, voice: string = "en-CA-Linda"): Promise<SpeechGeneratorResult> {
         const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(Keys.get(configVars[0]),
             Keys.get(configVars[1]))
         speechConfig.speechRecognitionLanguage = "en-US"
         speechConfig.speechSynthesisVoiceName = voice
         let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, null)
-        return new Promise<Readable>((res, rej) => {
+        return new Promise<SpeechGeneratorResult>((res, rej) => {
             synthesizer.speakTextAsync(message, (result) => {
                 const array = new Uint8Array(result.audioData)
                 let duplex = new Duplex()
                 duplex.push(array)
                 duplex.push(null)
-                res(AudioUtils.convertMp3StreamToOpusStream(duplex))
+                res({stream: AudioUtils.convertMp3StreamToOpusStream(duplex), length: result.audioData.byteLength / 48000})
                 synthesizer.close()
                 synthesizer = undefined
             }, (err) => {

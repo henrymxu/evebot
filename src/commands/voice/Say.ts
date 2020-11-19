@@ -31,8 +31,8 @@ export default class SayCommand extends VoiceCommand {
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         context.getVoiceDependencyProvider().getSpeechGenerator().asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
-            .then((stream) => {
-                context.getProvider().getInterruptService().playOpusStream(stream)
+            .then((result) => {
+                context.getProvider().getInterruptService().playOpusStream(result.stream)
                 context.getProvider().getResponder().acknowledge(0, message)
             })
     }

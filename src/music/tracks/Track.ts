@@ -6,7 +6,10 @@ import {GuildUtils} from "../../utils/GuildUtils"
 export abstract class Track {
     id: string
     metaData: TrackMetaData
+    private elapsedTimeInSeconds = 0
+    private secondsInterval: NodeJS.Timeout
     protected state: TrackState = TrackState.QUEUED
+
     protected constructor(id: string) {
         this.id = id
     }
@@ -16,30 +19,58 @@ export abstract class Track {
     }
 
     isLoaded(): boolean {
-        return this.state === TrackState.LOADED || this.state === TrackState.PLAYING
+        return this.state === TrackState.LOADED || this.state === TrackState.PLAYING || this.state === TrackState.PAUSED
     }
 
-    isSkipped(): boolean {
-        return this.state === TrackState.SKIPPED
+    isFinished(): boolean {
+        return this.state === TrackState.FINISHED
     }
 
     isPlaying(): boolean {
         return this.state === TrackState.PLAYING
     }
 
-    setState(state: TrackState) {
-        this.state = state
+    isPaused(): boolean {
+        return this.state === TrackState.PAUSED
+    }
+
+    setPlaying() {
+        this.state = TrackState.PLAYING
+        this.secondsInterval = setInterval(() => {
+            this.elapsedTimeInSeconds++
+        }, 1000)
+    }
+
+    setPaused() {
+        this.state = TrackState.PAUSED
+        clearInterval(this.secondsInterval)
+        this.getStream()?.pause()
+        this.getStream()?.unpipe()
+    }
+
+    setFinished() {
+        this.state = TrackState.FINISHED
+        clearInterval(this.secondsInterval)
+        this.getStream()?.removeAllListeners('finish')
+        this.getStream()?.destroy()
     }
 
     getRequester(context: GuildContext): string {
         return GuildUtils.parseUserFromUserID(context, this.metaData.requesterId).username
     }
 
+    getElapsedTimeInSeconds(): number {
+        return this.elapsedTimeInSeconds
+    }
+
     abstract getTitle(): string
+
     abstract getArtist(): string
+
     abstract getLength(): number
 
     abstract loadStream(context: GuildContext): Promise<Readable>
+
     abstract getStream(): Readable | undefined
 }
 
@@ -48,7 +79,8 @@ export enum TrackState {
     LOADING,
     LOADED,
     PLAYING,
-    SKIPPED
+    FINISHED,
+    PAUSED
 }
 
 export interface TrackItem {

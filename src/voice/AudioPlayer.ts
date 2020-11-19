@@ -78,7 +78,7 @@ export default class AudioPlayer {
         if (!this.getConnection().dispatcher) {
             return false
         }
-        this.getQueue().forEach(track => { track.setState(TrackState.SKIPPED) })
+        this.getQueue().forEach(track => { track.setFinished() })
         this.getConnection().dispatcher.destroy()
         this.initialize()
         return true
@@ -110,8 +110,7 @@ export default class AudioPlayer {
             return
         }
         if (this.state == AudioPlayerState.PLAYING && this.trackQueue.length > 0) {
-            this.trackQueue[0].getStream().pause()
-            this.trackQueue[0].getStream().unpipe()
+            this.trackQueue[0].setPaused()
         } else if (this.state == AudioPlayerState.INTERRUPTING && this.interruptQueue.size() > 1) {
             if (this.interruptQueue[0] === this.currentInterrupt) {
                 return
@@ -154,7 +153,7 @@ export default class AudioPlayer {
             this.play(track)
         } else {
             track.loadStream(this.context).then((stream) => {
-                if (track.isSkipped()) {
+                if (track.isFinished()) {
                     Logger.w(this.context, AudioPlayer.name,
                         `${track.getTitle()} was skipped before stream finished loading`)
                     stream.destroy()
@@ -174,7 +173,7 @@ export default class AudioPlayer {
             volume: this.getScaledVolume()
         }).on('start', () => {
             this.state = AudioPlayerState.PLAYING
-            track.setState(TrackState.PLAYING)
+            track.setPlaying()
         }).on('finish', () => {
             this.playNext()
         })
@@ -183,20 +182,15 @@ export default class AudioPlayer {
     private playNext(): boolean {
         const current = this.trackQueue.shift()
         this.endTrack(current)
-        const trackItem = this.trackQueue[0]
-        if (!trackItem) {
-            return false
-        }
+        const nextTrackItem = this.trackQueue[0]
         this.prepareToPlay(false)
-        return true
+        return nextTrackItem !== undefined
     }
 
     private endTrack(track: Track) {
         if (track) {
             this.getConnection()?.dispatcher?.destroy()
-            track.setState(TrackState.SKIPPED)
-            track.getStream()?.removeAllListeners('finish')
-            track.getStream()?.destroy()
+            track.setFinished()
             this.context.getProvider().getDJ().onTrackCompleted(track)
             this.state = AudioPlayerState.IDLE
         }

@@ -50,13 +50,21 @@ export namespace TrackMessageFactory {
         const tableHeaders = ['Track Name', 'Artist', 'Requester', 'Length']
         const tableData = []
         let totalLength = 0
+        let currentTrackProgress = ""
         tracks.forEach((track) => {
-            const title = track.isPlaying() ? `< ${track.getTitle()} > `: track.getTitle()
-            const length = Utils.convertSecondsToTimeString(track.getLength())
+            let title = Utils.truncate(track.getTitle(), 25)
+            title = track.isPlaying() || track.isPaused() ? `< ${title} > `: title
+            let length = Utils.convertSecondsToTimeString(track.getLength())
             tableData.push([title, track.getArtist(), track.getRequester(context), length])
             totalLength += track.getLength()
+            if (track.isPlaying() || track.isPaused()) {
+                currentTrackProgress = createProgressBar(track)
+            }
         })
         let response = TableGenerator.createTable(tableHeaders, tableData)
+        if (currentTrackProgress) {
+            response += `\nCurrent Song: ${currentTrackProgress}`
+        }
         response += `\n# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}`
         return response
     }
@@ -68,5 +76,17 @@ export namespace TrackMessageFactory {
         embed.setURL(album.metadata.externalURL)
         embed.setImage(album.metadata.imageURL)
         return embed
+    }
+
+    function createProgressBar(track: Track): string {
+        const barLength = 25
+        const filledLength = Math.floor(barLength * (track.getElapsedTimeInSeconds() / track.getLength()))
+        const numberOfBrackets = filledLength > 2 ? 1 : 0 // Open and close brackets
+        const numberOfFilled = filledLength > 2 ? filledLength - 2 : filledLength
+        const bar = '<'.repeat(numberOfBrackets) + '='.repeat(numberOfFilled) +
+                '>'.repeat(numberOfBrackets) + '-'.repeat(barLength - (numberOfFilled + 2 * numberOfBrackets))
+        const elapsedTimeString = Utils.convertSecondsToTimeString(track.getElapsedTimeInSeconds())
+        const totalTimeString = Utils.convertSecondsToTimeString(track.getLength())
+        return `[${bar}] < ${elapsedTimeString} > / ${totalTimeString}`
     }
 }
