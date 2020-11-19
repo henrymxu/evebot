@@ -1,7 +1,7 @@
 {
   "name": "evebot",
   "version": "1.0.0",
-  "description": "",
+  "description": "E.V.E is a voice enabled all in one discord bot.",
   "scripts": {
     "preinstall": "npx npm-force-resolutions"
   },
