@@ -3,6 +3,11 @@ import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
 import {Communicator} from "./Communicator"
 import {MessageGenerator} from "./MessageGenerator"
 
+const EMOJIS = {
+    0: '👌',
+    1: '👎',
+};
+
 export default class Responder {
     private context: GuildContext
     private messageCache: Map<string, Message[]> = new Map()
@@ -20,13 +25,7 @@ export default class Responder {
         if (!message) {
             return
         }
-        let emoji: string
-        if (mode == 0) {
-            emoji = '👌'
-        } else {
-            emoji = '👎'
-        }
-        Communicator.acknowledge(emoji, message)
+        Communicator.acknowledge(EMOJIS[mode], message)
     }
 
     send(message: BotMessage, removeAfter?: number): Promise<Message[]> {
