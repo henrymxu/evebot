@@ -1,6 +1,6 @@
-import NodeCache from 'node-cache'
-import { User } from 'discord.js'
-import { Command } from '../commands/Command'
+import NodeCache from "node-cache"
+import {User} from "discord.js"
+import {Command} from "../commands/Command"
 
 export default class Throttler {
     private cache: NodeCache = new NodeCache()

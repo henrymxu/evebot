@@ -1,10 +1,10 @@
-import VoiceConnectionHandler from '../voice/ConnectionHandler'
-import { GuildContext } from './Context'
-import AudioPlayer from '../voice/AudioPlayer'
-import DJ from '../music/DJ'
-import InterruptService from '../music/InterruptService'
-import Responder from '../communication/Responder'
-import Throttler from './Throttler'
+import VoiceConnectionHandler from "../voice/ConnectionHandler"
+import {GuildContext} from "./Context"
+import AudioPlayer from "../voice/AudioPlayer"
+import DJ from "../music/DJ"
+import InterruptService from "../music/InterruptService"
+import Responder from "../communication/Responder"
+import Throttler from "./Throttler"
 
 export default class GuildProvider {
     private readonly voiceConnectionHandler: VoiceConnectionHandler

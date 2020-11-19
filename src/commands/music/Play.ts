@@ -1,8 +1,8 @@
-import VoiceCommand from '../../voice/VoiceCommand'
-import { Message, User } from 'discord.js'
-import { GuildContext } from '../../guild/Context'
-import { ArgumentType, CommandOptions } from '../Command'
-import { QueryMode } from '../../music/DJ'
+import VoiceCommand from "../../voice/VoiceCommand"
+import {Message, User} from "discord.js"
+import {GuildContext} from "../../guild/Context"
+import {ArgumentType, CommandOptions} from "../Command"
+import {QueryMode} from "../../music/DJ"
 
 export default class PlayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -15,37 +15,29 @@ export default class PlayCommand extends VoiceCommand {
                 key: 'query',
                 description: 'Name or url of song',
                 required: true,
-                type: ArgumentType.STRING,
-            },
+                type: ArgumentType.STRING
+            }
         ],
-        examples: ['play Blank Space'],
+        examples: ['play Blank Space']
     }
 
-    execute(
-        context: GuildContext,
-        source: User,
-        args: Map<string, any>,
-        message?: Message
-    ) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         let mode: QueryMode = QueryMode.Play
         if (args.get('keyword') === 'album') {
             mode = QueryMode.Album
         }
-        context
-            .getProvider()
-            .getDJ()
-            .request(mode, args.get('query'), source.id, message)
+        context.getProvider().getDJ().request(mode, args.get('query'), source.id, message)
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {
-        return false
+        return false;
     }
 
     botMustBeInSameVoiceChannel(): boolean {
-        return false
+        return false;
     }
 
     userMustBeInVoiceChannel(): boolean {
-        return true
+        return true;
     }
 }

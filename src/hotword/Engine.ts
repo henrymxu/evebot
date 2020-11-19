@@ -1,4 +1,4 @@
-import { Transform } from 'stream'
+import {Transform} from "stream"
 
 export abstract class HotwordEngine {
     protected detectors: Map<string, any> = new Map()
@@ -14,22 +14,14 @@ export abstract class HotwordEngine {
         this.detectors.clear()
     }
 
-    register(
-        userID: string,
-        input: Transform,
-        callback: (trigger: string) => void
-    ) {
+    register(userID: string, input: Transform, callback: (trigger: string) => void) {
         if (this.detectors.has(userID)) {
             return
         }
         this.detectors.set(userID, this.createDetector(userID, input, callback))
     }
 
-    protected abstract createDetector(
-        userID: string,
-        input: Transform,
-        callback: (trigger: string) => void
-    ): any
+    protected abstract createDetector(userID: string, input: Transform, callback: (trigger: string) => void): any
     protected abstract deleteDetector(userID)
     abstract getStatus(): string
     abstract getHotwords(): string[]

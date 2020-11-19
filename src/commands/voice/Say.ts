@@ -1,7 +1,7 @@
-import { Message, User } from 'discord.js'
-import { GuildContext } from '../../guild/Context'
-import VoiceCommand from '../../voice/VoiceCommand'
-import { ArgumentType, CommandOptions } from '../Command'
+import {Message, User} from "discord.js"
+import {GuildContext} from "../../guild/Context"
+import VoiceCommand from "../../voice/VoiceCommand"
+import {ArgumentType, CommandOptions} from "../Command"
 
 export default class SayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -19,45 +19,33 @@ export default class SayCommand extends VoiceCommand {
             {
                 key: 'voice',
                 flag: 'v',
-                description:
-                    'Voice the bot should use. Microsoft: ' +
+                description: 'Voice the bot should use. Microsoft: ' +
                     '(https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support#standard-voices)',
                 required: false,
-                type: ArgumentType.STRING,
-            },
+                type: ArgumentType.STRING
+            }
         ],
-        throttleRate: { count: 3, seconds: 60 },
-        examples: ['say hello my name is eve -v en-IN-Heera-Apollo'],
+        throttleRate: {count: 3, seconds: 60},
+        examples: ['say hello my name is eve -v en-IN-Heera-Apollo']
     }
 
-    execute(
-        context: GuildContext,
-        source: User,
-        args: Map<string, any>,
-        message?: Message
-    ) {
-        context
-            .getVoiceDependencyProvider()
-            .getSpeechGenerator()
-            .asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        context.getVoiceDependencyProvider().getSpeechGenerator().asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
             .then((result) => {
-                context
-                    .getProvider()
-                    .getInterruptService()
-                    .playOpusStream(result.stream)
+                context.getProvider().getInterruptService().playOpusStream(result.stream)
                 context.getProvider().getResponder().acknowledge(0, message)
             })
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {
-        return false
+        return false;
     }
 
     botMustBeInSameVoiceChannel(): boolean {
-        return false
+        return false;
     }
 
     userMustBeInVoiceChannel(): boolean {
-        return true
+        return true;
     }
 }

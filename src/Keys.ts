@@ -1,4 +1,4 @@
-import { FileUtils } from './utils/FileUtils'
+import {FileUtils} from "./utils/FileUtils";
 
 /**
  * Class to retrieve keys from environment variables or json file
@@ -13,7 +13,7 @@ export namespace Keys {
 function loadKeysFromJson(): Map<string, string> {
     const keys: Map<string, string> = new Map()
     const json = FileUtils.openJsonFile('./keys.json')
-    Object.keys(json).forEach((key) => {
+    Object.keys(json).forEach(key => {
         keys.set(key, json[key])
     })
     return keys

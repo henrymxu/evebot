@@ -1,5 +1,5 @@
 build:
-    docker:
-        worker: Dockerfile
+  docker:
+    worker: Dockerfile
 run:
-    worker: node dist/main.js
+  worker: node dist/main.js

@@ -1,20 +1,14 @@
-import { HotwordModels, Models, SnowboyDetect } from 'snowboy'
+import {HotwordModels, Models, SnowboyDetect} from "snowboy"
 
-import { AudioUtils } from '../../utils/AudioUtils'
-import { Transform } from 'stream'
-import { HotwordEngine } from '../Engine'
+import {AudioUtils} from "../../utils/AudioUtils"
+import {Transform} from "stream"
+import {HotwordEngine} from "../Engine"
 
 export default class Snowboy extends HotwordEngine {
-    protected createDetector(
-        userID: string,
-        input: Transform,
-        callback: (trigger: string) => void
-    ): any {
+    protected createDetector(userID: string, input: Transform, callback: (trigger: string) => void): any {
         const detector = createRecognizer(callback)
-        input
-            .pipe(AudioUtils.createStereoToMonoTransformStream())
-            .pipe(AudioUtils.createDownSampleTransformStream())
-            .pipe(detector)
+        input.pipe(AudioUtils.createStereoToMonoTransformStream())
+            .pipe(AudioUtils.createDownSampleTransformStream()).pipe(detector)
     }
 
     protected deleteDetector(userID) {
@@ -32,10 +26,10 @@ export default class Snowboy extends HotwordEngine {
 
 function createRecognizer(callback: (hotword: string) => void): SnowboyDetect {
     let detector = new SnowboyDetect({
-        resource: 'resources/common.res',
+        resource: "resources/common.res",
         models: constructModels(),
         audioGain: 1.0,
-        applyFrontend: true,
+        applyFrontend: true
     })
     // detector.on('silence', () => {});
     // detector.on('sound', buffer => {});

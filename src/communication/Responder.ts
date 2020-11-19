@@ -1,12 +1,12 @@
-import { GuildContext } from '../guild/Context'
-import { Message, MessageEmbed, MessageOptions, TextChannel } from 'discord.js'
-import { Communicator } from './Communicator'
-import { MessageGenerator } from './MessageGenerator'
+import {GuildContext} from "../guild/Context"
+import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
+import {Communicator} from "./Communicator"
+import {MessageGenerator} from "./MessageGenerator"
 
 const DEFAULT_EMOJIS = {
     0: '👌',
     1: '👎',
-}
+};
 
 export default class Responder {
     private context: GuildContext
@@ -17,10 +17,8 @@ export default class Responder {
     }
 
     error(error: string | Error, message?: Message) {
-        const embed = MessageGenerator.createErrorEmbed(
-            error instanceof Error ? error.message : error
-        )
-        this.send({ content: embed, message: message }, 30)
+        const embed = MessageGenerator.createErrorEmbed(error instanceof Error ? error.message : error)
+        this.send({content: embed, message: message}, 30)
     }
 
     acknowledge(mode: number, message: Message) {
@@ -38,63 +36,55 @@ export default class Responder {
             message.options = {}
         }
         message.options.split = true
-        const textChannel: TextChannel = message.message
-            ? (message.message.channel as TextChannel)
-            : this.context.getTextChannel()
+        const textChannel: TextChannel = message.message ?
+            (message.message.channel as TextChannel) : this.context.getTextChannel()
         return new Promise((res, rej) => {
-            Communicator.send(message.content, message.options, textChannel)
-                .then((result) => {
-                    const results: Message[] =
-                        result instanceof Message ? [result] : result
-                    if (message.id) {
-                        this.messageCache.set(message.id, results)
+            Communicator.send(message.content, message.options, textChannel).then((result) => {
+                const results: Message[] = result instanceof Message ? [result] : result
+                if (message.id) {
+                    this.messageCache.set(message.id, results)
+                }
+                results.forEach((messageResult) => {
+                    if (this.typingStatus.has(message.id)) {
+                        this.stopTyping(message.message)
+                        this.typingStatus.delete(message.id)
                     }
-                    results.forEach((messageResult) => {
-                        if (this.typingStatus.has(message.id)) {
-                            this.stopTyping(message.message)
-                            this.typingStatus.delete(message.id)
-                        }
-                        if (removeAfter > 0) {
-                            this.delete(messageResult, removeAfter)
-                        }
-                    })
-                    res(results)
+                    if (removeAfter > 0) {
+                        this.delete(messageResult, removeAfter)
+                    }
                 })
-                .catch((err) => {
-                    rej(err)
-                })
+                res(results)
+            }).catch(err => {
+                rej(err)
+            })
         })
     }
 
     delete(source: Message | string, delay?: number) {
-        const messages = !(source instanceof Message)
-            ? this.messageCache.get(source)
-            : [source]
+        const messages = !(source instanceof Message) ? this.messageCache.get(source) : [source]
         if (messages) {
             messages.forEach((message) => {
-                message
-                    .delete({
-                        timeout: delay * 1000,
-                    })
-                    .catch((err) => {})
+                message.delete({
+                    timeout: delay * 1000
+                }).catch(err => {
+
+                })
             })
         }
     }
 
-    reply() {}
+    reply() {
+
+    }
 
     startTyping(source?: Message, id?: string) {
-        const textChannel: TextChannel = source
-            ? (source.channel as TextChannel)
-            : this.context.getTextChannel()
+        const textChannel: TextChannel = source ? source.channel as TextChannel : this.context.getTextChannel()
         Communicator.startTyping(textChannel)
         this.typingStatus.add(id)
     }
 
     stopTyping(source?: Message) {
-        const textChannel: TextChannel = source
-            ? (source.channel as TextChannel)
-            : this.context.getTextChannel()
+        const textChannel: TextChannel = source ? source.channel as TextChannel : this.context.getTextChannel()
         Communicator.stopTyping(textChannel)
     }
 }

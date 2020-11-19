@@ -1,7 +1,7 @@
-import { Readable } from 'stream'
-import { Message } from 'discord.js'
-import { GuildContext } from '../../guild/Context'
-import { GuildUtils } from '../../utils/GuildUtils'
+import {Readable} from "stream"
+import {Message} from "discord.js"
+import {GuildContext} from "../../guild/Context"
+import {GuildUtils} from "../../utils/GuildUtils"
 
 export abstract class Track {
     id: string
@@ -19,11 +19,7 @@ export abstract class Track {
     }
 
     isLoaded(): boolean {
-        return (
-            this.state === TrackState.LOADED ||
-            this.state === TrackState.PLAYING ||
-            this.state === TrackState.PAUSED
-        )
+        return this.state === TrackState.LOADED || this.state === TrackState.PLAYING || this.state === TrackState.PAUSED
     }
 
     isFinished(): boolean {
@@ -60,10 +56,7 @@ export abstract class Track {
     }
 
     getRequester(context: GuildContext): string {
-        return GuildUtils.parseUserFromUserID(
-            context,
-            this.metaData.requesterId
-        ).username
+        return GuildUtils.parseUserFromUserID(context, this.metaData.requesterId).username
     }
 
     getElapsedTimeInSeconds(): number {
@@ -87,7 +80,7 @@ export enum TrackState {
     LOADED,
     PLAYING,
     FINISHED,
-    PAUSED,
+    PAUSED
 }
 
 export interface TrackItem {
