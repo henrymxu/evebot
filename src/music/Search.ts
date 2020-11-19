@@ -66,6 +66,8 @@ export namespace Search {
                 } else {
                     return new ExternalTrack(id, youtubeInfo, extraInfo)
                 }
+            } else {
+                Logger.w(null, TAG, `${basicInfo.videoDetails.title} does not have supported formats, trying next track`)
             }
         }
         return Promise.reject('Could not find a playable video (region locked)')

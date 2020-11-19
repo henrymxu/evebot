@@ -46,6 +46,14 @@ export class Config {
         return Config.setKeyValue(this, 'defaultTextChannel', textChannelID)
     }
 
+    getLoggingTextChannel(): string {
+        return this.json.loggingTextChannel
+    }
+
+    setLoggingTextChannel(textChannelID: string) {
+        return Config.setKeyValue(this, 'loggingTextChannel', textChannelID)
+    }
+
     getUserIDForNickname(nickname: string): string {
         return this.json.nicknames[nickname]
     }

@@ -6,8 +6,12 @@ export namespace MessageGenerator {
             .setColor([46, 115, 189])
     }
 
-    export function createBasicEmbed(message: string): MessageEmbed {
-        return getBaseEmbed().setDescription(`${message}`)
+    export function createBasicEmbed(message: string, title: string = ''): MessageEmbed {
+        const embed = getBaseEmbed().setDescription(`${message}`)
+        if (title) {
+            embed.setTitle(title)
+        }
+        return embed
     }
 
     export function createBlockEmbed(message: string): MessageEmbed {

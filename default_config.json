@@ -1,6 +1,7 @@
 {
   "prefix": "?",
   "defaultTextChannel": "",
+  "loggingTextChannel": "",
   "nicknames": {
 
   },
