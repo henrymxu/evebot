@@ -1,6 +1,6 @@
-import {Role, User} from "discord.js"
-import {Storage} from "../storage/Storage"
-import {CommandRegistry} from "../commands/Registry"
+import { Role, User } from 'discord.js'
+import { Storage } from '../storage/Storage'
+import { CommandRegistry } from '../commands/Registry'
 
 export class Config {
     private readonly guildID: string
@@ -52,8 +52,8 @@ export class Config {
 
     setLogging(channelID: string, level: string) {
         return Config.setKeyValue(this, 'logging', {
-            "channelID": channelID,
-            "flags": level
+            channelID: channelID,
+            flags: level,
         })
     }
 
@@ -70,9 +70,15 @@ export class Config {
     }
 
     addNicknames(userID: string, nicknames: string[]): Error {
-        return Config.addUniqueKeyToMap(this, 'nicknames', nicknames, userID, (config, key) => {
-            return config.json['nicknames'][key]
-        })
+        return Config.addUniqueKeyToMap(
+            this,
+            'nicknames',
+            nicknames,
+            userID,
+            (config, key) => {
+                return config.json['nicknames'][key]
+            }
+        )
     }
 
     getCommandNameFromAlias(alias: string): string {
@@ -88,7 +94,13 @@ export class Config {
     }
 
     addAliases(command: string, aliases: string[]): Error {
-        return Config.addUniqueKeyToMap(this, 'aliases', aliases, command, Config.isAlreadyProtectedKeyword)
+        return Config.addUniqueKeyToMap(
+            this,
+            'aliases',
+            aliases,
+            command,
+            Config.isAlreadyProtectedKeyword
+        )
     }
 
     getMacro(macroKey: string): Macro {
@@ -114,7 +126,7 @@ export class Config {
 
     getPrivileges(): Privilege[] {
         const privileges: Privilege[] = []
-        Object.keys(this.json.privileges).forEach(key => {
+        Object.keys(this.json.privileges).forEach((key) => {
             privileges.push(this.getPrivilege(key))
         })
         return privileges
@@ -126,13 +138,15 @@ export class Config {
 
     getPrivilege(key: string): Privilege {
         let privilege = this.json.privileges[key]
-        return privilege ? {
-            command: key,
-            grantedRoles: new Set(privilege.grantedRoles || []),
-            grantedUsers: new Set(privilege.grantedUsers || []),
-            deniedRoles: new Set(privilege.deniedRoles || []),
-            deniedUsers: new Set(privilege.deniedUsers || [])
-        } : null
+        return privilege
+            ? {
+                  command: key,
+                  grantedRoles: new Set(privilege.grantedRoles || []),
+                  grantedUsers: new Set(privilege.grantedUsers || []),
+                  deniedRoles: new Set(privilege.deniedRoles || []),
+                  deniedUsers: new Set(privilege.deniedUsers || []),
+              }
+            : null
     }
 
     deletePrivilege(name: string) {
@@ -141,37 +155,63 @@ export class Config {
     }
 
     grantEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
-        entities.forEach(entity => {
+        entities.forEach((entity) => {
             Config.modifyEntityPrivilege(this, privilegeName, entity, true)
         })
     }
 
     denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
         console.log(`deny ${entities}`)
-        entities.forEach(entity => {
+        entities.forEach((entity) => {
             Config.modifyEntityPrivilege(this, privilegeName, entity, false)
         })
     }
 
-    removeEntitiesFromPrivilege(privilegeName: string, entities: (User | Role)[]) {
+    removeEntitiesFromPrivilege(
+        privilegeName: string,
+        entities: (User | Role)[]
+    ) {
         console.log(`remove ${entities}`)
         let privilege = this.json.privileges[privilegeName]
         if (privilege) {
-            const ids = entities.map(entity => entity.id)
-            privilege.grantedRoles = removeArrayFromArray(privilege.grantedRoles, ids)
-            privilege.deniedRoles = removeArrayFromArray(privilege.deniedRoles, ids)
-            privilege.grantedUsers = removeArrayFromArray(privilege.grantedUsers, ids)
-            privilege.deniedUsers = removeArrayFromArray(privilege.deniedUsers, ids)
+            const ids = entities.map((entity) => entity.id)
+            privilege.grantedRoles = removeArrayFromArray(
+                privilege.grantedRoles,
+                ids
+            )
+            privilege.deniedRoles = removeArrayFromArray(
+                privilege.deniedRoles,
+                ids
+            )
+            privilege.grantedUsers = removeArrayFromArray(
+                privilege.grantedUsers,
+                ids
+            )
+            privilege.deniedUsers = removeArrayFromArray(
+                privilege.deniedUsers,
+                ids
+            )
         }
     }
 
-    private static modifyEntityPrivilege(config: Config, privilegeName: string, entity: User | Role, isGranting: boolean) {
-        let privilege = config.json.privileges[privilegeName] || createPrivilege()
+    private static modifyEntityPrivilege(
+        config: Config,
+        privilegeName: string,
+        entity: User | Role,
+        isGranting: boolean
+    ) {
+        let privilege =
+            config.json.privileges[privilegeName] || createPrivilege()
         let baseKey = entity instanceof User ? 'Users' : 'Roles'
         let addingToKey = `${isGranting ? 'granted' : 'denied'}${baseKey}`
         let removingFromKey = `${isGranting ? 'denied' : 'granted'}${baseKey}`
-        privilege[removingFromKey] = removeArrayFromArray(privilege[removingFromKey], [entity.id])
-        privilege[addingToKey] = addArrayToArray(privilege[addingToKey], [entity.id])
+        privilege[removingFromKey] = removeArrayFromArray(
+            privilege[removingFromKey],
+            [entity.id]
+        )
+        privilege[addingToKey] = addArrayToArray(privilege[addingToKey], [
+            entity.id,
+        ])
         config.json.privileges[privilegeName] = privilege
         config.save()
     }
@@ -181,10 +221,15 @@ export class Config {
         config.save()
     }
 
-    private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string,
-                                     validate?: (Config, string) => boolean): Error {
+    private static addUniqueKeyToMap(
+        config: Config,
+        entry: string,
+        keys: string[],
+        value: string,
+        validate?: (Config, string) => boolean
+    ): Error {
         const alreadyHad = []
-        keys.forEach(key => {
+        keys.forEach((key) => {
             if (validate(Config, key)) {
                 alreadyHad.push(`${key} => ${config.json[entry][key]}`)
             }
@@ -194,21 +239,37 @@ export class Config {
         return alreadyHad.length > 0 ? new Error(alreadyHad.join('\n')) : null
     }
 
-    private static removeKeysFromMap(config: Config, entry: string, keys: string[]) {
-        keys.forEach(key => {
+    private static removeKeysFromMap(
+        config: Config,
+        entry: string,
+        keys: string[]
+    ) {
+        keys.forEach((key) => {
             config[entry]?.delete(key)
         })
         config.save()
     }
 
-    private static getValuesOfUniqueKeyAsSet(config: Config, entry: string, value: string): Set<string> {
-        let values: string[] = Object.values(config.json[entry]).filter(val => val === value) as string[]
+    private static getValuesOfUniqueKeyAsSet(
+        config: Config,
+        entry: string,
+        value: string
+    ): Set<string> {
+        let values: string[] = Object.values(config.json[entry]).filter(
+            (val) => val === value
+        ) as string[]
         return new Set(values || [])
     }
 
-    private static isAlreadyProtectedKeyword(config: Config, keyword: string): boolean {
-        return !!(config.getMacro(keyword) || config.getCommandNameFromAlias(keyword) || CommandRegistry.getCommands().has(keyword))
-
+    private static isAlreadyProtectedKeyword(
+        config: Config,
+        keyword: string
+    ): boolean {
+        return !!(
+            config.getMacro(keyword) ||
+            config.getCommandNameFromAlias(keyword) ||
+            CommandRegistry.getCommands().has(keyword)
+        )
     }
 }
 
@@ -217,19 +278,21 @@ function createPrivilege(): object {
         grantedRoles: [],
         grantedUsers: [],
         deniedRoles: [],
-        deniedUsers: []
+        deniedUsers: [],
     }
 }
 
 function addArrayToArray(current: string[], adds: string[]): string[] {
-    adds.forEach(add => {
-        if (current.indexOf(add) === -1) { current.push(add) }
+    adds.forEach((add) => {
+        if (current.indexOf(add) === -1) {
+            current.push(add)
+        }
     })
     return current
 }
 
-function removeArrayFromArray(current: string[] ,removes: string[]): string[] {
-    return current.filter(n => removes.indexOf(n) === -1)
+function removeArrayFromArray(current: string[], removes: string[]): string[] {
+    return current.filter((n) => removes.indexOf(n) === -1)
 }
 
 export type Nicknames = Set<string>

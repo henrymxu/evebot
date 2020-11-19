@@ -1,5 +1,5 @@
-import {GuildContext} from "./guild/Context"
-import {Client} from "discord.js"
+import { GuildContext } from './guild/Context'
+import { Client } from 'discord.js'
 
 const guildContexts: Map<string, GuildContext> = new Map()
 const client = new Client()

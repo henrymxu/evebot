@@ -1,11 +1,19 @@
-import {GuildContext} from "../guild/Context"
-import {Message, User} from "discord.js"
-import {Logger} from "../Logger"
+import { GuildContext } from '../guild/Context'
+import { Message, User } from 'discord.js'
+import { Logger } from '../Logger'
 
 export abstract class Command {
     abstract readonly options: CommandOptions
-    protected abstract execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message)
-    protected preExecute(context: GuildContext, message?: Message): Promise<any> {
+    protected abstract execute(
+        context: GuildContext,
+        source: User,
+        args: Map<string, any>,
+        message?: Message
+    )
+    protected preExecute(
+        context: GuildContext,
+        message?: Message
+    ): Promise<any> {
         // Implemented by child classes
         return Promise.resolve()
     }
@@ -13,15 +21,33 @@ export abstract class Command {
         context.getProvider().getResponder().acknowledge(1, message)
     }
 
-    public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        this.preExecute(context, message).then(() => {
-            Logger.d(context, Command.name,
-                `Executing command ${args.get('keyword')} with args ${JSON.stringify(Array.from(args.entries()))}`)
-            this.execute(context, source, args, message)
-        }).catch(err => {
-            Logger.w(context, Command.name, `Execution failed for command ${args.get('keyword')}, reason ${err}`)
-            this.onPreExecuteFailed(context, message)
-        })
+    public run(
+        context: GuildContext,
+        source: User,
+        args: Map<string, any>,
+        message?: Message
+    ) {
+        this.preExecute(context, message)
+            .then(() => {
+                Logger.d(
+                    context,
+                    Command.name,
+                    `Executing command ${args.get(
+                        'keyword'
+                    )} with args ${JSON.stringify(Array.from(args.entries()))}`
+                )
+                this.execute(context, source, args, message)
+            })
+            .catch((err) => {
+                Logger.w(
+                    context,
+                    Command.name,
+                    `Execution failed for command ${args.get(
+                        'keyword'
+                    )}, reason ${err}`
+                )
+                this.onPreExecuteFailed(context, message)
+            })
     }
 }
 
@@ -32,7 +58,7 @@ export interface CommandOptions {
     descriptions: string[]
     arguments: CommandArgument[]
     permissions?: string[]
-    throttleRate?: { count: number, seconds: number}
+    throttleRate?: { count: number; seconds: number }
     file?: FileType
     examples?: string[]
 }
@@ -53,9 +79,9 @@ export enum ArgumentType {
     INTEGER,
     NUMBER,
     USER,
-    FLAG
+    FLAG,
 }
 
 export enum FileType {
-    AUDIO
+    AUDIO,
 }

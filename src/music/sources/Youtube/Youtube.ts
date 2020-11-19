@@ -1,14 +1,14 @@
-import {SearchResult, TrackSource} from "../../Search"
-import {Keys} from "../../../Keys"
+import { SearchResult, TrackSource } from '../../Search'
+import { Keys } from '../../../Keys'
 
-import YoutubeAPI from "youtube-search"
+import YoutubeAPI from 'youtube-search'
 
 export default class Youtube implements TrackSource {
     private options: YoutubeAPI.YouTubeSearchOptions
     constructor() {
         this.options = {
             maxResults: 3,
-            key: Keys.get('youtube_api_token')
+            key: Keys.get('youtube_api_token'),
         }
     }
 
@@ -23,15 +23,15 @@ export default class Youtube implements TrackSource {
                     return
                 }
                 const searchResult: SearchResult = {
-                    infos: results.map(result => {
+                    infos: results.map((result) => {
                         return {
                             url: result.link,
                         }
                     }),
                     metadata: {
-                        mode: "single",
-                        query: query
-                    }
+                        mode: 'single',
+                        query: query,
+                    },
                 }
                 res(searchResult)
             })
@@ -39,7 +39,6 @@ export default class Youtube implements TrackSource {
     }
 
     getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
-        return undefined;
+        return undefined
     }
-
 }
