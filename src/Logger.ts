@@ -43,6 +43,7 @@ export namespace Logger {
     }
 }
 
+// TODO: Probably a way to clean this up using bitfields
 function appropriateLevel(level: string, flag: string): boolean {
     if (flag == 'e') {
         return true

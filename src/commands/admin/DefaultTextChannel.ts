@@ -24,6 +24,7 @@ export default class DefaultTextChannelCommand extends Command {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        // TODO: Implement way to remove channel
         if (!args.get('channel')) {
             context.getProvider().getResponder().send(
                 {content: createCurrentDefaultTextChannelEmbed(context), message: message}, 20)

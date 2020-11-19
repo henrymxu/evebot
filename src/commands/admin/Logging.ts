@@ -34,6 +34,7 @@ export default class LoggingCommand extends Command {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        // TODO: Implement way to modify / remove flags / channel
         if (!args.get('channel')) {
             context.getProvider().getResponder().send(
                 {content: createCurrentLoggingTextChannelEmbed(context), message: message}, 20)
