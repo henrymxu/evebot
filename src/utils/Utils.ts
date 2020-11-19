@@ -15,6 +15,10 @@ export namespace Utils {
         return input === input.toLowerCase()
     }
 
+    export function truncate(input: string, maxLength: number): string {
+        return (input.length > maxLength) ? input.substr(0, maxLength - 1) + ' ...' : input;
+    }
+
     export function roughSizeOfObject( object: any): number {
         const objectList = []
         const stack = [object]

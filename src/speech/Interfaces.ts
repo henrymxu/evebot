@@ -1,7 +1,12 @@
 import {Readable} from "stream";
 
 export interface SpeechGenerator {
-    asyncGenerateSpeechFromText(message: string, voice?: string): Promise<Readable>
+    asyncGenerateSpeechFromText(message: string, voice?: string): Promise<SpeechGeneratorResult>
+}
+
+export interface SpeechGeneratorResult {
+    stream: Readable
+    length: number
 }
 
 export interface SpeechRecognizer {
