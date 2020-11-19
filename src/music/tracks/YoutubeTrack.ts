@@ -4,6 +4,7 @@ import ytdl from "discord-ytdl-core"
 import {GuildContext} from "../../guild/Context"
 import {StreamUtils} from "../../utils/StreamUtils"
 import {Logger} from "../../Logger"
+import {SpeechGeneratorResult} from "../../speech/Interfaces"
 
 export default class YoutubeTrack extends Track {
     private stream: Readable
@@ -46,10 +47,10 @@ export default class YoutubeTrack extends Track {
             .getSpeechGenerator().asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
         const songStream = ytdl(this.youtubeInfo.url, {filter: 'audioonly', opusEncoded: true})
         return new Promise<Readable>((res, rej) => {
-            Promise.all([announceResult, songStream]).then((streams: any[]) => {
-                this.stream = StreamUtils.mergeAsync(streams[0].stream, streams[1])
+            Promise.all([announceResult, songStream]).then((streams: (Readable | SpeechGeneratorResult)[]) => {
+                this.stream = StreamUtils.mergeAsync((streams[0] as SpeechGeneratorResult).stream, streams[1] as Readable)
                 this.state = TrackState.LOADED
-                this.announcementLength = streams[0].length
+                this.announcementLength = (streams[0] as SpeechGeneratorResult).length
                 res(this.stream)
             }).catch(err => {
                 Logger.e(context, YoutubeTrack.name, err)

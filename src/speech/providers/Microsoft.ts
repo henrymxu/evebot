@@ -33,10 +33,12 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
         return new Promise<SpeechGeneratorResult>((res, rej) => {
             synthesizer.speakTextAsync(message, (result) => {
                 const array = new Uint8Array(result.audioData)
+                const sampleRate = 48000
+                const streamLengthInSeconds = result.audioData.byteLength / sampleRate
                 let duplex = new Duplex()
                 duplex.push(array)
                 duplex.push(null)
-                res({stream: AudioUtils.convertMp3StreamToOpusStream(duplex), length: result.audioData.byteLength / 48000})
+                res({stream: AudioUtils.convertMp3StreamToOpusStream(duplex), length: streamLengthInSeconds})
                 synthesizer.close()
                 synthesizer = undefined
             }, (err) => {
