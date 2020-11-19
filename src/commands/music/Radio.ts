@@ -1,9 +1,9 @@
-import VoiceCommand from "../../voice/VoiceCommand"
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, CommandOptions} from "../Command"
-import {TableGenerator} from "../../communication/TableGenerator"
-import {RadioConfiguration, RadioContext} from "../../music/radio/Radio"
+import VoiceCommand from '../../voice/VoiceCommand'
+import { Message, User } from 'discord.js'
+import { GuildContext } from '../../guild/Context'
+import { ArgumentType, CommandOptions } from '../Command'
+import { TableGenerator } from '../../communication/TableGenerator'
+import { RadioConfiguration, RadioContext } from '../../music/radio/Radio'
 
 export default class RadioCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -15,23 +15,26 @@ export default class RadioCommand extends VoiceCommand {
             {
                 key: 'artist',
                 flag: 'a',
-                description: 'Artist name (Radio will use this to determine what artists to choose from)',
+                description:
+                    'Artist name (Radio will use this to determine what artists to choose from)',
                 required: false,
-                type: ArgumentType.STRING
+                type: ArgumentType.STRING,
             },
             {
                 key: 'genre',
                 flag: 'g',
-                description: 'Genre (Radio will use this to determine what genres to choose from)',
+                description:
+                    'Genre (Radio will use this to determine what genres to choose from)',
                 required: false,
-                type: ArgumentType.STRING
+                type: ArgumentType.STRING,
             },
             {
                 key: 'track',
                 flag: 't',
-                description: 'Track name (Radio will use this to choose from similar tracks)',
+                description:
+                    'Track name (Radio will use this to choose from similar tracks)',
                 required: false,
-                type: ArgumentType.STRING
+                type: ArgumentType.STRING,
             },
             {
                 key: 'length',
@@ -40,22 +43,45 @@ export default class RadioCommand extends VoiceCommand {
                 required: false,
                 default: 20,
                 type: ArgumentType.NUMBER,
-                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 100
-            }
+                validate: (context, arg) =>
+                    parseInt(arg) > 0 && parseInt(arg) <= 100,
+            },
         ],
-        examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop']
+        examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop'],
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(
+        context: GuildContext,
+        source: User,
+        args: Map<string, any>,
+        message?: Message
+    ) {
         if (!args.get('artist') && !args.get('genre') && !args.get('track')) {
-            const radioConfiguration = context.getProvider().getDJ().getRadio().getRadioConfiguration()
+            const radioConfiguration = context
+                .getProvider()
+                .getDJ()
+                .getRadio()
+                .getRadioConfiguration()
             if (radioConfiguration) {
-                context.getProvider().getResponder().send(
-                    {content: createRadioMessage(radioConfiguration),
-                        message: message, options: {code: 'Markdown'}}, 30)
+                context
+                    .getProvider()
+                    .getResponder()
+                    .send(
+                        {
+                            content: createRadioMessage(radioConfiguration),
+                            message: message,
+                            options: { code: 'Markdown' },
+                        },
+                        30
+                    )
             } else {
-                context.getProvider().getResponder()
-                    .error(`There is no radio playing! Use ${context.getPrefix()}radio command to start one!`, message)
+                context
+                    .getProvider()
+                    .getResponder()
+                    .error(
+                        `There is no radio playing! Use ${context.getPrefix()}radio command to start one!`,
+                        message
+                    )
             }
             return
         }
@@ -63,21 +89,21 @@ export default class RadioCommand extends VoiceCommand {
             artists: [args.get('artist')],
             genres: [args.get('genre')],
             tracks: [args.get('track')],
-            length: args.get('length')
+            length: args.get('length'),
         }
         context.getProvider().getDJ().getRadio().start(radioContext, message)
     }
 
     botMustBeAlreadyInVoiceChannel(): boolean {
-        return false;
+        return false
     }
 
     botMustBeInSameVoiceChannel(): boolean {
-        return false;
+        return false
     }
 
     userMustBeInVoiceChannel(): boolean {
-        return true;
+        return true
     }
 }
 
@@ -92,13 +118,22 @@ function createRadioMessage(radioConfiguration: RadioConfiguration): string {
     response += `${TableGenerator.createTable(tableHeaders, tableData)}\n`
 
     const tableHeaders2 = ['Previous Track', 'Current Track', 'Next Track']
-    const tableData2 = [[radioConfiguration.playedTracks[0],
-        radioConfiguration.currentTrack, radioConfiguration.recommendedTracks[0]]]
+    const tableData2 = [
+        [
+            radioConfiguration.playedTracks[0],
+            radioConfiguration.currentTrack,
+            radioConfiguration.recommendedTracks[0],
+        ],
+    ]
     response += `${TableGenerator.createTable(tableHeaders2, tableData2)}\n`
 
     const tableHeaders3 = ['Tracks Played', 'Tracks Remaining']
-    const tableData3 = [[radioConfiguration.playedTracks.length.toString(),
-        radioConfiguration.recommendedTracks.length.toString()]]
+    const tableData3 = [
+        [
+            radioConfiguration.playedTracks.length.toString(),
+            radioConfiguration.recommendedTracks.length.toString(),
+        ],
+    ]
     response += `${TableGenerator.createTable(tableHeaders3, tableData3)}`
     return response
 }

@@ -1,7 +1,7 @@
-import {GuildContext} from "./guild/Context"
-import {TextChannel} from "discord.js"
-import {MessageGenerator} from "./communication/MessageGenerator"
-import {GlobalContext} from "./GlobalContext"
+import { GuildContext } from './guild/Context'
+import { TextChannel } from 'discord.js'
+import { MessageGenerator } from './communication/MessageGenerator'
+import { GlobalContext } from './GlobalContext'
 
 export namespace Logger {
     export function i(context: GuildContext, tag: string, log: string) {
@@ -27,17 +27,31 @@ export namespace Logger {
         sendMessageToLoggingChannel(context, 'w', tag, log)
     }
 
-    function sendMessageToLoggingChannel(context: GuildContext, level: string, tag: string, log: string) {
+    function sendMessageToLoggingChannel(
+        context: GuildContext,
+        level: string,
+        tag: string,
+        log: string
+    ) {
         if (!context) {
             return
         }
-        const message = MessageGenerator.createBasicEmbed(`${tag}: ${log}`, levelToString(level))
+        const message = MessageGenerator.createBasicEmbed(
+            `${tag}: ${log}`,
+            levelToString(level)
+        )
         const logging = context.getConfig().getLogging()
         if (!logging.channelID || !appropriateLevel(level, logging.flag)) {
             return
         }
-        const channel = context.getGuild().channels.resolve(logging.channelID) as TextChannel
-        if (channel.permissionsFor(GlobalContext.getClient().user.id).has('SEND_MESSAGES')) {
+        const channel = context
+            .getGuild()
+            .channels.resolve(logging.channelID) as TextChannel
+        if (
+            channel
+                .permissionsFor(GlobalContext.getClient().user.id)
+                .has('SEND_MESSAGES')
+        ) {
             channel.send(message)
         }
     }
@@ -49,7 +63,7 @@ function appropriateLevel(level: string, flag: string): boolean {
         return true
     } else if (flag == 'w' && (level == 'w' || level == 'e')) {
         return true
-    } else if (flag == 'd' && (level != 'i')) {
+    } else if (flag == 'd' && level != 'i') {
         return true
     } else if (flag == 'i' && level == 'i') {
         return true
@@ -58,7 +72,7 @@ function appropriateLevel(level: string, flag: string): boolean {
 }
 
 function levelToString(level: string): string {
-    switch(level) {
+    switch (level) {
         case 'i':
             return 'Info'
         case 'd':

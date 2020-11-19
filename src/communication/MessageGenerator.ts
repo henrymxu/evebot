@@ -1,12 +1,14 @@
-import {MessageAttachment, MessageEmbed} from "discord.js"
+import { MessageAttachment, MessageEmbed } from 'discord.js'
 
 export namespace MessageGenerator {
     export function getBaseEmbed(): MessageEmbed {
-        return new MessageEmbed()
-            .setColor([46, 115, 189])
+        return new MessageEmbed().setColor([46, 115, 189])
     }
 
-    export function createBasicEmbed(message: string, title: string = ''): MessageEmbed {
+    export function createBasicEmbed(
+        message: string,
+        title: string = ''
+    ): MessageEmbed {
         const embed = getBaseEmbed().setDescription(`${message}`)
         if (title) {
             embed.setTitle(title)
@@ -22,8 +24,15 @@ export namespace MessageGenerator {
         return createBlockEmbed(message)
     }
 
-    export function attachFileToEmbed(message: MessageEmbed, file: string | Buffer, caption: string): MessageEmbed {
-        const messageAttachment: MessageAttachment = new MessageAttachment(file, caption)
+    export function attachFileToEmbed(
+        message: MessageEmbed,
+        file: string | Buffer,
+        caption: string
+    ): MessageEmbed {
+        const messageAttachment: MessageAttachment = new MessageAttachment(
+            file,
+            caption
+        )
         return message.attachFiles([messageAttachment])
     }
 }
