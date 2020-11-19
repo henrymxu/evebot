@@ -3,7 +3,7 @@ import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
 import {Communicator} from "./Communicator"
 import {MessageGenerator} from "./MessageGenerator"
 
-const EMOJIS = {
+const DEFAULT_EMOJIS = {
     0: '👌',
     1: '👎',
 };
@@ -25,7 +25,7 @@ export default class Responder {
         if (!message) {
             return
         }
-        Communicator.acknowledge(EMOJIS[mode], message)
+        Communicator.acknowledge(DEFAULT_EMOJIS[mode], message)
     }
 
     send(message: BotMessage, removeAfter?: number): Promise<Message[]> {
