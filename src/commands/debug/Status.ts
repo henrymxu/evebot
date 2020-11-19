@@ -10,7 +10,7 @@ export default class StatusCommand extends Command {
         name: 'Status',
         keywords: ['status', 'memory', 'config'],
         group: 'debug',
-        descriptions: ['Show various information of the bot\s status',
+        descriptions: ['Show status of the bot',
             'Show current memory usage of the bot', 'Show raw config of the bot'],
         arguments: [],
         permissions: ['ADMINISTRATOR']

@@ -33,7 +33,7 @@ export namespace Logger {
         }
         const message = MessageGenerator.createBasicEmbed(`${tag}: ${log}`, levelToString(level))
         const logging = context.getConfig().getLogging()
-        if (!logging.channelID || appropriateLevel(level, logging.flag)) {
+        if (!logging.channelID || !appropriateLevel(level, logging.flag)) {
             return
         }
         const channel = context.getGuild().channels.resolve(logging.channelID) as TextChannel
