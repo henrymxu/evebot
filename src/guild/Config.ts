@@ -46,12 +46,15 @@ export class Config {
         return Config.setKeyValue(this, 'defaultTextChannel', textChannelID)
     }
 
-    getLoggingTextChannel(): string {
-        return this.json.loggingTextChannel
+    getLogging(): Logging {
+        return this.json.logging
     }
 
-    setLoggingTextChannel(textChannelID: string) {
-        return Config.setKeyValue(this, 'loggingTextChannel', textChannelID)
+    setLogging(channelID: string, level: string) {
+        return Config.setKeyValue(this, 'logging', {
+            "channelID": channelID,
+            "flags": level
+        })
     }
 
     getUserIDForNickname(nickname: string): string {
@@ -243,4 +246,9 @@ export interface Privilege {
     grantedUsers: Set<string>
     deniedRoles: Set<string>
     deniedUsers: Set<string>
+}
+
+export interface Logging {
+    channelID: string
+    flag: string
 }

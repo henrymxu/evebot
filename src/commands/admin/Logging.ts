@@ -5,7 +5,7 @@ import {Message, MessageEmbed, User} from "discord.js"
 import {Logger} from "../../Logger"
 import {MessageGenerator} from "../../communication/MessageGenerator"
 
-export default class LoggingTextChannelCommand extends Command {
+export default class LoggingCommand extends Command {
     readonly options: CommandOptions = {
         name: 'Logging',
         keywords: ['logging'],
@@ -18,6 +18,16 @@ export default class LoggingTextChannelCommand extends Command {
                 required: false,
                 type: ArgumentType.STRING,
                 validate: (context, arg) => GuildUtils.findTextChannelByName(context, arg) != null
+            },
+            {
+                key: 'level',
+                flag: 'l',
+                description: 'Logging level',
+                required: false,
+                type: ArgumentType.STRING,
+                validate: (context, arg) => {
+                    return (arg == 'i' || arg == 'd' || arg == 'w' || arg == 'e')
+                }
             }
         ],
         permissions: ['MANAGE_CHANNELS'],
@@ -30,15 +40,17 @@ export default class LoggingTextChannelCommand extends Command {
             return
         }
         const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))
-        context.getConfig().setLoggingTextChannel(textChannel.id)
-        Logger.i(context, LoggingTextChannelCommand.name, `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`)
+        const flag = args.get('flag') || 'e'
+        context.getConfig().setLogging(textChannel.id, flag)
+        Logger.i(context, LoggingCommand.name, `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`)
         context.getProvider().getResponder().acknowledge(0, message)
     }
 }
 
 function createCurrentLoggingTextChannelEmbed(context: GuildContext): MessageEmbed {
-    const currentTextChannel = GuildUtils.findTextChannelByID(context, context.getConfig().getLoggingTextChannel())
-    const message = currentTextChannel ? `${currentTextChannel.name} | ${currentTextChannel.id}` : 'No Logging Text Channel set'
+    const logging = context.getConfig().getLogging()
+    const currentTextChannel = GuildUtils.findTextChannelByID(context, logging.channelID)
+    const message = currentTextChannel ? `${currentTextChannel.name} | ${currentTextChannel.id} | ${logging.flag}` : 'No Logging Text Channel set'
     const embed = MessageGenerator.createBasicEmbed(message)
     embed.setTitle('Current Logging Text Channel')
     return embed
