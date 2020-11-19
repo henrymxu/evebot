@@ -104,9 +104,11 @@ Details on how to authenticate and configure each provider can be found in each 
 
 #### Amazon Web Services
 
-| Environment Variable  | Description       |
+| Environment Variable  | Description |
 |-----------------------|-------------------|
-| AWS_ACCESS_KEY_ID     | Access Key ID     |
+| AWS_REGION | AWS Region |
+| AWS_ENDPOINT | Endpoint |
+| AWS_ACCESS_KEY_ID | Access Key ID |
 | AWS_SECRET_ACCESS_KEY | Secret Access Key |
 
 ## Configurations
