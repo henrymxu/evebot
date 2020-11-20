@@ -52,7 +52,7 @@ export default class VoiceConnectionHandler {
         this.isListeningToCommand.clear()
     }
 
-    joinVoiceChannel(voiceChannel: VoiceChannel): Promise<any> {
+    joinVoiceChannel(voiceChannel: VoiceChannel): Promise<void> {
         return new Promise((res, rej) => {
             voiceChannel.join().then((connection) => {
                 if (!this.context.getVoiceConnection()) {
