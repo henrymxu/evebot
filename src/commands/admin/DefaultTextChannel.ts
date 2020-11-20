@@ -17,7 +17,7 @@ export default class DefaultTextChannelCommand extends Command {
                 description: 'Default Text Channel',
                 required: false,
                 type: ArgumentType.STRING,
-                validate: (context, arg) => GuildUtils.findTextChannelByName(context, arg) != null
+                validate: (context: GuildContext, arg: any) => GuildUtils.findTextChannelByName(context, arg) != null
             }
         ],
         permissions: ['MANAGE_CHANNELS'],

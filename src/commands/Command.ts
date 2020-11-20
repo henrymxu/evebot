@@ -5,7 +5,7 @@ import {Logger} from "../Logger"
 export abstract class Command {
     abstract readonly options: CommandOptions
     protected abstract execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message)
-    protected preExecute(context: GuildContext, message?: Message): Promise<any> {
+    protected preExecute(context: GuildContext, message?: Message): Promise<void> {
         // Implemented by child classes
         return Promise.resolve()
     }

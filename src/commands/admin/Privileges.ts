@@ -100,7 +100,7 @@ function createPrivilegeMessage(context: GuildContext, privilege: Privilege): st
     let response = `${privilege.command}\n---------\n`
     const tableHeaders = ['Type', '< Grant >']
     function addRowsToTable(users: Set<string>, roles: Set<string>): string[][] {
-        const rows = []
+        const rows: string[][] = []
         users.forEach((userID) => {
             rows.push(['User', GuildUtils.parseUserFromUserID(context, userID).username])
         })

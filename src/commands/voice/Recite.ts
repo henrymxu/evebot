@@ -25,7 +25,7 @@ export default class ReciteCommand extends VoiceCommand {
                 required: false,
                 type: ArgumentType.INTEGER,
                 default: 10,
-                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 20
+                validate: (context: GuildContext, arg: any) => parseInt(arg) > 0 && parseInt(arg) <= 20
             },
             {
                 key: 'transcribe',

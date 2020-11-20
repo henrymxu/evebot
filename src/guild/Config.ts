@@ -182,10 +182,10 @@ export class Config {
     }
 
     private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string,
-                                     validate?: (Config, string) => boolean): Error {
+                                     validate?: (arg0: Config, arg1: string) => boolean): Error {
         const alreadyHad = []
         keys.forEach(key => {
-            if (validate(Config, key)) {
+            if (validate(config, key)) {
                 alreadyHad.push(`${key} => ${config.json[entry][key]}`)
             }
             config.json[entry][key] = value
@@ -196,7 +196,7 @@ export class Config {
 
     private static removeKeysFromMap(config: Config, entry: string, keys: string[]) {
         keys.forEach(key => {
-            config[entry]?.delete(key)
+            config.json[entry]?.delete(key)
         })
         config.save()
     }

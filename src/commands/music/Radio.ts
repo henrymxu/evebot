@@ -40,7 +40,7 @@ export default class RadioCommand extends VoiceCommand {
                 required: false,
                 default: 20,
                 type: ArgumentType.NUMBER,
-                validate: (context, arg) => parseInt(arg) > 0 && parseInt(arg) <= 100
+                validate: (context: GuildContext, arg: any) => parseInt(arg) > 0 && parseInt(arg) <= 100
             }
         ],
         examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop']

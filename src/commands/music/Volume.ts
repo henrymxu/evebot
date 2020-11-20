@@ -14,9 +14,7 @@ export default class VolumeCommand extends Command {
                 description: 'The desired volume of the bot (0 - 100)',
                 required: true,
                 type: ArgumentType.INTEGER,
-                validate: (context, arg) => {
-                    return arg >= 0 && arg <= 100
-                }
+                validate: (context: GuildContext, arg: any) => { return arg >= 0 && arg <= 100 }
             }
         ]
     }

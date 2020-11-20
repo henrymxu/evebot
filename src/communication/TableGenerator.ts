@@ -16,7 +16,7 @@ export namespace TableGenerator {
                 throw new Error(`Table Rows aren't all the same size`)
             }
         }
-        const columnOptions = {}
+        const columnOptions: {}[] = []
         for (let i = 0; i < data[0].length; i++) {
             columnOptions[i] = {
 

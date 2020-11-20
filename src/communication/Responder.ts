@@ -3,10 +3,7 @@ import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
 import {Communicator} from "./Communicator"
 import {MessageGenerator} from "./MessageGenerator"
 
-const DEFAULT_EMOJIS = {
-    0: '👌',
-    1: '👎',
-};
+const DEFAULT_EMOJIS = ['👌', '👎']
 
 export default class Responder {
     private context: GuildContext
@@ -21,7 +18,7 @@ export default class Responder {
         this.send({content: embed, message: message}, 30)
     }
 
-    acknowledge(mode: number, message: Message) {
+    acknowledge(mode: number, message?: Message) {
         if (!message) {
             return
         }

@@ -45,7 +45,7 @@ export default class StatusCommand extends Command {
 function getStatusResponse(context: GuildContext): string {
     let response = ""
     const tableHeader = ['Context', 'Value']
-    const tableData = []
+    const tableData: string[][] = []
     tableData.push(['Guild', context.getGuild().name])
     tableData.push(['Prefix', context.getPrefix()])
     tableData.push(['TextChannel', context.getTextChannel().name])
@@ -54,7 +54,7 @@ function getStatusResponse(context: GuildContext): string {
     response += `${TableGenerator.createTable(tableHeader, tableData)}\n`
 
     const tableHeader2 = ['SpeechProvider', 'Status']
-    const tableData2 = []
+    const tableData2: string[][] = []
     tableData2.push(['HotwordEngine', context.getVoiceDependencyProvider().getHotwordEngine().getStatus()])
     tableData2.push(['Hotwords', context.getVoiceDependencyProvider().getHotwordEngine().getHotwords().join(', ')])
     tableData2.push(['SpeechGeneration',
@@ -65,7 +65,7 @@ function getStatusResponse(context: GuildContext): string {
     response += `${TableGenerator.createTable(tableHeader2, tableData2)}\n`
 
     const tableHeader3 = ['Registered Users']
-    const tableData3 = []
+    const tableData3: string[][] = []
     context.getProvider().getVoiceConnectionHandler().getVoiceStreams().forEach((_, userID) => {
         tableData3.push([GuildUtils.parseUserFromUserID(context, userID).username])
     })
@@ -75,9 +75,9 @@ function getStatusResponse(context: GuildContext): string {
 
 function getMemoryResponse(): string {
     const tableHeaders = ['Type', 'Allocated (MBs)']
-    const tableData = []
-    tableData.push(['heapTotal', process.memoryUsage().heapTotal / 1000000])
-    tableData.push(['external', process.memoryUsage().external / 1000000])
-    tableData.push(['rss', process.memoryUsage().rss / 1000000])
+    const tableData: string[][] = []
+    tableData.push(['heapTotal', (process.memoryUsage().heapTotal / 1000000).toString()])
+    tableData.push(['external', (process.memoryUsage().external / 1000000).toString()])
+    tableData.push(['rss', (process.memoryUsage().rss / 1000000).toString()])
     return TableGenerator.createTable(tableHeaders, tableData)
 }
