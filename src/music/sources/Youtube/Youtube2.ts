@@ -1,6 +1,6 @@
 import {SearchResult, TrackSource} from "../../Search"
 import {Keys} from "../../../Keys"
-
+// @ts-ignore
 import YoutubeAPI from "simple-youtube-api"
 
 export default class Youtube2 implements TrackSource {
@@ -13,23 +13,19 @@ export default class Youtube2 implements TrackSource {
         return new Promise((res, rej) => {
             this.api.searchVideos(query, 3, {
                 'relevanceLanguage': 'en'
-            }).then(results => {
+            }).then((results: any[]) => {
                 if (results.length == 0) {
                     rej(`No search results found for ${query}`)
                 }
                 const searchResult: SearchResult = {
-                    infos: results.map(result => {
-                        return {
-                            url: result.url,
-                        }
-                    }),
+                    infos: results.map((result) => { return { url: result.url } }),
                     metadata: {
                         mode: "single",
                         query: query
                     }
                 }
                 res(searchResult)
-            }).catch(err => {
+            }).catch((err: Error) => {
                 rej(`Unable to find search results from YoutubeAPI ${err.message}`)
             })
         })
@@ -37,26 +33,22 @@ export default class Youtube2 implements TrackSource {
 
     getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
-            this.api.getPlaylist(playlistURL).then(playlist => {
+            this.api.getPlaylist(playlistURL).then((playlist: any) => {
                 console.log(`The playlist's title is ${playlist.title}`)
-                playlist.getVideos().then(videos => {
+                playlist.getVideos().then((videos: any[]) => {
                     console.log(`This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
                     const searchResult: SearchResult = {
-                        infos: videos.map(result => {
-                            return {
-                                url: result.url,
-                            }
-                        }),
+                        infos: videos.map((result) => { return { url: result.url } }),
                         metadata: {
                             mode: "playlist",
                             query: playlistURL
                         }
                     }
                     res(searchResult)
-                }).catch(err => {
+                }).catch((err: Error) => {
                     rej(err)
                 })
-            }).catch(err => {
+            }).catch((err: Error) => {
                 rej(err)
             })
         })

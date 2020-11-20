@@ -16,6 +16,6 @@ export interface SpeechRecognizer {
 export interface SpeechProvider {
     requiredConfigVariables(): string[]
     getStatus(): string
-    asGenerator(): SpeechGenerator
-    asRecognizer(): SpeechRecognizer
+    asGenerator(): SpeechGenerator | undefined
+    asRecognizer(): SpeechRecognizer | undefined
 }

@@ -13,7 +13,7 @@ export default class PlayCommand extends VoiceCommand {
         arguments: [
             {
                 key: 'query',
-                description: 'Name or url of song',
+                description: 'Song: Name or url of song | Album: Spotify url',
                 required: true,
                 type: ArgumentType.STRING
             }
@@ -29,11 +29,11 @@ export default class PlayCommand extends VoiceCommand {
         context.getProvider().getDJ().request(mode, args.get('query'), source.id, message)
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return false;
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return false;
     }
 

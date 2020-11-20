@@ -1,3 +1,4 @@
+// @ts-ignore
 import {HotwordModels, Models, SnowboyDetect} from "snowboy"
 
 import {AudioUtils} from "../../utils/AudioUtils"
@@ -34,7 +35,7 @@ function createRecognizer(callback: (hotword: string) => void): SnowboyDetect {
     // detector.on('silence', () => {});
     // detector.on('sound', buffer => {});
     // detector.on('error', () => {console.log('error');});
-    detector.on('hotword', function (index, hotword, buffer) {
+    detector.on('hotword', function (index: number, hotword: string, buffer: Buffer) {
         // <buffer> contains the last chunk of the audio that triggers the "hotword"
         // event. It could be written to a wav stream. You will have to use it
         // together with the <buffer> in the "sound" event if you want to get audio

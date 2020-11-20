@@ -15,12 +15,12 @@ export namespace Lifecycle {
                     //     })
                     // }
                     GlobalContext.get(oldState.guild.id).then(context => {
-                        context.getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member.user)
+                        context.getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member?.user)
                     })
                 }
                 if (hasUserChangedChannel(oldState, newState)) {
-                    if (isItself(client, newState)) {
-                        Logger.w(null, TAG, `Bot was moved from ${oldState.channel.name} to ${newState.channel.name} | New connection = ${newState.connection}`)
+                    if (isItself(newState)) {
+                        Logger.w(TAG, `Bot was moved from ${oldState.channel?.name} to ${newState.channel?.name} | New connection = ${newState.connection}`)
                         GlobalContext.get(newState.guild.id).then(context => {
                             context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
                         })
@@ -32,7 +32,7 @@ export namespace Lifecycle {
                 }
                 return
             }
-            if (isAlreadyInChannel(newState.channel, client.user.id)) {
+            if (isAlreadyInChannel(newState?.channel, GlobalContext.getBotID())) {
                 if (hasUserJoinedChannel(oldState, newState)) {
                     GlobalContext.get(newState.guild.id).then(context => {
                         context.getProvider().getVoiceConnectionHandler().userJoinedChannel(newState)
@@ -46,14 +46,13 @@ export namespace Lifecycle {
         })
     }
 
-    function isItself(client: Client, voiceState: VoiceState): boolean {
-        return client.user.id === voiceState.member.user.id
+    function isItself(voiceState: VoiceState): boolean {
+        return GlobalContext.getBotID() === voiceState?.member?.user.id
     }
 
-    function isAlreadyInChannel(channel: VoiceChannel, botId: string): boolean {
+    function isAlreadyInChannel(channel: VoiceChannel | null, botId: string): boolean {
         try {
-            // @ts-ignore
-            channel.guild.channels.cache.filter(channel => channel.type === 'voice').forEach(channel => {
+            channel?.guild.channels.cache.filter(channel => channel.type === 'voice').forEach(channel => {
                 channel.members.forEach(member => {
                     if (member.user && member.user.id === botId) {
                         throw Error()
@@ -67,14 +66,17 @@ export namespace Lifecycle {
     }
 
     function hasUserJoinedChannel(oldState: VoiceState, newState: VoiceState): boolean {
-        return oldState.channel == undefined && newState.channel != undefined
+        return oldState.channel === undefined && newState.channel !== undefined
     }
 
     function hasUserLeftChannel(oldState: VoiceState, newState: VoiceState): boolean {
-        return oldState.channel != undefined && newState.channel == undefined
+        return oldState.channel !== undefined && newState.channel === undefined
     }
 
     function hasUserChangedChannel(oldState: VoiceState, newState: VoiceState): boolean {
+        if (!oldState.channel || !newState.channel) {
+            return false
+        }
         return (oldState.channel && newState.channel) && (oldState.channelID !== newState.channelID)
     }
 }

@@ -68,11 +68,11 @@ export default class RadioCommand extends VoiceCommand {
         context.getProvider().getDJ().getRadio().start(radioContext, message)
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return false;
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return false;
     }
 

@@ -7,8 +7,8 @@ import {GlobalContext} from "../GlobalContext"
 import {Logger} from "../Logger"
 
 export class GuildContext {
-    private voiceConnection: VoiceConnection
-    private textChannel: TextChannel
+    private voiceConnection: VoiceConnection | undefined
+    private textChannel: TextChannel | undefined
 
     private readonly voiceDependencyProvider: VoiceDependencyProvider
     private readonly guildProvider: GuildProvider
@@ -18,16 +18,16 @@ export class GuildContext {
 
     constructor(id: string) {
         this.id = id
-        this.voiceDependencyProvider = VoiceDependencyProviderBuilder.build(null)
         this.guildProvider = new GuildProvider(this)
         this.config = new Config(id)
+        this.voiceDependencyProvider = VoiceDependencyProviderBuilder.build(this.config)
     }
 
     async initialize() {
         await this.config.load()
     }
 
-    setVoiceConnection(voiceConnection: VoiceConnection) {
+    setVoiceConnection(voiceConnection: VoiceConnection | undefined) {
         this.voiceConnection = voiceConnection
     }
 
@@ -35,11 +35,11 @@ export class GuildContext {
         this.textChannel = textChannel
     }
 
-    getVoiceConnection(): VoiceConnection {
+    getVoiceConnection(): VoiceConnection | undefined {
         return this.voiceConnection
     }
 
-    getTextChannel(): TextChannel {
+    getTextChannel(): TextChannel | undefined {
         return this.textChannel ? this.textChannel : findDefaultTextChannel(this)
     }
 
@@ -52,7 +52,8 @@ export class GuildContext {
     }
 
     getGuild(): Guild {
-        return GlobalContext.getClient().guilds.resolve(this.id)
+        // TODO: Check if this is actually okay (i.e when bot is added to a new guild, does this still work?)
+        return GlobalContext.getClient().guilds.resolve(this.id)!
     }
 
     getVoiceDependencyProvider(): VoiceDependencyProvider {
@@ -64,7 +65,7 @@ export class GuildContext {
     }
 }
 
-export function findDefaultTextChannel(context: GuildContext): TextChannel {
+export function findDefaultTextChannel(context: GuildContext): TextChannel | undefined {
     const desiredChannelId = context.getConfig().getDefaultTextChannel()
     let textChannel = GuildUtils.findTextChannelByID(context, desiredChannelId)
     if (!textChannel) {
@@ -72,7 +73,7 @@ export function findDefaultTextChannel(context: GuildContext): TextChannel {
         textChannel = guild.channels.cache.filter(channel => channel.type === 'text').first()
     }
     if (!textChannel) {
-        Logger.w(context, "FindDefaultTextChannel",`${context.getGuild().name} does not have defaultTextChannel`)
+        Logger.w("FindDefaultTextChannel", `${context.getGuild()?.name} does not have defaultTextChannel`, context)
     }
     return textChannel
 }

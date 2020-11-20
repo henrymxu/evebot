@@ -32,30 +32,33 @@ export namespace TrackMessageFactory {
         if (track instanceof YoutubeTrack) {
             return TrackMessageGenerator.createSongTrackNowPlayingEmbed(track)
         }
+        throw(Error('Missing implementation for Track Embed'))
     }
 
     export function createCurrentlyPlayingEmbed(track: Track): MessageEmbed {
         if (track instanceof YoutubeTrack) {
             return TrackMessageGenerator.createLinkTrackCurrentlyPlayingEmbed(track, track.getYoutubeTrackInfo().url)
         }
+        throw(Error('Missing implementation for Track Embed'))
     }
 
     export function createTrackNewlyQueuedEmbed(track: Track): MessageEmbed {
         if (track instanceof YoutubeTrack) {
             return TrackMessageGenerator.createLinkTrackNewlyQueuedEmbed(track, track.getYoutubeTrackInfo().url)
         }
+        throw(Error('Missing implementation for Track Embed'))
     }
 
     export function createQueuedTracksMessage(context: GuildContext, tracks: Track[]): string {
         const tableHeaders = ['Track Name', 'Artist', 'Requester', 'Length']
         const tableData: string[][] = []
         let totalLength = 0
-        let currentTrackProgress: String
+        let currentTrackProgress: string = ''
         tracks.forEach((track) => {
             let title = Utils.truncate(track.getTitle(), 25)
             title = track.isPlaying() || track.isPaused() ? `< ${title} > `: title
             let length = Utils.convertSecondsToTimeString(track.getLength())
-            tableData.push([title, track.getArtist(), track.getRequester(context), length])
+            tableData.push([title, track.getArtist(), track.getRequester(context) || '', length])
             totalLength += track.getLength()
             if (track.isPlaying() || track.isPaused()) {
                 currentTrackProgress = createProgressBar(track)

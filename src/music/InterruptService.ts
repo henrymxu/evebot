@@ -35,6 +35,6 @@ export default class InterruptService {
     }
 
     playUnknownStream(stream: Readable) {
-        this.context.getProvider().getAudioPlayer().queueInterrupt(stream, undefined, 0)
+        this.context.getProvider().getAudioPlayer().queueInterrupt(stream, '', 0)
     }
 }

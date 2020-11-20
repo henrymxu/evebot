@@ -10,15 +10,15 @@ export class VoiceDependencyProvider {
         this.hotwordEngine = hotwordEngine
     }
 
-    getHotwordEngine(): HotwordEngine {
+    getHotwordEngine(): HotwordEngine | undefined {
         return this.hotwordEngine
     }
 
-    getSpeechGenerator(): SpeechGenerator {
+    getSpeechGenerator(): SpeechGenerator | undefined {
         return SpeechEngine.getGenerator()
     }
 
-    getSpeechRecognizer(): SpeechRecognizer {
+    getSpeechRecognizer(): SpeechRecognizer | undefined {
         return SpeechEngine.getRecognizer()
     }
 }

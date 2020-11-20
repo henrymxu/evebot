@@ -39,44 +39,48 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
         commandString = `${context.getPrefix()}${context.getConfig().getMacro(keywordResult.keyword).command}`
         keywordResult = CommandParser.parseKeyword(context, commandString)
         if (!keywordResult.keyword) {
-            Logger.w(context, TAG, `${keywordResult.keyword} macro has an invalid keyword`)
+            Logger.w(TAG, `${keywordResult.keyword} macro has an invalid keyword`, context)
             return
         }
     }
     const command = CommandRegistry.getCommand(context, keywordResult.keyword)
     if (!command) {
-        Logger.w(context, TAG,`No command found for ${keywordResult.keyword}`)
+        Logger.w(TAG, `No command found for ${keywordResult.keyword}`, context)
         return
     }
     if (!checkPermissions(context, source, command)) {
-        Logger.w(context, command.options.name, `${source.username} does not have permissions to execute ${keywordResult.keyword}`)
+        Logger.w(command.options.name, `${source.username} does not have permissions to execute ${keywordResult.keyword}`, context)
         return
     }
     if (!checkPrivileges(context, source, keywordResult.keyword)) {
-        Logger.w(context, command.options.name, `${source.username} does not have privileges to execute ${keywordResult.keyword}`)
+        Logger.w(command.options.name, `${source.username} does not have privileges to execute ${keywordResult.keyword}`, context)
         return
     }
     if (context.getProvider().getThrottler().shouldThrottleCommand(source, command)) {
-        Logger.w(context, command.options.name, `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`)
+        Logger.w(command.options.name, `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`, context)
         return
     }
     const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
     if (result.error) {
-        Logger.w(context, TAG, `Could not parse arguments for ${commandString}, reason ${result.error}`)
+        Logger.w(TAG, `Could not parse arguments for ${commandString}, reason ${result.error}`, context)
         return
     }
     if (result.help) {
         // TODO: send help command instead of executing
     }
-    if (command.options.file != null) {
-        if (checkFileType(message.attachments.first(), command.options.file)) {
-            result.args.set('file', message.attachments.first())
+    if (!command.options.file) {
+        const attachment = message?.attachments?.first()
+        if (attachment && checkFileType(attachment, command.options.file)) {
+            result.args.set('file', attachment)
         }
     }
     command.run(context, source, result.args, message)
 }
 
 function handleTextChannelMessage(message: Message) {
+    if (!message.guild?.id) {
+        return
+    }
     GlobalContext.get(message.guild.id).then(context => {
         context.setTextChannel(message.channel as TextChannel)
         handleGuildCommand(context, message.content, message.author, message)
@@ -97,7 +101,7 @@ function checkPermissions(context: GuildContext, user: User, command: Command): 
 }
 
 function checkPrivileges(context: GuildContext, user: User, keyword: string): boolean {
-    if (context.getGuild().member(user).permissions.has('ADMINISTRATOR')) {
+    if (context.getGuild()?.member(user)?.permissions.has('ADMINISTRATOR')) {
         return true
     }
     const privilege = context.getConfig().getPrivilege(keyword)
@@ -112,7 +116,11 @@ function checkPrivileges(context: GuildContext, user: User, keyword: string): bo
     if (privilege.deniedUsers.has(user.id)) {
         return false
     }
-    for (let role of Object.keys(context.getGuild().member(user).roles.cache)) {
+    const roles = context.getGuild().member(user)?.roles.cache
+    if (!roles) {
+        return false
+    }
+    for (let role of Object.keys(roles)) {
         if (privilege.grantedRoles.has(role)) {
             return true
         }
@@ -131,7 +139,7 @@ function checkPrivileges(context: GuildContext, user: User, keyword: string): bo
     return false
 }
 
-function checkFileType(attachment: MessageAttachment, type: FileType): boolean {
+function checkFileType(attachment: MessageAttachment, type: FileType | undefined): boolean {
     if (attachment) {
         switch(type) {
             case FileType.AUDIO : {

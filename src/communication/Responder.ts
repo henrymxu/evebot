@@ -2,7 +2,9 @@ import {GuildContext} from "../guild/Context"
 import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
 import {Communicator} from "./Communicator"
 import {MessageGenerator} from "./MessageGenerator"
+import {Logger} from "../Logger"
 
+const TAG = 'Responder'
 const DEFAULT_EMOJIS = ['👌', '👎']
 
 export default class Responder {
@@ -19,30 +21,28 @@ export default class Responder {
     }
 
     acknowledge(mode: number, message?: Message) {
-        if (!message) {
-            return
-        }
         Communicator.acknowledge(DEFAULT_EMOJIS[mode], message)
     }
 
-    send(message: BotMessage, removeAfter?: number): Promise<Message[]> {
-        if (this.messageCache.has(message.id)) {
+    send(message: BotMessage, removeAfter: number = 0): Promise<Message[]> {
+        if (message.id && this.messageCache.has(message.id)) {
             this.delete(message.id)
         }
-        if (!message.options) {
-            message.options = {}
-        }
-        message.options.split = true
-        const textChannel: TextChannel = message.message ?
-            (message.message.channel as TextChannel) : this.context.getTextChannel()
+        const options = message.options || {}
+        options.split = true
         return new Promise((res, rej) => {
-            Communicator.send(message.content, message.options, textChannel).then((result) => {
+            const textChannel = message.message ? (message.message.channel as TextChannel) : this.context.getTextChannel()
+            if (!textChannel) {
+                rej(`TextChannel is undefined`)
+                return
+            }
+            Communicator.send(message.content, options, textChannel).then((result) => {
                 const results: Message[] = result instanceof Message ? [result] : result
                 if (message.id) {
                     this.messageCache.set(message.id, results)
                 }
                 results.forEach((messageResult) => {
-                    if (this.typingStatus.has(message.id)) {
+                    if (message.id && this.typingStatus.has(message.id)) {
                         this.stopTyping(message.message)
                         this.typingStatus.delete(message.id)
                     }
@@ -52,19 +52,19 @@ export default class Responder {
                 })
                 res(results)
             }).catch(err => {
-                rej(err)
+                rej(`Sending message failed ${err.toString}`)
             })
         })
     }
 
-    delete(source: Message | string, delay?: number) {
+    delete(source: Message | string, delay: number = 0) {
         const messages = !(source instanceof Message) ? this.messageCache.get(source) : [source]
         if (messages) {
             messages.forEach((message) => {
                 message.delete({
                     timeout: delay * 1000
                 }).catch(err => {
-
+                    Logger.e(TAG, err)
                 })
             })
         }
@@ -75,13 +75,15 @@ export default class Responder {
     }
 
     startTyping(source?: Message, id?: string) {
-        const textChannel: TextChannel = source ? source.channel as TextChannel : this.context.getTextChannel()
+        const textChannel = source ? source.channel as TextChannel : this.context.getTextChannel()
         Communicator.startTyping(textChannel)
-        this.typingStatus.add(id)
+        if (id) {
+            this.typingStatus.add(id)
+        }
     }
 
     stopTyping(source?: Message) {
-        const textChannel: TextChannel = source ? source.channel as TextChannel : this.context.getTextChannel()
+        const textChannel = source ? source.channel as TextChannel : this.context.getTextChannel()
         Communicator.stopTyping(textChannel)
     }
 }

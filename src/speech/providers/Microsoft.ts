@@ -4,6 +4,12 @@ import {AudioUtils} from "../../utils/AudioUtils"
 const SpeechSDK = require('microsoft-cognitiveservices-speech-sdk')
 import {Keys} from "../../Keys"
 import {Logger} from "../../Logger"
+import {
+    Recognizer,
+    SpeechRecognitionEventArgs,
+    SpeechRecognitionResult,
+    SpeechSynthesisResult
+} from "microsoft-cognitiveservices-speech-sdk"
 
 const configVars = ['microsoft_token', 'microsoft_location']
 
@@ -31,7 +37,7 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
         speechConfig.speechSynthesisVoiceName = voice
         let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, null)
         return new Promise<SpeechGeneratorResult>((res, rej) => {
-            synthesizer.speakTextAsync(message, (result) => {
+            synthesizer.speakTextAsync(message, (result: SpeechSynthesisResult) => {
                 const array = new Uint8Array(result.audioData)
                 const sampleRate = 48000
                 const streamLengthInSeconds = result.audioData.byteLength / sampleRate
@@ -41,10 +47,10 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
                 res({stream: AudioUtils.convertMp3StreamToOpusStream(duplex), length: streamLengthInSeconds})
                 synthesizer.close()
                 synthesizer = undefined
-            }, (err) => {
+            }, (err: string) => {
                 synthesizer.close()
                 synthesizer = undefined
-                Logger.e(null, Microsoft.name, `Generate speech error, reason ${err}`)
+                Logger.e(Microsoft.name, `Generate speech error, reason ${err}`)
                 rej(err)
             })
         })
@@ -66,18 +72,17 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
         let recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig)
 
         return new Promise((res, rej) => {
-            recognizer.recognized = function (s, e) {
+            recognizer.recognized = (s: Recognizer, e: SpeechRecognitionEventArgs) => {
                 const result = e.result.reason === SpeechSDK.ResultReason.NoMatch ?
                     'Unknown Value' : e.result.text.replace('.', '')
                 res(result)
             }
 
             recognizer.recognizeOnceAsync(
-                function (result) {
+                (result: SpeechRecognitionResult) => {
                     recognizer.close()
                     recognizer = undefined
-                },
-                function (err) {
+                }, (err: string) => {
                     recognizer.close()
                     recognizer = undefined
                 })

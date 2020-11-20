@@ -1,4 +1,4 @@
-import url from "url"
+import { parse } from "url"
 import ytdl from "discord-ytdl-core"
 import Youtube from "./sources/Youtube/Youtube2"
 import {Utils} from "../utils/Utils"
@@ -12,9 +12,9 @@ import {Logger} from "../Logger"
 const TAG = 'YoutubeSearch'
 const YoutubeSource = new Youtube()
 export namespace Search {
-    export function search(query): Promise<Track[]> {
+    export function search(query: string): Promise<Track[]> {
         return new Promise((res, rej) => {
-            parse(query).then(async (result) => {
+            parseQueryForType(query).then(async (result) => {
                 if (result.metadata.mode == "single") {
                     resolveSingleTrack(result).then((trackInfo) => {
                         res([trackInfo])
@@ -25,7 +25,7 @@ export namespace Search {
 
                 }
             }).catch(err => {
-                Logger.e(null, TAG, `Error searching for track ${query}, reason: ${err}`)
+                Logger.e(TAG, `Error searching for track ${query}, reason: ${err}`)
                 rej(err)
             })
         })
@@ -35,7 +35,7 @@ export namespace Search {
         const promises: Promise<Track>[] = []
         album.tracks.forEach((track) => {
             promises.push(new Promise<Track>((res1, rej1) => {
-                parse(`${track.artist} - ${track.name}`).then((searchResult) => {
+                parseQueryForType(`${track.artist} - ${track.name}`).then((searchResult) => {
                     resolveSingleTrack(searchResult, track).then((trackResult) => {
                         res1(trackResult)
                     })
@@ -48,10 +48,13 @@ export namespace Search {
     async function resolveSingleTrack(result: SearchResult, extraInfo?: ExternalTrackInfo): Promise<Track> {
         let resolved = false
         for (let info of result.infos) {
+            if (!info.url) {
+                continue
+            }
             const basicInfo = await ytdl.getBasicInfo(info.url)
             if (basicInfo.formats.length > 0) {
                 resolved = true
-                Logger.d(null, TAG, `Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
+                Logger.d(TAG, `Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
                 const id = Utils.generateUUID()
                 const youtubeInfo: YoutubeTrackInfo = {
                     description: basicInfo.videoDetails.shortDescription,
@@ -67,27 +70,33 @@ export namespace Search {
                     return new ExternalTrack(id, youtubeInfo, extraInfo)
                 }
             } else {
-                Logger.w(null, TAG,
-                    `${basicInfo.videoDetails.title} does not have supported formats, trying next track`)
+                Logger.w(TAG, `${basicInfo.videoDetails.title} does not have supported formats, trying next track`)
             }
         }
         return Promise.reject('Could not find a playable video (region locked)')
     }
 }
 
-function parse(query: string): Promise<SearchResult> {
-    const result = url.parse(query)
+function parseQueryForType(query: string): Promise<SearchResult> {
+    const result = parse(query)
     if (result.hostname === 'www.youtube.com') {
         switch (result.pathname) {
             case '/watch':
-                Logger.d(null, TAG, `Found a Youtube video for ${query}`)
-                return YoutubeSource.getTrackURLFromSearch(query)
+                Logger.d(TAG, `Found a Youtube video for ${query}`)
+                return Promise.resolve({
+                    infos: [{url: query}],
+                    metadata: {
+                        mode: 'single',
+                        query: query
+                    }
+                })
             case '/playlist':
-                Logger.d(null, TAG, `Found a Youtube playlist for ${query}`)
+                Logger.d(TAG, `Found a Youtube playlist for ${query}`)
                 return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
         }
     } else if (result.hostname === 'open.spotify.com') {
-        if (result.pathname.includes('playlist')) {
+        // TODO: implement spotify song parsing
+        if (result.pathname?.includes('playlist')) {
             //.replace('/playlist/', '')
             // return retrieveSongsFromSpotifyPlaylist(result.pathname)
         }
@@ -113,24 +122,4 @@ export interface ResultInfo {
 export interface SearchMetaData {
     mode: string // single, playlist
     query: string
-}
-
-function filter(format) {
-    return format.codecs === 'opus' &&
-        format.container === 'webm' &&
-        format.audioSampleRate == 48000;
-}
-
-/**
- * Tries to find the highest bitrate audio-only format. Failing that, will use any available audio format.
- * @param {Object[]} formats The formats to select from
- * @param {boolean} isLive Whether the content is live or not
- */
-function nextBestFormat(formats: any[], isLive: boolean) {
-    let filter = format => format.audioBitrate;
-    if (isLive) filter = format => format.audioBitrate && format.isHLS;
-    formats = formats
-        .filter(filter)
-        .sort((a, b) => b.audioBitrate - a.audioBitrate);
-    return formats.find(format => !format.bitrate) || formats[0];
 }

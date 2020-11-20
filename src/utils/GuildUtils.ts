@@ -3,43 +3,41 @@ import {GuildContext} from "../guild/Context"
 import {CommandRegistry} from "../commands/Registry"
 
 export namespace GuildUtils {
-    export function parseUserFromUserID(context: GuildContext, userID: string): User {
-        return context.getGuild().member(userID).user
+    export function parseUserFromUserID(context: GuildContext, userID: string): User | undefined {
+        return context.getGuild()?.member(userID)?.user
     }
 
-    export function parseRoleFromRoleID(context: GuildContext, roleID: string): Role {
-        return context.getGuild().roles.resolve(roleID)
+    export function parseRoleFromRoleID(context: GuildContext, roleID: string): Role | undefined {
+        const role = context.getGuild()?.roles?.resolve(roleID)
+        return role || undefined
     }
 
     export function createUserMentionString(userID: string): string {
         return `<@${userID}>`
     }
 
-    export function findTextChannelByName(context: GuildContext, name: string): TextChannel {
-        let textChannel: GuildChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text')
+    export function findTextChannelByName(context: GuildContext, name: string): TextChannel | undefined {
+        let textChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text')
             .find(channel => channel.name == name)
         return textChannel as TextChannel
     }
 
-    export function findTextChannelByID(context: GuildContext, id: string): TextChannel {
-        let textChannel: GuildChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text')
+    export function findTextChannelByID(context: GuildContext, id: string): TextChannel | undefined {
+        let textChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text')
             .find(channel => channel.id == id)
         return textChannel as TextChannel
     }
 
     export function isStringACommand(context: GuildContext, input: string): boolean {
-        return CommandRegistry.getCommand(context, input) != null
+        return CommandRegistry.getCommand(context, input) !== undefined
     }
 
     export function isStringACommandOrCommandGroup(context: GuildContext, input: string): boolean {
         let isCommand = isStringACommand(context, input)
-        if (isCommand) {
-            return isCommand
-        }
-        return CommandRegistry.getCommandGroup(input) != null
+        return isCommand ? isCommand : CommandRegistry.getCommandGroup(input).size > 0
     }
 
-    export function parseUserFromString(context: GuildContext, input: string): User {
+    export function parseUserFromString(context: GuildContext, input: string): User | undefined {
         const id = parseIdFromMention(input)
         if (id) {
             return GuildUtils.parseUserFromUserID(context, id)
@@ -51,7 +49,7 @@ export namespace GuildUtils {
         return context.getGuild().members.cache.find(member => compareCaseInsensitive(member.displayName, input))?.user
     }
 
-    export function parseRoleFromString(context: GuildContext, input: string): Role {
+    export function parseRoleFromString(context: GuildContext, input: string): Role | undefined {
         const id = parseIdFromMention(input)
         if (id) {
             return GuildUtils.parseRoleFromRoleID(context, id)
@@ -62,7 +60,7 @@ export namespace GuildUtils {
     }
 }
 
-function parseIdFromMention(input: string): string {
+function parseIdFromMention(input: string): string | undefined {
     const parsedId = input.match(/^<@!?(\d+)>$/)
     return parsedId?.[1]
 }

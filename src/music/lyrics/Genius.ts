@@ -1,3 +1,4 @@
+// @ts-ignore
 import genius from "genius-lyrics-api"
 import {Keys} from "../../Keys"
 
@@ -11,7 +12,7 @@ export namespace GeniusLyrics {
                 artist: artistString,
                 optimizeQuery: true
             };
-            genius.getSong(options).then((song) => {
+            genius.getSong(options).then((song: any) => {
                 if (!song) {
                     rej(`No lyrics found for ${songTitle}`)
                     return
@@ -21,7 +22,7 @@ export namespace GeniusLyrics {
                     albumArt: song.albumArt,
                     lyrics: song.lyrics
                 })
-            }).catch(err => {
+            }).catch((err: Error) => {
                 rej(`Error when retrieving lyrics for ${songTitle}: ${err}`)
             })
         })

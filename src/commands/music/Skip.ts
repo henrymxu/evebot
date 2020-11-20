@@ -18,11 +18,11 @@ export default class SkipCommand extends VoiceCommand {
         }
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return true;
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return true;
     }
 

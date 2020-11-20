@@ -1,4 +1,5 @@
 import {Transform, TransformCallback} from "stream"
+// @ts-ignore
 import pcm_convert from "pcm-convert";
 import defaults from "defaults";
 
@@ -33,7 +34,7 @@ export default class DownSamplingStream extends Transform {
      * @param  {AudioBuffer} bufferNewSamples Microphone/MediaElement audio chunk
      * @return {Float32Array} 'audio/l16' chunk
      */
-    downsample(bufferNewSamples): Float32Array {
+    downsample(bufferNewSamples: any): Float32Array {
         let buffer: Float32Array
         const newSamples = bufferNewSamples.length
         const unusedSamples = this.bufferUnusedSamples.length

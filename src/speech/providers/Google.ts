@@ -18,11 +18,11 @@ export default class Google implements SpeechRecognizer, SpeechProvider {
         return "google"
     }
 
-    asGenerator(): SpeechGenerator {
+    asGenerator(): SpeechGenerator | undefined {
         return undefined
     }
 
-    asRecognizer(): SpeechRecognizer {
+    asRecognizer(): SpeechRecognizer | undefined {
         return this
     }
 
@@ -44,11 +44,11 @@ export default class Google implements SpeechRecognizer, SpeechProvider {
         return new Promise((res, rej) => {
             const recognizeStream = this.client
                 .streamingRecognize(request)
-                .on('data', data => {
+                .on('data', (data: any) => {
                     res(data.results[0].alternatives[0].transcript)
                 })
-                .on('error', err => {
-                    Logger.e(null, Google.name, `Generate speech error, reason ${err}`)
+                .on('error', (err: Error) => {
+                    Logger.e(Google.name, `Generate speech error, reason ${err}`)
                     rej(err)
                 })
             audioStream.pipe(AudioUtils.createStereoToMonoTransformStream()).pipe(recognizeStream)

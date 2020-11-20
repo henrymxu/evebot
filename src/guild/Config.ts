@@ -69,7 +69,7 @@ export class Config {
         Config.removeKeysFromMap(this, 'nicknames', nicknames)
     }
 
-    addNicknames(userID: string, nicknames: string[]): Error {
+    addNicknames(userID: string, nicknames: string[]): Error | null {
         return Config.addUniqueKeyToMap(this, 'nicknames', nicknames, userID, (config, key) => {
             return config.json['nicknames'][key]
         })
@@ -87,7 +87,7 @@ export class Config {
         Config.removeKeysFromMap(this, 'aliases', aliases)
     }
 
-    addAliases(command: string, aliases: string[]): Error {
+    addAliases(command: string, aliases: string[]): Error | null {
         return Config.addUniqueKeyToMap(this, 'aliases', aliases, command, Config.isAlreadyProtectedKeyword)
     }
 
@@ -104,18 +104,19 @@ export class Config {
         this.save()
     }
 
-    addMacro(macroKey: string, macro: Macro): Error {
+    addMacro(macroKey: string, macro: Macro): Error | null {
         if (Config.isAlreadyProtectedKeyword(this, macroKey)) {
             return Error('Keyword already exists as Macro / Alias / Command')
         }
         this.json['macros'][macroKey] = macro
         this.save()
+        return null
     }
 
     getPrivileges(): Privilege[] {
         const privileges: Privilege[] = []
         Object.keys(this.json['privileges']).forEach(key => {
-            privileges.push(this.getPrivilege(key))
+            privileges.push(this.getPrivilege(key)!)
         })
         return privileges
     }
@@ -124,7 +125,7 @@ export class Config {
         return this.json['privileges'][key] !== undefined
     }
 
-    getPrivilege(key: string): Privilege {
+    getPrivilege(key: string): Privilege | undefined {
         let privilege = this.json['privileges'][key]
         return privilege ? {
             command: key,
@@ -132,7 +133,7 @@ export class Config {
             grantedUsers: new Set(privilege.grantedUsers || []),
             deniedRoles: new Set(privilege.deniedRoles || []),
             deniedUsers: new Set(privilege.deniedUsers || [])
-        } : null
+        } : undefined
     }
 
     deletePrivilege(name: string) {
@@ -180,10 +181,10 @@ export class Config {
     }
 
     private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string,
-                                     validate?: (arg0: Config, arg1: string) => boolean): Error {
-        const alreadyHad = []
+                                     validate?: (arg0: Config, arg1: string) => boolean): Error | null {
+        const alreadyHad: string[] = []
         keys.forEach(key => {
-            if (validate(config, key)) {
+            if (validate && validate(config, key)) {
                 alreadyHad.push(`${key} => ${config.json[entry][key]}`)
             }
             config.json[entry][key] = value

@@ -1,33 +1,33 @@
-import fs from "fs";
 import {Readable} from "stream"
-
-import https from "https"
+import {existsSync, readFileSync, unlink, unlinkSync} from "fs"
+import {get} from "https"
+import {IncomingMessage} from "http"
 
 export namespace FileUtils {
-    export function openJsonFile(filePath: string): object {
-        if (!fs.existsSync(filePath)) {
+    export function openJsonFile(filePath: string): any {
+        if (!existsSync(filePath)) {
             return {}
         }
-        let rawdata = fs.readFileSync(filePath);
+        let rawdata = readFileSync(filePath);
         // @ts-ignore
         return JSON.parse(rawdata)
     }
 
     export function deleteFile(filePath: string, sync:boolean = true, callback=()=>{}) {
         if (sync) {
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath)
+            if (existsSync(filePath)) {
+                unlinkSync(filePath)
             }
         } else {
-            if (fs.existsSync(filePath)) {
-                fs.unlink(filePath, callback)
+            if (existsSync(filePath)) {
+                unlink(filePath, callback)
             }
         }
     }
 
     export function downloadFile(url: string): Promise<Readable> {
         return new Promise((res, rej) => {
-            https.get(url, function(response) {
+            get(url, function(response: IncomingMessage) {
                 res(response)
             })
         })
