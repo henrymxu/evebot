@@ -19,8 +19,6 @@ WORKDIR src
 RUN pwd
 RUN ls
 
-RUN npm install typescript -g
 RUN npm install --unsafe-perm
-RUN tsc
 
-# Start the bot by running `node dist/main.js`
+# Start the bot by running `npx ts-node src/main.ts`
