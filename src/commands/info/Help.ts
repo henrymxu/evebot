@@ -87,7 +87,7 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
         const tableData: string[][] = []
         const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Default']
         command.options.arguments.forEach((argument) => {
-            const flag = argument.flag != '_' ? argument.flag : ''
+            const flag = argument.flag !== '_' ? argument.flag : ''
             const defaultValue = argument.default ? argument.default : ''
             const required =  argument.required ? 'yes': 'no'
             const type = `${ArgumentType[argument.type]}${argument.array ? ' [ Multiple ]' : ''}`

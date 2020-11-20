@@ -43,7 +43,7 @@ export namespace CommandParser {
             const flag = argument.flag || '_'
             const value = messageArgs[flag]
             const key = argument.key
-            if (argument.flag == 'h') {
+            if (argument.flag === 'h') {
                 helpCommand = true
                 break
             }
@@ -70,7 +70,7 @@ export namespace CommandParser {
             }
             args.set(key, parsedValue)
         }
-        if (invalidArgs.size != 0) {
+        if (invalidArgs.size !== 0) {
             invalidArgs.forEach(error => {
                 Logger.w(TAG, `Invalid argument, reason: ${error}`, context)
             })

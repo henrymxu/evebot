@@ -45,38 +45,38 @@ export namespace Lifecycle {
             })
         })
     }
+}
 
-    function isItself(voiceState: VoiceState): boolean {
-        return GlobalContext.getBotID() === voiceState?.member?.user.id
-    }
+function isItself(voiceState: VoiceState): boolean {
+    return GlobalContext.getBotID() === voiceState?.member?.user.id
+}
 
-    function isAlreadyInChannel(channel: VoiceChannel | null, botId: string): boolean {
-        try {
-            channel?.guild.channels.cache.filter(channel => channel.type === 'voice').forEach(channel => {
-                channel.members.forEach(member => {
-                    if (member.user && member.user.id === botId) {
-                        throw Error()
-                    }
-                })
+function isAlreadyInChannel(channel: VoiceChannel | null, botId: string): boolean {
+    try {
+        channel?.guild.channels.cache.filter(channel => channel.type === 'voice').forEach(channel => {
+            channel.members.forEach(member => {
+                if (member.user && member.user.id === botId) {
+                    throw Error()
+                }
             })
-        } catch {
-            return true
-        }
+        })
+    } catch {
+        return true
+    }
+    return false
+}
+
+function hasUserJoinedChannel(oldState: VoiceState, newState: VoiceState): boolean {
+    return oldState.channel === undefined && newState.channel !== undefined
+}
+
+function hasUserLeftChannel(oldState: VoiceState, newState: VoiceState): boolean {
+    return oldState.channel !== undefined && newState.channel === undefined
+}
+
+function hasUserChangedChannel(oldState: VoiceState, newState: VoiceState): boolean {
+    if (!oldState.channel || !newState.channel) {
         return false
     }
-
-    function hasUserJoinedChannel(oldState: VoiceState, newState: VoiceState): boolean {
-        return oldState.channel === undefined && newState.channel !== undefined
-    }
-
-    function hasUserLeftChannel(oldState: VoiceState, newState: VoiceState): boolean {
-        return oldState.channel !== undefined && newState.channel === undefined
-    }
-
-    function hasUserChangedChannel(oldState: VoiceState, newState: VoiceState): boolean {
-        if (!oldState.channel || !newState.channel) {
-            return false
-        }
-        return (oldState.channel && newState.channel) && (oldState.channelID !== newState.channelID)
-    }
+    return (oldState.channel && newState.channel) && (oldState.channelID !== newState.channelID)
 }

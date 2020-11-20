@@ -22,7 +22,7 @@ export namespace CommandRegistry {
     export function getCommandGroup(group: string): Map<string, Command> {
         const commandGroup = new Map<string, Command>()
         commands.forEach((command, keyword) => {
-            if (command.options.group == group) {
+            if (command.options.group === group) {
                 commandGroup.set(keyword, command)
             }
         })
@@ -79,10 +79,10 @@ function validateCommand(command: Command): boolean {
     if (firstCharacter === firstCharacter.toLowerCase() && firstCharacter !== firstCharacter.toUpperCase()) {
         throw(`${options.name} command name does not start with uppercase letter`)
     }
-    if (options.keywords.length == 0) {
+    if (options.keywords.length === 0) {
         throw(`${options.name} command does not have any keywords`)
     }
-    if (options.keywords.length != options.descriptions.length) {
+    if (options.keywords.length !== options.descriptions.length) {
         throw(`${options.name} command is missing / has to many descriptions (number of descriptions should match number of keywords)`)
     }
     options.keywords.forEach(keyword => {
@@ -91,7 +91,7 @@ function validateCommand(command: Command): boolean {
         }
     })
     commands.forEach(registeredCommand => {
-        if (registeredCommand.options.name == options.name) {
+        if (registeredCommand.options.name === options.name) {
             throw(`Multiple commands registered with name ${options.name}`)
         }
         const overlap = registeredCommand.options.keywords.filter(x => options.keywords.includes(x))
@@ -102,13 +102,13 @@ function validateCommand(command: Command): boolean {
     const argKeys = new Set<string>()
     const argFlags = new Set<string>()
     for (let argument of options.arguments) {
-        if (argument.key == 'keyword') {
+        if (argument.key === 'keyword') {
             throw(`${options.name} command, ${argument.key} cannot use key 'keyword'`)
         }
         if (argument.required && argument.default) {
             throw(`${options.name} command, ${argument.key} is required but has default value`)
         }
-        if (argument.flag == '_' || argument.flag == 'h') {
+        if (argument.flag === '_' || argument.flag === 'h') {
             throw(`${options.name} command, ${argument.key} cannot use flag '_' or 'h'. These are reserved for default and help options`)
         }
         const parsedFlag = argument.flag || '_'

@@ -18,13 +18,13 @@ export namespace GuildUtils {
 
     export function findTextChannelByName(context: GuildContext, name: string): TextChannel | undefined {
         let textChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text')
-            .find(channel => channel.name == name)
+            .find(channel => channel.name === name)
         return textChannel as TextChannel
     }
 
     export function findTextChannelByID(context: GuildContext, id: string): TextChannel | undefined {
         let textChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text')
-            .find(channel => channel.id == id)
+            .find(channel => channel.id === id)
         return textChannel as TextChannel
     }
 

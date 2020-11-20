@@ -16,10 +16,10 @@ export default abstract class VoiceCommand extends Command {
 
     protected preExecute(context: GuildContext, message?: Message): Promise<void> {
         const status = this.checkBotVoiceChannelStatus(context, message)
-        if (status == Status.READY) {
+        if (status === Status.READY) {
             return Promise.resolve()
         }
-        if (status == Status.NEEDS_JOIN) {
+        if (status === Status.NEEDS_JOIN) {
             if (this.botShouldNotJoinVoiceChannelIfNotReady()) {
                 return Promise.reject('Bot needs to be in the voice channel before this command is called')
             } else {
@@ -48,7 +48,7 @@ export default abstract class VoiceCommand extends Command {
             return Status.INVALID
         }
         if (this.botMustBeInTheSameVoiceChannel()) {
-            if (!userVoiceChannel || !botVoiceChannel || userVoiceChannel.id != botVoiceChannel.id) {
+            if (!userVoiceChannel || !botVoiceChannel || userVoiceChannel.id !== botVoiceChannel.id) {
                 Logger.w(VoiceCommand.name,
                     `Bot [${botVoiceChannel?.name}] was not in same voice channel as User [${userVoiceChannel?.name}]`, context)
                 return Status.INVALID

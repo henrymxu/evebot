@@ -50,7 +50,7 @@ export default class AudioPlayer {
     }
 
     pause(): boolean {
-        if (!this.getConnection()?.dispatcher || this.state == AudioPlayerState.PAUSED) {
+        if (!this.getConnection()?.dispatcher || this.state === AudioPlayerState.PAUSED) {
             return false
         }
         this.getConnection()?.dispatcher.pause()
@@ -59,7 +59,7 @@ export default class AudioPlayer {
     }
 
     resume(): boolean {
-        if (!this.getConnection()?.dispatcher || this.state != AudioPlayerState.PAUSED) {
+        if (!this.getConnection()?.dispatcher || this.state !== AudioPlayerState.PAUSED) {
             return false
         }
         if (this.getConnection()?.dispatcher) {
@@ -106,9 +106,9 @@ export default class AudioPlayer {
             this.prepareToPlay(true)
             return
         }
-        if (this.state == AudioPlayerState.PLAYING && this.trackQueue.length > 0) {
+        if (this.state === AudioPlayerState.PLAYING && this.trackQueue.length > 0) {
             this.trackQueue[0].setPaused()
-        } else if (this.state == AudioPlayerState.INTERRUPTING && this.interruptQueue.size() > 1) {
+        } else if (this.state === AudioPlayerState.INTERRUPTING && this.interruptQueue.size() > 1) {
             if (this.interruptQueue.peek() === this.currentInterrupt) {
                 return
             }

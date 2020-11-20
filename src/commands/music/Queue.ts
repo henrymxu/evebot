@@ -36,7 +36,7 @@ export default class QueueCommand extends Command {
 }
 
 function createQueueMessage(context: GuildContext, tracks: Track[]): MessageEmbed | string {
-    if (tracks.length == 0) {
+    if (tracks.length === 0) {
         return createErrorMessage(context)
     }
     return TrackMessageFactory.createQueuedTracksMessage(context, tracks)

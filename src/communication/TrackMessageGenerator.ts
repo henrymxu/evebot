@@ -80,16 +80,16 @@ export namespace TrackMessageFactory {
         embed.setImage(album.metadata.imageURL)
         return embed
     }
+}
 
-    function createProgressBar(track: Track): string {
-        const barLength = 25
-        const filledLength = Math.floor(barLength * (track.getElapsedTimeInSeconds() / track.getLength()))
-        const numberOfBrackets = filledLength > 2 ? 1 : 0 // Open and close brackets
-        const numberOfFilled = filledLength > 2 ? filledLength - 2 : filledLength
-        const bar = '<'.repeat(numberOfBrackets) + '='.repeat(numberOfFilled) +
-                '>'.repeat(numberOfBrackets) + '-'.repeat(barLength - (numberOfFilled + 2 * numberOfBrackets))
-        const elapsedTimeString = Utils.convertSecondsToTimeString(track.getElapsedTimeInSeconds())
-        const totalTimeString = Utils.convertSecondsToTimeString(track.getLength())
-        return `[${bar}] < ${elapsedTimeString} > / ${totalTimeString}`
-    }
+function createProgressBar(track: Track): string {
+    const barLength = 25
+    const filledLength = Math.floor(barLength * (track.getElapsedTimeInSeconds() / track.getLength()))
+    const numberOfBrackets = filledLength > 2 ? 1 : 0 // Open and close brackets
+    const numberOfFilled = filledLength > 2 ? filledLength - 2 : filledLength
+    const bar = '<'.repeat(numberOfBrackets) + '='.repeat(numberOfFilled) +
+        '>'.repeat(numberOfBrackets) + '-'.repeat(barLength - (numberOfFilled + 2 * numberOfBrackets))
+    const elapsedTimeString = Utils.convertSecondsToTimeString(track.getElapsedTimeInSeconds())
+    const totalTimeString = Utils.convertSecondsToTimeString(track.getLength())
+    return `[${bar}] < ${elapsedTimeString} > / ${totalTimeString}`
 }

@@ -26,7 +26,7 @@ export default class LoggingCommand extends Command {
                 required: false,
                 type: ArgumentType.STRING,
                 validate: (context: GuildContext, arg: any) => {
-                    return (arg == 'i' || arg == 'd' || arg == 'w' || arg == 'e')
+                    return (arg === 'i' || arg === 'd' || arg === 'w' || arg === 'e')
                 }
             }
         ],

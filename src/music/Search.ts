@@ -15,14 +15,14 @@ export namespace Search {
     export function search(query: string): Promise<Track[]> {
         return new Promise((res, rej) => {
             parseQueryForType(query).then(async (result) => {
-                if (result.metadata.mode == "single") {
+                if (result.metadata.mode === "single") {
                     resolveSingleTrack(result).then((trackInfo) => {
                         res([trackInfo])
                     }).catch(err => { rej(err) })
-                } else if (result.metadata.mode == "playlist") {
-
-                } else if (result.metadata.mode == "stream") {
-
+                } else if (result.metadata.mode === "playlist") {
+                    // TODO: handle playlist result
+                } else if (result.metadata.mode === "stream") {
+                    // TODO: handle stream result
                 }
             }).catch(err => {
                 Logger.e(TAG, `Error searching for track ${query}, reason: ${err}`)

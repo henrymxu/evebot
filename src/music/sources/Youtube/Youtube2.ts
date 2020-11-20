@@ -14,7 +14,7 @@ export default class Youtube2 implements TrackSource {
             this.api.searchVideos(query, 3, {
                 'relevanceLanguage': 'en'
             }).then((results: any[]) => {
-                if (results.length == 0) {
+                if (results.length === 0) {
                     rej(`No search results found for ${query}`)
                 }
                 const searchResult: SearchResult = {

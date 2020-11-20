@@ -8,7 +8,7 @@ export interface Storage {
     save(params: any): Promise<void>
 }
 
-const storage: Storage = Keys.get('bot_environment') == 'production' ? new AWSStorage() : new LocalStorage()
+const storage: Storage = Keys.get('bot_environment') === 'production' ? new AWSStorage() : new LocalStorage()
 const CONFIG_TABLE_NAME = 'Configs'
 
 export namespace Storage {

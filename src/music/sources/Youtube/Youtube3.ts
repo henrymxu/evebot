@@ -9,8 +9,8 @@ export default class Youtube3 implements TrackSource {
     getTrackURLFromSearch(query: string): Promise<SearchResult> {
         return new Promise((res, rej) => {
             ytsr(query, {limit: 5}).then((result: Result) => {
-                const videos = result.items.filter((item: Item) => item.type == 'video')
-                if (videos.length == 0) {
+                const videos = result.items.filter((item: Item) => item.type === 'video')
+                if (videos.length === 0) {
                     rej(`No search results found for ${query}`)
                 }
                 const searchResult: SearchResult = {
