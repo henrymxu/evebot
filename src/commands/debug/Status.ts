@@ -56,8 +56,9 @@ function getStatusResponse(context: GuildContext): string {
 
     const tableHeader2 = ['SpeechProvider', 'Status']
     const tableData2: string[][] = []
-    tableData2.push(['HotwordEngine', context.getVoiceDependencyProvider().getHotwordEngine().getStatus()])
-    tableData2.push(['Hotwords', context.getVoiceDependencyProvider().getHotwordEngine().getHotwords().join(', ')])
+    const hotwordEngine = context.getVoiceDependencyProvider().getHotwordEngine()
+    tableData2.push(['HotwordEngine', hotwordEngine ? hotwordEngine.getStatus() : 'None'])
+    tableData2.push(['Hotwords', hotwordEngine ? hotwordEngine.getHotwords().join(', ') : 'None'])
     tableData2.push(['SpeechGeneration',
         (context.getVoiceDependencyProvider().getSpeechGenerator() as unknown as SpeechProvider).getStatus()])
     tableData2.push(['SpeechRecognition',
