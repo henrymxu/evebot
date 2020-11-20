@@ -28,6 +28,9 @@ export namespace Logger {
     }
 }
 
+/**
+ * Don't use responder to send logging message, this may create an infinite loop
+ */
 function sendMessageToLoggingChannel(level: string, tag: string, log: string, context?: GuildContext) {
     if (!context) {
         return

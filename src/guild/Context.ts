@@ -52,6 +52,7 @@ export class GuildContext {
     }
 
     getGuild(): Guild {
+        // TODO: Check if this is actually okay (i.e when bot is added to a new guild, does this still work?)
         return GlobalContext.getClient().guilds.resolve(this.id)!
     }
 

@@ -43,8 +43,7 @@ export default class YoutubeTrack extends Track {
 
     loadStream(context: GuildContext): Promise<Readable> {
         this.state = TrackState.LOADING
-        const sGen = context.getVoiceDependencyProvider()
-            .getSpeechGenerator()
+        const sGen = context.getVoiceDependencyProvider().getSpeechGenerator()
         const announceResult = sGen
             ? sGen.asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`) : Promise.resolve()
         const songStream = ytdl(this.youtubeInfo.url, {filter: 'audioonly', opusEncoded: true})
@@ -52,11 +51,8 @@ export default class YoutubeTrack extends Track {
             // @ts-ignore
             Promise.all([announceResult, songStream]).then((streams: (Readable | SpeechGeneratorResult | void)[]) => {
                 const announceStream = streams[0] ? (streams[0] as SpeechGeneratorResult).stream : undefined
-                if (announceStream) {
-                    this.stream = StreamUtils.mergeAsync(announceStream, streams[1] as Readable)
-                } else {
-                    this.stream = streams[1] as Readable
-                }
+                this.stream = announceStream ?
+                    StreamUtils.mergeAsync(announceStream, streams[1] as Readable) : streams[1] as Readable
                 this.state = TrackState.LOADED
                 this.announcementLength = (streams[0] as SpeechGeneratorResult).length
                 res(this.stream)

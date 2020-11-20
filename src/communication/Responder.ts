@@ -2,7 +2,9 @@ import {GuildContext} from "../guild/Context"
 import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
 import {Communicator} from "./Communicator"
 import {MessageGenerator} from "./MessageGenerator"
+import {Logger} from "../Logger"
 
+const TAG = 'Responder'
 const DEFAULT_EMOJIS = ['👌', '👎']
 
 export default class Responder {
@@ -28,10 +30,10 @@ export default class Responder {
         }
         const options = message.options || {}
         options.split = true
-        return new Promise((res) => {
+        return new Promise((res, rej) => {
             const textChannel = message.message ? (message.message.channel as TextChannel) : this.context.getTextChannel()
             if (!textChannel) {
-                console.error(`TextChannel is undefined`)
+                rej(`TextChannel is undefined`)
                 return
             }
             Communicator.send(message.content, options, textChannel).then((result) => {
@@ -50,7 +52,7 @@ export default class Responder {
                 })
                 res(results)
             }).catch(err => {
-                console.error(`Sending message failed ${err.toString}`)
+                rej(`Sending message failed ${err.toString}`)
             })
         })
     }
@@ -62,7 +64,7 @@ export default class Responder {
                 message.delete({
                     timeout: delay * 1000
                 }).catch(err => {
-                    console.error(`Deleting message failed ${err.toString()}`)
+                    Logger.e(TAG, err)
                 })
             })
         }

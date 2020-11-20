@@ -52,15 +52,13 @@ export namespace Lifecycle {
 
     function isAlreadyInChannel(channel: VoiceChannel | null, botId: string): boolean {
         try {
-            if (channel) {
-                channel.guild.channels.cache.filter(channel => channel.type === 'voice').forEach(channel => {
-                    channel.members.forEach(member => {
-                        if (member.user && member.user.id === botId) {
-                            throw Error()
-                        }
-                    })
+            channel?.guild.channels.cache.filter(channel => channel.type === 'voice').forEach(channel => {
+                channel.members.forEach(member => {
+                    if (member.user && member.user.id === botId) {
+                        throw Error()
+                    }
                 })
-            }
+            })
         } catch {
             return true
         }

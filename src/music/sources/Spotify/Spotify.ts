@@ -167,7 +167,7 @@ function convertResponseToSpotifyAlbum(album: any, tracks: ExternalTrackInfo[]):
 }
 
 function convertResponseToSpotifyTracks(tracks: any[]): ExternalTrackInfo[] {
-    return tracks.map((track: any) => convertResponseToSpotifyTrack(track))
+    return tracks.map((track) => convertResponseToSpotifyTrack(track))
 }
 
 function convertResponseToSpotifyTrack(result: any): ExternalTrackInfo {

@@ -1,6 +1,6 @@
 import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
-import VoiceCommand, {Status} from "../../voice/VoiceCommand"
+import VoiceCommand from "../../voice/VoiceCommand"
 import {ArgumentType, CommandOptions} from "../Command"
 import {Logger} from "../../Logger"
 

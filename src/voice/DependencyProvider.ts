@@ -10,7 +10,7 @@ export class VoiceDependencyProvider {
         this.hotwordEngine = hotwordEngine
     }
 
-    getHotwordEngine(): HotwordEngine {
+    getHotwordEngine(): HotwordEngine | undefined {
         return this.hotwordEngine
     }
 
