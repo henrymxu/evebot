@@ -65,7 +65,7 @@ export class GuildContext {
 }
 
 export function findDefaultTextChannel(context: GuildContext): TextChannel {
-    const desiredChannelId = context.getConfig()["defaultTextChannel"]
+    const desiredChannelId = context.getConfig().getDefaultTextChannel()
     let textChannel = GuildUtils.findTextChannelByID(context, desiredChannelId)
     if (!textChannel) {
         // @ts-ignore

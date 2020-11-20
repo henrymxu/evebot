@@ -23,7 +23,7 @@ export class Config {
     }
 
     getPrefix(): string {
-        return this.json.prefix
+        return this.json['prefix']
     }
 
     setPrefix(prefix: string) {
@@ -31,7 +31,7 @@ export class Config {
     }
 
     getDefaultPrivilege(): boolean {
-        return this.json.defaultPrivilege
+        return this.json['defaultPrivilege']
     }
 
     setDefaultPrivilege(privilege: boolean) {
@@ -39,7 +39,7 @@ export class Config {
     }
 
     getDefaultTextChannel(): string {
-        return this.json.defaultTextChannel
+        return this.json['defaultTextChannel']
     }
 
     setDefaultTextChannel(textChannelID: string) {
@@ -47,7 +47,7 @@ export class Config {
     }
 
     getLogging(): Logging {
-        return this.json.logging
+        return this.json['logging']
     }
 
     setLogging(channelID: string, level: string) {
@@ -58,7 +58,7 @@ export class Config {
     }
 
     getUserIDForNickname(nickname: string): string {
-        return this.json.nicknames[nickname]
+        return this.json['nicknames'][nickname]
     }
 
     getNicknames(userID: string): Nicknames {
@@ -76,7 +76,7 @@ export class Config {
     }
 
     getCommandNameFromAlias(alias: string): string {
-        return this.json.aliases[alias]
+        return this.json['aliases'][alias]
     }
 
     getAliases(command: string): Aliases {
@@ -114,18 +114,18 @@ export class Config {
 
     getPrivileges(): Privilege[] {
         const privileges: Privilege[] = []
-        Object.keys(this.json.privileges).forEach(key => {
+        Object.keys(this.json['privileges']).forEach(key => {
             privileges.push(this.getPrivilege(key))
         })
         return privileges
     }
 
     hasPrivilege(key: string): boolean {
-        return this.json.privileges[key] !== undefined
+        return this.json['privileges'][key] !== undefined
     }
 
     getPrivilege(key: string): Privilege {
-        let privilege = this.json.privileges[key]
+        let privilege = this.json['privileges'][key]
         return privilege ? {
             command: key,
             grantedRoles: new Set(privilege.grantedRoles || []),
@@ -136,7 +136,7 @@ export class Config {
     }
 
     deletePrivilege(name: string) {
-        this.json.privileges.delete(name)
+        delete this.json['privileges'][name]
         this.save()
     }
 
@@ -147,15 +147,13 @@ export class Config {
     }
 
     denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
-        console.log(`deny ${entities}`)
         entities.forEach(entity => {
             Config.modifyEntityPrivilege(this, privilegeName, entity, false)
         })
     }
 
     removeEntitiesFromPrivilege(privilegeName: string, entities: (User | Role)[]) {
-        console.log(`remove ${entities}`)
-        let privilege = this.json.privileges[privilegeName]
+        let privilege = this.json['privileges'][privilegeName]
         if (privilege) {
             const ids = entities.map(entity => entity.id)
             privilege.grantedRoles = removeArrayFromArray(privilege.grantedRoles, ids)
@@ -166,7 +164,7 @@ export class Config {
     }
 
     private static modifyEntityPrivilege(config: Config, privilegeName: string, entity: User | Role, isGranting: boolean) {
-        let privilege = config.json.privileges[privilegeName] || createPrivilege()
+        let privilege = config.json['privileges'][privilegeName] || createPrivilege()
         let baseKey = entity instanceof User ? 'Users' : 'Roles'
         let addingToKey = `${isGranting ? 'granted' : 'denied'}${baseKey}`
         let removingFromKey = `${isGranting ? 'denied' : 'granted'}${baseKey}`
@@ -182,10 +180,10 @@ export class Config {
     }
 
     private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string,
-                                     validate?: (Config, string) => boolean): Error {
+                                     validate?: (arg0: Config, arg1: string) => boolean): Error {
         const alreadyHad = []
         keys.forEach(key => {
-            if (validate(Config, key)) {
+            if (validate(config, key)) {
                 alreadyHad.push(`${key} => ${config.json[entry][key]}`)
             }
             config.json[entry][key] = value
@@ -196,7 +194,7 @@ export class Config {
 
     private static removeKeysFromMap(config: Config, entry: string, keys: string[]) {
         keys.forEach(key => {
-            config[entry]?.delete(key)
+            config.json[entry]?.delete(key)
         })
         config.save()
     }

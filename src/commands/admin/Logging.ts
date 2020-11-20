@@ -17,7 +17,7 @@ export default class LoggingCommand extends Command {
                 description: 'Logging text channel',
                 required: false,
                 type: ArgumentType.STRING,
-                validate: (context, arg) => GuildUtils.findTextChannelByName(context, arg) != null
+                validate: (context: GuildContext, arg: any) => GuildUtils.findTextChannelByName(context, arg) != null
             },
             {
                 key: 'level',
@@ -25,7 +25,7 @@ export default class LoggingCommand extends Command {
                 description: 'Logging level (i = info, d = debug, w = warning, e = error)',
                 required: false,
                 type: ArgumentType.STRING,
-                validate: (context, arg) => {
+                validate: (context: GuildContext, arg: any) => {
                     return (arg == 'i' || arg == 'd' || arg == 'w' || arg == 'e')
                 }
             }

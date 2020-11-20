@@ -48,7 +48,7 @@ export namespace TrackMessageFactory {
 
     export function createQueuedTracksMessage(context: GuildContext, tracks: Track[]): string {
         const tableHeaders = ['Track Name', 'Artist', 'Requester', 'Length']
-        const tableData = []
+        const tableData: string[][] = []
         let totalLength = 0
         let currentTrackProgress: String
         tracks.forEach((track) => {

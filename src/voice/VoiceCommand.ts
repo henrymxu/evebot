@@ -14,7 +14,7 @@ export default abstract class VoiceCommand extends Command {
         return false
     }
 
-    protected preExecute(context: GuildContext, message?: Message): Promise<any> {
+    protected preExecute(context: GuildContext, message?: Message): Promise<void> {
         const status = this.checkBotVoiceChannelStatus(context, message)
         if (status == Status.READY) {
             return Promise.resolve()
@@ -55,7 +55,7 @@ export default abstract class VoiceCommand extends Command {
         return Status.NEEDS_JOIN
     }
 
-    protected async joinVoiceChannel(context: GuildContext, message?: Message): Promise<any> {
+    protected async joinVoiceChannel(context: GuildContext, message?: Message): Promise<void> {
         try {
             await context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(message.member.voice.channel)
         } catch {

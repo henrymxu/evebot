@@ -66,8 +66,8 @@ function createMultipleCommandHelpMessage(context: GuildContext, commandsByGroup
 }
 
 function createGroupCommandTable(commands: Map<string, Command>): string {
-    const tableData = []
     const tableHeaders = ['Group', 'Keyword', 'Description']
+    const tableData: string[][] = []
     commands.forEach((command, keyword) => {
         tableData.push([command.options.group, keyword,
             command.options.descriptions[command.options.keywords.indexOf(keyword)]])
@@ -84,7 +84,7 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     const aliasesString = aliases.length > 0 ? aliases.reduce((result, alias) => `${result}, ${alias}`) : ''
     description += `Keyword: <${keyword}${aliasesString}>\n`
     if (command.options.arguments.length > 0) {
-        const tableData = []
+        const tableData: string[][] = []
         const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Default']
         command.options.arguments.forEach((argument) => {
             const flag = argument.flag != '_' ? argument.flag : ''
