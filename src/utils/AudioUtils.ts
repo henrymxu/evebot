@@ -86,12 +86,7 @@ export namespace AudioUtils {
         return opusEncoder
     }
 
-    /**
-     *
-     * @param audioStream
-     * @param {string} outputPath
-     */
-    export function writeStreamToWavFile(audioStream, outputPath) {
+    export function writeStreamToWavFile(audioStream: Readable, outputPath: string) {
         const wavWriter = new FileWriter(`${outputPath}`, {
             "channels": 2,
             "sampleRate": 48000,

@@ -54,7 +54,7 @@ export default class MacrosCommand extends Command {
         const tableHeaders = ['Name', 'Command', 'Creator']
         const tableData: string[][] = []
         context.getConfig().getMacros().forEach((command, key) => {
-            tableData.push([key, command.command, GuildUtils.parseUserFromUserID(context, command.creator).username])
+            tableData.push([key, command.command, GuildUtils.parseUserFromUserID(context, command.creator)!.username])
         })
         const content = TableGenerator.createTable(tableHeaders, tableData)
         context.getProvider().getResponder().send({content: content, message: message, options: {code: true}}, 20)

@@ -1,4 +1,4 @@
-import {Duplex, Transform} from "stream"
+import {Duplex, Transform, TransformCallback} from "stream"
 
 const MAX_BUFFER_SIZE = 500 // Buffer in seconds is approximately MAX_BUFFER_SIZE / 50
 export default class RecorderStream extends Transform {
@@ -26,7 +26,7 @@ export default class RecorderStream extends Transform {
         return Buffer.concat(this.rollingBuffer.slice(-numberOfChunks))
     }
 
-    _transform(chunk, encoding, callback) {
+    _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
         if (!this.isWriting) {
             if (this.rollingBuffer.length > MAX_BUFFER_SIZE) { // Chunk size ~3840
                 this.rollingBuffer.shift()

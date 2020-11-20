@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "preinstall": "npx npm-force-resolutions"
+    "preinstall": "npx npm-force-resolutions",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
   },
   "config": {
     "unsafe-perm": true
@@ -44,10 +51,16 @@
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
-    "@types/node": "^14.6.4",
+    "@types/defaults": "^1.0.3",
+    "@types/node": "^14.11.2",
+    "@types/priorityqueuejs": "^1.0.1",
+    "@types/require-all": "^3.0.1",
+    "@types/table": "^6.0.0",
+    "@types/wav": "^1.0.0",
     "@types/yargs": "^15.0.5",
+    "gts": "^3.0.2",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.3"
   },
   "resolutions": {
     "ytdl-core": "^4.0.3",

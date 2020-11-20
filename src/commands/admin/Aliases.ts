@@ -50,6 +50,9 @@ export default class AliasesCommand extends Command {
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         const command = CommandRegistry.getCommand(context, args.get('command'))
+        if (!command) {
+            throw Error(`Command ${args.get('command')} not found`)
+        }
         if (!args.get('list') && (args.get('add') || args.get('remove'))) {
             context.getConfig().addAliases(command.options.name.toLowerCase(), args.get('add') || [])
             context.getConfig().removeAliases(command.options.name.toLowerCase(), args.get('remove') || [])

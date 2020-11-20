@@ -1,5 +1,6 @@
 node_modules/
 dist/
+build/
 keys
 keys.json
 configs/

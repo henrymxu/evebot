@@ -7,7 +7,7 @@ const commands: Map<string, Command> = new Map()
 const groups: Set<string> = new Set()
 
 export namespace CommandRegistry {
-    export function getCommand(context: GuildContext, keyword: string) {
+    export function getCommand(context: GuildContext, keyword: string): Command | undefined {
         let command = commands.get(keyword.toLowerCase())
         if (!command) {
             command = commands.get(context.getConfig().getCommandNameFromAlias(keyword.toLowerCase()))
@@ -43,7 +43,7 @@ export namespace CommandRegistry {
             filter: /^([^.].*)\.(ts|js)(on)?$/
         })
 
-        function getLeafNodes(nodes: object, result = []): any[] {
+        function getLeafNodes(nodes: object, result: any[] = []): any[] {
             Object.values(nodes).forEach((node) => {
                 if (node.default) {
                     result.push(node)

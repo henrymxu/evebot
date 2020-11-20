@@ -17,7 +17,7 @@ export default class LoggingCommand extends Command {
                 description: 'Logging text channel',
                 required: false,
                 type: ArgumentType.STRING,
-                validate: (context: GuildContext, arg: any) => GuildUtils.findTextChannelByName(context, arg) != null
+                validate: (context: GuildContext, arg: any) => GuildUtils.findTextChannelByName(context, arg) !== undefined
             },
             {
                 key: 'level',
@@ -40,11 +40,10 @@ export default class LoggingCommand extends Command {
                 {content: createCurrentLoggingTextChannelEmbed(context), message: message}, 20)
             return
         }
-        const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))
+        const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))!
         const flag = args.get('flag') || 'e'
         context.getConfig().setLogging(textChannel.id, flag)
-        Logger.i(context, LoggingCommand.name,
-            `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`)
+        Logger.i(LoggingCommand.name, `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`, context)
         context.getProvider().getResponder().acknowledge(0, message)
     }
 }

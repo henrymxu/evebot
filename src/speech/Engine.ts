@@ -18,23 +18,37 @@ export namespace SpeechEngine {
                 }
             }
         }
-        return null
+        return new StubSpeechProvider()
     }
 
-    export function getGenerator(): SpeechGenerator {
+    export function getGenerator(): SpeechGenerator | undefined {
         return findProvider(providers.filter(provider => {
             return provider.asGenerator()
         })).asGenerator()
     }
 
-    export function getRecognizer(): SpeechRecognizer {
+    export function getRecognizer(): SpeechRecognizer | undefined {
         return findProvider(providers.filter(provider => {
             return provider.asRecognizer()
         })).asRecognizer()
     }
+}
 
-    export function getProviderStatus(): string {
-        const provider = findProvider(providers)
-        return provider ? provider.getStatus() : 'Unavailable'
+class StubSpeechProvider implements SpeechProvider {
+    asGenerator(): SpeechGenerator | undefined {
+        return undefined;
     }
+
+    asRecognizer(): SpeechRecognizer | undefined {
+        return undefined;
+    }
+
+    getStatus(): string {
+        return "No Registered Speech Provider";
+    }
+
+    requiredConfigVariables(): string[] {
+        return [];
+    }
+
 }

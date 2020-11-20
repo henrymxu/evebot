@@ -44,8 +44,8 @@ export default class ClipCommand extends VoiceCommand {
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         const user: User = args.get('user')
         const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
-        if (voiceStream == null) {
-            Logger.w(context, ClipCommand.name, `No audioStream for ${user.tag} [${user.id}]`)
+        if (!voiceStream) {
+            Logger.w(ClipCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)
             context.getProvider().getResponder().error('No listening stream registered for user', message)
             return
         }
@@ -58,16 +58,15 @@ export default class ClipCommand extends VoiceCommand {
                 context.getProvider().getResponder().send({content: embed, message: message}).then((results) => {
                     context.getProvider().getResponder().stopTyping(message)})
             }).catch((err) => {
-                Logger.e(context, ClipCommand.name,
-                    `There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`)
+                Logger.e(ClipCommand.name, `There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`, context)
             })
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return true
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return true
     }
 

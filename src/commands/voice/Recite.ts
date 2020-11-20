@@ -42,25 +42,29 @@ export default class ReciteCommand extends VoiceCommand {
         const user: User = args.get('user')
         const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
         if (!voiceStream) {
-            Logger.w(context, ReciteCommand.name, `No audioStream for ${user.tag} [${user.id}]`)
+            Logger.w(ReciteCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)
             context.getProvider().getResponder().error('No listening stream registered for user', message)
             return
         }
         context.getProvider().getInterruptService().playRawStream(voiceStream.getRecordedStream(args.get('length')))
         if (args.get('transcribe')) {
-            context.getVoiceDependencyProvider().getSpeechRecognizer().recognizeTextFromSpeech(voiceStream)
-                .then((transcribed) => {
-                    const transcribedMessage = `${GuildUtils.createUserMentionString(user.id)} said ${transcribed}`
-                    context.getProvider().getResponder().send({content: transcribedMessage, message: message})
-                })
+            const speechRecognizer = context.getVoiceDependencyProvider().getSpeechRecognizer()
+            if (!speechRecognizer) {
+                Logger.e(ReciteCommand.name, 'No SpeechRecognizer Registered', context)
+                return
+            }
+            speechRecognizer.recognizeTextFromSpeech(voiceStream).then((transcribed) => {
+                const transcribedMessage = `${GuildUtils.createUserMentionString(user.id)} said ${transcribed}`
+                context.getProvider().getResponder().send({content: transcribedMessage, message: message})
+            })
         }
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return true;
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return false;
     }
 

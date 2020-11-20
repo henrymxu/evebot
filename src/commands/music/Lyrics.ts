@@ -43,7 +43,7 @@ export default class LyricsCommand extends Command {
                 {content: result.lyrics,
                     message: message, options: {code: 'Markdown', embed: embed}})
         }).catch(err => {
-            Logger.e(context, LyricsCommand.name, `Error retrieving lyrics for ${query}, reason: ${err}`)
+            Logger.e(LyricsCommand.name, `Error retrieving lyrics for ${query}, reason: ${err}`, context)
             context.getProvider().getResponder().acknowledge(1, message)
         })
     }

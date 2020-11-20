@@ -1,7 +1,8 @@
 import {Message, User} from "discord.js"
 import {GuildContext} from "../../guild/Context"
-import VoiceCommand from "../../voice/VoiceCommand"
+import VoiceCommand, {Status} from "../../voice/VoiceCommand"
 import {ArgumentType, CommandOptions} from "../Command"
+import {Logger} from "../../Logger"
 
 export default class SayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -30,18 +31,23 @@ export default class SayCommand extends VoiceCommand {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        context.getVoiceDependencyProvider().getSpeechGenerator().asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
+        const speechGenerator = context.getVoiceDependencyProvider().getSpeechGenerator()
+        if (!speechGenerator) {
+            Logger.e(SayCommand.name, 'No SpeechGenerator Registered', context)
+            return
+        }
+        context.getVoiceDependencyProvider().getSpeechGenerator()!.asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
             .then((result) => {
                 context.getProvider().getInterruptService().playOpusStream(result.stream)
                 context.getProvider().getResponder().acknowledge(0, message)
             })
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return false;
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return false;
     }
 

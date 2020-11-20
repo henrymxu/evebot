@@ -17,7 +17,7 @@ export default class DefaultTextChannelCommand extends Command {
                 description: 'Default Text Channel',
                 required: false,
                 type: ArgumentType.STRING,
-                validate: (context: GuildContext, arg: any) => GuildUtils.findTextChannelByName(context, arg) != null
+                validate: (context: GuildContext, arg: any) => GuildUtils.findTextChannelByName(context, arg) !== undefined
             }
         ],
         permissions: ['MANAGE_CHANNELS'],
@@ -30,10 +30,9 @@ export default class DefaultTextChannelCommand extends Command {
                 {content: createCurrentDefaultTextChannelEmbed(context), message: message}, 20)
             return
         }
-        const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))
+        const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))!
         context.getConfig().setDefaultTextChannel(textChannel.id)
-        Logger.i(context, DefaultTextChannelCommand.name,
-            `Successfully set DefaultTextChannel to ${textChannel.name} | ${textChannel.id}`)
+        Logger.i(DefaultTextChannelCommand.name, `Successfully set DefaultTextChannel to ${textChannel.name} | ${textChannel.id}`, context)
         context.getProvider().getResponder().acknowledge(0, message)
     }
 }

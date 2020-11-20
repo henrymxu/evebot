@@ -13,7 +13,7 @@ export default class Throttler {
         if (!this.cache.has(key)) {
             this.cache.set(key, [], command.options.throttleRate.seconds)
         }
-        let prevCommands: any[] = this.cache.get(key)
+        let prevCommands: any[] = this.cache.get(key) || []
         if (prevCommands.length > command.options.throttleRate.count) {
             return true
         }

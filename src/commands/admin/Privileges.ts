@@ -64,7 +64,7 @@ export default class PrivilegesCommand extends Command {
                     30)
             return
         }
-        const privilegeName = CommandRegistry.getCommand(context, args.get('privilegeName')).options.name.toLowerCase()
+        const privilegeName = CommandRegistry.getCommand(context, args.get('privilegeName'))!.options.name.toLowerCase()
         if (args.get('delete')) {
             context.getConfig().deletePrivilege(privilegeName)
             context.getProvider().getResponder().acknowledge(0, message)
@@ -72,11 +72,11 @@ export default class PrivilegesCommand extends Command {
         }
         if (args.get('grant') || args.get('deny') || args.get('remove')) {
             context.getConfig().grantEntitiesPrivilege(privilegeName, (args.get('grant') || [])
-                .map(name => mapNameToUserOrRole(context, name)))
+                .map((name: string) => mapNameToUserOrRole(context, name)))
             context.getConfig().denyEntitiesPrivilege(privilegeName, (args.get('deny') || [])
-                .map(name => mapNameToUserOrRole(context, name)))
+                .map((name: string) => mapNameToUserOrRole(context, name)))
             context.getConfig().removeEntitiesFromPrivilege(privilegeName, (args.get('remove') || [])
-                .map(name => mapNameToUserOrRole(context, name)))
+                .map((name: string) => mapNameToUserOrRole(context, name)))
         }
         const response = createPrivilegeMessage(context, context.getConfig().getPrivilege(privilegeName))
         context.getProvider().getResponder().send(
@@ -85,7 +85,7 @@ export default class PrivilegesCommand extends Command {
     }
 }
 
-function mapNameToUserOrRole(context: GuildContext, name: string): User | Role {
+function mapNameToUserOrRole(context: GuildContext, name: string): User | Role | undefined {
     let role = GuildUtils.parseRoleFromString(context, name)
     if (role) {
         return role
@@ -93,7 +93,7 @@ function mapNameToUserOrRole(context: GuildContext, name: string): User | Role {
     return GuildUtils.parseUserFromString(context, name)
 }
 
-function createPrivilegeMessage(context: GuildContext, privilege: Privilege): string {
+function createPrivilegeMessage(context: GuildContext, privilege?: Privilege): string {
     if (!privilege) {
         return 'Privilege does not exist, create one first'
     }
@@ -102,10 +102,16 @@ function createPrivilegeMessage(context: GuildContext, privilege: Privilege): st
     function addRowsToTable(users: Set<string>, roles: Set<string>): string[][] {
         const rows: string[][] = []
         users.forEach((userID) => {
-            rows.push(['User', GuildUtils.parseUserFromUserID(context, userID).username])
+            const user = GuildUtils.parseUserFromUserID(context, userID)?.username
+            if (user) {
+                rows.push(['User', user])
+            }
         })
         roles.forEach((roleID) => {
-            rows.push(['Role', GuildUtils.parseRoleFromRoleID(context, roleID).name])
+            const role = GuildUtils.parseRoleFromRoleID(context, roleID)?.name
+            if (role) {
+                rows.push(['Role', role])
+            }
         })
         return rows
     }
@@ -119,10 +125,10 @@ function createPrivilegeMessage(context: GuildContext, privilege: Privilege): st
 
 function createPrivilegesListMessage(privileges: Privilege[]): string {
     const tableHeaders = ['Privilege For', 'Grants', 'Denies']
-    const tableData = []
+    const tableData: string[][] = []
     privileges.forEach((privilege) => {
-        tableData.push([privilege.command, privilege.grantedRoles.size + privilege.grantedUsers.size,
-            privilege.deniedRoles.size + privilege.deniedUsers.size])
+        tableData.push([privilege.command, (privilege.grantedRoles.size + privilege.grantedUsers.size).toString(),
+            (privilege.deniedRoles.size + privilege.deniedUsers.size).toString()])
     })
     return TableGenerator.createTable(tableHeaders, tableData)
 }

@@ -13,7 +13,7 @@ export default class ReconnectCommand extends VoiceCommand {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        const currentVoiceChannel = context.getVoiceConnection().channel
+        const currentVoiceChannel = context.getVoiceConnection()?.channel
         context.getProvider().getVoiceConnectionHandler().disconnect().then(() => {
             setTimeout(() => {
                 context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(currentVoiceChannel).then(() => {
@@ -23,11 +23,11 @@ export default class ReconnectCommand extends VoiceCommand {
         })
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return true;
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return true;
     }
 

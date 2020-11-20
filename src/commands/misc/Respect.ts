@@ -30,6 +30,9 @@ export class RespectCommand extends Command {
                 func = disrespect
                 break
             }
+            default: {
+                func = respect
+            }
         }
         const response = func(context, source, args.get('user'))
         context.getProvider().getResponder().send({content: response, id: 'disrespect', message: message}, 30)

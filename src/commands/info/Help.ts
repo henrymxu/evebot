@@ -24,11 +24,11 @@ export default class HelpCommand extends Command {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        const commands = CommandRegistry.getCommands()
         if (args.get('query')) {
-            let response = null
-            if (commands.has(args.get('query'))) {
-                response = createSingleCommandHelpMessage(context, args.get('query'), commands.get(args.get('query')))
+            let response = ''
+            const command = CommandRegistry.getCommand(context, args.get('query'))
+            if (command) {
+                response = createSingleCommandHelpMessage(context, args.get('query'), command)
             } else {
                 const group = CommandRegistry.getCommandGroup(args.get('query'))
                 if (group.size > 0) {
@@ -97,7 +97,7 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     } else {
         description += `Arguments: None\n`
     }
-    if (command.options.file != null) {
+    if (command.options.file) {
         description += `<File Attaching a ${FileType[command.options.file]} File is supported>`
     }
     if (command.options.throttleRate) {

@@ -9,7 +9,7 @@ const TAG = 'CommandParser'
 
 export namespace CommandParser {
     export function parseKeyword(context: GuildContext, message: string): KeywordResult {
-        let array = []
+        let array: string[] = []
         context.getPrefix().split('').forEach(char => {
             if (['[', '\\', '^', '$', '.', '|', '?', '*', '+', '(', ')'].includes(char)) {
                 char = '\\' + char
@@ -24,9 +24,9 @@ export namespace CommandParser {
     }
 
     export function parseArguments(context: GuildContext, command: Command, keyword: string, message: string): ParserResult {
-        const allFlags = []
+        const allFlags: string[] = []
         command.options.arguments.forEach(arg => { allFlags.push(arg.flag || '_') })
-        const messageArgs: {} = parser(message, {array: allFlags, configuration: {"short-option-groups": false}})
+        const messageArgs: any = parser(message, {array: allFlags, configuration: {"short-option-groups": false}})
         // Join all non array types, remove empty array types
         command.options.arguments.forEach(arg => {
             const flag = arg.flag || '_'
@@ -72,21 +72,21 @@ export namespace CommandParser {
         }
         if (invalidArgs.size != 0) {
             invalidArgs.forEach(error => {
-                Logger.w(context, TAG, `Invalid argument, reason: ${error}`)
+                Logger.w(TAG, `Invalid argument, reason: ${error}`, context)
             })
-            return {args: null, error: new Error('Something wrong with args')}
+            return {args: new Map<string, any>(), error: new Error('Something wrong with args')}
         }
         args.set('keyword', keyword.toLowerCase())
-        return {args: args, error: null, help: helpCommand}
+        return {args: args, error: undefined, help: helpCommand}
     }
 
     export interface KeywordResult {
-        keyword: string,
+        keyword?: string,
         parsedCommandString: string
     }
 
     export interface ParserResult {
-        error: Error
+        error?: Error
         args: Map<string, any>
         help?: boolean
     }

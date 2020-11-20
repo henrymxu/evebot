@@ -6,7 +6,7 @@ import {FileUtils} from "./utils/FileUtils";
 const keys: Map<string, string> = loadKeysFromJson()
 export namespace Keys {
     export function get(key: string): string {
-        return keys.get(key) || process.env[key]
+        return keys.get(key) || process.env[key]!
     }
 }
 

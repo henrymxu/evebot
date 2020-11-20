@@ -26,9 +26,14 @@ export default class UserInfoCommand extends Command {
         embed.addField('Username', user.username)
         embed.addField('ID', user.id)
         embed.addField('Created', user.createdAt.toDateString())
-        embed.addField('Joined Server', context.getGuild().member(user).joinedAt.toDateString())
+        if (context.getGuild().member(user)?.joinedAt?.toDateString()) {
+            embed.addField('Joined Server', context.getGuild().member(user)?.joinedAt?.toDateString())
+        }
         embed.addField('Status', user.presence.status)
-        embed.setThumbnail(user.avatarURL())
+        const avatar = user.avatarURL()
+        if (avatar) {
+            embed.setThumbnail(avatar)
+        }
         context.getProvider().getResponder().send({content: embed, id: user.id, message: message}, 30)
     }
 }

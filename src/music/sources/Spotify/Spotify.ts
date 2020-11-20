@@ -1,3 +1,4 @@
+// @ts-ignore
 import SpotifyWebAPI from "spotify-web-api-node"
 import {Keys} from "../../../Keys"
 import {ExternalTrackInfo} from "../../tracks/ExternalTrack"
@@ -15,15 +16,15 @@ export namespace Spotify {
             return Promise.resolve('')
         }
         return new Promise((res, rej) => {
-            spotifyApi.clientCredentialsGrant().then(data => {
+            spotifyApi.clientCredentialsGrant().then((data: any) => {
                 spotifyApi.setAccessToken(data.body['access_token'])
-                spotifyApi.searchArtists(artist, { limit: 1 }).then(data => {
+                spotifyApi.searchArtists(artist, { limit: 1 }).then((data: any) => {
                     if (data.body.artists.items.length === 0) {
                         rej('No artists found')
                         return
                     }
                     res(data.body.artists.items[0].id)
-                }).catch(err => { rej(err) })
+                }).catch((err: Error) => { rej(err) })
             })
         })
     }
@@ -33,15 +34,15 @@ export namespace Spotify {
             return Promise.resolve('')
         }
         return new Promise((res, rej) => {
-            spotifyApi.clientCredentialsGrant().then(data => {
+            spotifyApi.clientCredentialsGrant().then((data: any) => {
                 spotifyApi.setAccessToken(data.body['access_token'])
-                spotifyApi.searchTracks(track, { limit: 1 }).then(data => {
+                spotifyApi.searchTracks(track, { limit: 1 }).then((data: any) => {
                     if (data.body.tracks.items.length === 0) {
                         rej('No tracks found')
                         return
                     }
                     res(data.body.tracks.items[0].id)
-                }).catch(err => { rej(err) })
+                }).catch((err: Error) => { rej(err) })
             })
         })
     }
@@ -51,15 +52,15 @@ export namespace Spotify {
             return Promise.resolve('')
         }
         return new Promise((res, rej) => {
-            spotifyApi.clientCredentialsGrant().then(data => {
+            spotifyApi.clientCredentialsGrant().then((data: any) => {
                 spotifyApi.setAccessToken(data.body['access_token'])
-                spotifyApi.getAvailableGenreSeeds().then(data => {
+                spotifyApi.getAvailableGenreSeeds().then((data: any) => {
                     if (data.body.genres.indexOf(genre) === -1) {
                         rej('No genre found')
                         return
                     }
                     res(genre)
-                }).catch(err => { rej(err) })
+                }).catch((err: Error) => { rej(err) })
             })
         })
     }
@@ -67,16 +68,16 @@ export namespace Spotify {
     export function getTrackNamesFromSeeds(artists: string[], genres: string[], tracks: string[],
                                            length: number): Promise<ExternalTrackInfo[]> {
         return new Promise((res, rej) => {
-            spotifyApi.clientCredentialsGrant().then(data => {
+            spotifyApi.clientCredentialsGrant().then((data: any) => {
                 spotifyApi.setAccessToken(data.body['access_token'])
                 spotifyApi.getRecommendations({
                     seed_artists: artists,
                     seed_genres: genres,
                     seed_tracks: tracks,
                     limit: length,
-                }).then(result => {
+                }).then((result: any) => {
                     res(convertResponseToSpotifyTracks(result.body.tracks))
-                }).catch(err => {
+                }).catch((err: Error) => {
                     rej(err)
                 })
             })
@@ -85,9 +86,9 @@ export namespace Spotify {
 
     export function getTrackNamesFromAlbumSearch(query: string): Promise<Album> {
         return new Promise((res, rej) => {
-            spotifyApi.clientCredentialsGrant().then(data => {
+            spotifyApi.clientCredentialsGrant().then((data: any) => {
                 spotifyApi.setAccessToken(data.body['access_token'])
-                spotifyApi.searchAlbums(query, {limit: 1}).then(result => {
+                spotifyApi.searchAlbums(query, {limit: 1}).then((result: any) => {
                     if (result.body.albums.items.length === 0) {
                         rej('No albums found')
                         return
@@ -96,7 +97,7 @@ export namespace Spotify {
                     getTrackNamesFromAlbumID(album.id, data.body['access_token']).then((tracks) => {
                         res(convertResponseToSpotifyAlbum(album, tracks))
                     })
-                }).catch(err => {
+                }).catch((err: Error) => {
                     rej(err)
                 })
             })
@@ -109,9 +110,9 @@ export namespace Spotify {
                 accessToken = await spotifyApi.clientCredentialsGrant()
             }
             spotifyApi.setAccessToken(accessToken)
-            spotifyApi.getAlbumTracks(albumID).then((data) => {
+            spotifyApi.getAlbumTracks(albumID).then((data: any) => {
                 res(convertResponseToSpotifyTracks(data.body.items))
-            }).catch(err => {
+            }).catch((err: Error) => {
                 rej(err)
             })
         })
@@ -119,16 +120,16 @@ export namespace Spotify {
 
     export function getTrackNamesFromPlaylistSearch(query: string): Promise<ExternalTrackInfo[]> {
         return new Promise((res, rej) => {
-            spotifyApi.clientCredentialsGrant().then(data => {
+            spotifyApi.clientCredentialsGrant().then((data: any) => {
                 spotifyApi.setAccessToken(data.body['access_token'])
-                spotifyApi.searchPlaylists(query).then(result => {
+                spotifyApi.searchPlaylists(query).then((result: any) => {
                     if (result.body.playlists.items.length === 0) {
                         rej('No playlists found')
                         return
                     }
-                    this.getTrackNamesFromPlaylistID(result.body.playlists.items[0].id, data.body['access_token'])
-                        .then((data) => { res(data) })
-                }).catch(err => {
+                    getTrackNamesFromPlaylistID(result.body.playlists.items[0].id, data.body['access_token'])
+                        .then((data: ExternalTrackInfo[]) => { res(data) })
+                }).catch((err: Error) => {
                     rej(err)
                 })
             })
@@ -143,9 +144,9 @@ export namespace Spotify {
             spotifyApi.setAccessToken(accessToken)
             spotifyApi.getPlaylist(playlistID, {
                 fields: ['tracks']
-            }).then((data) => {
+            }).then((data: any) => {
                 res(convertResponseToSpotifyTracks(data.body.tracks))
-            }).catch(err => {
+            }).catch((err: Error) => {
                 rej(err)
             })
         })
@@ -165,8 +166,8 @@ function convertResponseToSpotifyAlbum(album: any, tracks: ExternalTrackInfo[]):
     }
 }
 
-function convertResponseToSpotifyTracks(tracks: any): ExternalTrackInfo[] {
-    return tracks.map(track => convertResponseToSpotifyTrack(track))
+function convertResponseToSpotifyTracks(tracks: any[]): ExternalTrackInfo[] {
+    return tracks.map((track: any) => convertResponseToSpotifyTrack(track))
 }
 
 function convertResponseToSpotifyTrack(result: any): ExternalTrackInfo {

@@ -32,7 +32,7 @@ export default class ReplayCommand extends VoiceCommand {
         } else if (args.get('url')) {
             url = args.get('url')
         } else {
-            Logger.e(context, ReplayCommand.name, 'no file provided for replay')
+            Logger.e(ReplayCommand.name, 'no file provided for replay', context)
             return
         }
         FileUtils.downloadFile(url).then((result) => {
@@ -46,11 +46,11 @@ export default class ReplayCommand extends VoiceCommand {
         })
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return false;
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return false;
     }
 

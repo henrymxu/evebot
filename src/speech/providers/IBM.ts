@@ -7,6 +7,7 @@ import {SpeechToTextV1} from "ibm-watson/sdk"
 const configVars = ['watson_token', 'watson_url']
 
 export default class IBM implements SpeechRecognizer, SpeechProvider {
+    // @ts-ignore
     private speechToText: SpeechToTextV1
 
     requiredConfigVariables(): string[] {
@@ -17,11 +18,11 @@ export default class IBM implements SpeechRecognizer, SpeechProvider {
         return "IBM"
     }
 
-    asGenerator(): SpeechGenerator {
+    asGenerator(): SpeechGenerator | undefined {
         return undefined
     }
 
-    asRecognizer(): SpeechRecognizer {
+    asRecognizer(): SpeechRecognizer | undefined {
         return this
     }
 
@@ -42,7 +43,7 @@ export default class IBM implements SpeechRecognizer, SpeechProvider {
         return new Promise((res, rej) => {
             this.speechToText.recognize(params, (error, response) => {
                 let result = 'Unknown Value'
-                if (response.result.results.length > 0) {
+                if (response?.result?.results && response.result.results.length > 0) {
                     if (response.result.results[0].alternatives.length > 0) {
                         result = response.result.results[0].alternatives[0].transcript
                     }

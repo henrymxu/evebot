@@ -14,11 +14,11 @@ export class VoiceDependencyProvider {
         return this.hotwordEngine
     }
 
-    getSpeechGenerator(): SpeechGenerator {
+    getSpeechGenerator(): SpeechGenerator | undefined {
         return SpeechEngine.getGenerator()
     }
 
-    getSpeechRecognizer(): SpeechRecognizer {
+    getSpeechRecognizer(): SpeechRecognizer | undefined {
         return SpeechEngine.getRecognizer()
     }
 }

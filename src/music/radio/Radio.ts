@@ -5,46 +5,49 @@ import {GlobalContext} from "../../GlobalContext"
 export abstract class Radio {
     protected readonly play: (query: string, requesterId: string, message?: Message) => void
     protected context: GuildContext
-    protected radioConfiguration: RadioConfiguration = null
+    protected radioConfiguration: RadioConfiguration | undefined
 
     protected constructor(context: GuildContext, play: (query: string, requesterId: string, message?: Message) => void) {
         this.context = context
         this.play = play
     }
 
-    abstract start(context: RadioContext, message?: Message)
+    abstract start(context: RadioContext, message?: Message): void
 
     isPlaying(): boolean {
-        return this.radioConfiguration !== null
+        return this.radioConfiguration !== undefined
     }
 
-    getRadioConfiguration(): RadioConfiguration {
+    getRadioConfiguration(): RadioConfiguration | undefined {
         return this.radioConfiguration
     }
 
     next() {
-        this.radioConfiguration.playedTracks.unshift(this.radioConfiguration.currentTrack)
+        this.radioConfiguration?.playedTracks.unshift(this.radioConfiguration.currentTrack)
     }
 
     resume() {
+        if (!this.radioConfiguration) {
+            return
+        }
         while(this.radioConfiguration.playedTracks.length > 0 &&
         this.radioConfiguration.playedTracks.indexOf(this.radioConfiguration.recommendedTracks[0]) !== -1) {
             this.radioConfiguration.recommendedTracks.shift()
         }
-        if (this.radioConfiguration.recommendedTracks.length == 0) {
+        const nextSongToPlay = this.radioConfiguration.recommendedTracks.shift()
+        if (!nextSongToPlay) {
             // TODO retrieve more songs?
             return
         }
-        let songToPlay = this.radioConfiguration.recommendedTracks.shift()
         this.radioConfiguration.recommendedTracks.push()
-        this.radioConfiguration.currentTrack = songToPlay
-        this.play(this.radioConfiguration.currentTrack, GlobalContext.getClient().user.id, this.radioConfiguration.message)
+        this.radioConfiguration.currentTrack = nextSongToPlay
+        this.play(this.radioConfiguration.currentTrack, GlobalContext.getBotID(), this.radioConfiguration.message)
     }
 
     stop() {
         if (this.radioConfiguration) {
             this.context.getProvider().getAudioPlayer().stop()
-            this.radioConfiguration = null
+            this.radioConfiguration = undefined
         }
     }
 }

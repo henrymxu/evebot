@@ -16,11 +16,11 @@ export default class JoinCommand extends VoiceCommand {
         context.getProvider().getResponder().acknowledge(0, message)
     }
 
-    botMustBeAlreadyInVoiceChannel(): boolean {
+    botMustAlreadyBeInVoiceChannel(): boolean {
         return false;
     }
 
-    botMustBeInSameVoiceChannel(): boolean {
+    botMustBeInTheSameVoiceChannel(): boolean {
         return false;
     }
 

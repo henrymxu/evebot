@@ -1,5 +1,5 @@
 import RecorderStream from "./RecorderStream"
-import {User, VoiceChannel, VoiceState} from "discord.js"
+import {User, VoiceChannel, VoiceConnection, VoiceState} from "discord.js"
 import {GuildContext} from "../guild/Context"
 import {SilentStreamUtils} from "../utils/SilentStreamUtils"
 import {PassThrough} from "stream"
@@ -18,7 +18,7 @@ export default class VoiceConnectionHandler {
     private voiceStreams: Map<string, RecorderStream> = new Map()
     private removedTimeouts: Map<string, NodeJS.Timeout> = new Map()
     private isListeningToCommand: Map<string, boolean> = new Map()
-    private noUsersInVoiceChannelTimeout: NodeJS.Timeout
+    private noUsersInVoiceChannelTimeout: NodeJS.Timeout | undefined
 
     constructor(guildContext: GuildContext) {
         this.context = guildContext
@@ -28,17 +28,17 @@ export default class VoiceConnectionHandler {
         return this.voiceStreams
     }
 
-    getVoiceStreamForUser(user: User): RecorderStream {
+    getVoiceStreamForUser(user: User): RecorderStream | undefined {
         return this.voiceStreams.get(user.id)
     }
 
     disconnect(): Promise<void> {
         return new Promise((res, rej) => {
-            this.context.getVoiceConnection().on('disconnect', () => {
+            this.context.getVoiceConnection()?.on('disconnect', () => {
                 res()
             })
             this.context.getProvider().getDJ().stop()
-            this.context.getVoiceConnection().disconnect()
+            this.context.getVoiceConnection()?.disconnect()
         })
     }
 
@@ -52,9 +52,12 @@ export default class VoiceConnectionHandler {
         this.isListeningToCommand.clear()
     }
 
-    joinVoiceChannel(voiceChannel: VoiceChannel): Promise<void> {
-        return new Promise((res, rej) => {
-            voiceChannel.join().then((connection) => {
+    joinVoiceChannel(voiceChannel: VoiceChannel | undefined | null): Promise<void> {
+        if (!voiceChannel) {
+            Promise.reject('VoiceChannel is undefined')
+        }
+        return new Promise((res, rej) =>  {
+            voiceChannel?.join().then((connection: VoiceConnection) => {
                 if (!this.context.getVoiceConnection()) {
                     this.context.setVoiceConnection(connection)
                     this.initializeConnection()
@@ -68,29 +71,30 @@ export default class VoiceConnectionHandler {
 
     userJoinedChannel(newVoiceState: VoiceState) {
         if (this.noUsersInVoiceChannelTimeout) {
-            Logger.i(null, TAG, 'Cancelling no user timeout')
+            Logger.i(TAG, 'Cancelling no user timeout')
             clearTimeout(this.noUsersInVoiceChannelTimeout)
-            this.noUsersInVoiceChannelTimeout = null
+            this.noUsersInVoiceChannelTimeout = undefined
         }
     }
 
-    userLeftChannel(user: User) {
+    userLeftChannel(user?: User) {
+        if (!user) {
+            return
+        }
         this.removeVoiceStreamForUser(user)
-        if (this.context.getVoiceConnection()) {
-            if (this.context.getVoiceConnection().channel.members
-                .filter(member => member.id != GlobalContext.getClient().user.id).size == 0) {
-                Logger.i(null, TAG, 'Starting no user timeout')
-                this.noUsersInVoiceChannelTimeout = setTimeout(() => {
-                    this.disconnect()
-                }, NO_USER_TIMEOUT)
-            }
+        const members = this.context.getVoiceConnection()?.channel.members
+        if (members?.filter(member => member.id != GlobalContext.getBotID()).size == 0) {
+            Logger.i(TAG, 'Starting no user timeout')
+            this.noUsersInVoiceChannelTimeout = setTimeout(() => {
+                this.disconnect()
+            }, NO_USER_TIMEOUT)
         }
     }
 
     userChangedChannel(oldState: VoiceState) {
         if (this.context.getVoiceConnection() &&
-            oldState.channelID === this.context.getVoiceConnection().channel.id) {
-            this.removeVoiceStreamForUser(oldState.member.user)
+            oldState.channelID === this.context.getVoiceConnection()?.channel.id) {
+            this.removeVoiceStreamForUser(oldState?.member?.user)
         }
     }
 
@@ -101,11 +105,12 @@ export default class VoiceConnectionHandler {
         }
         SilentStreamUtils.playSilentAudioStream(connection)
         connection.on('speaking', (user, speaking) => {
-            if (user === undefined || GlobalContext.getClient().user.id === user.id) {
+            if (user === undefined || GlobalContext.getBotID() === user.id) {
                 return
             }
-            if (this.removedTimeouts.has(user.id)) {
-                clearTimeout(this.removedTimeouts.get(user.id))
+            const timeout = this.removedTimeouts.get(user.id)
+            if (timeout) {
+                clearTimeout(timeout)
                 this.removedTimeouts.delete(user.id)
             } else if (this.voiceStreams.has(user.id) || user.bot) {
                 return
@@ -137,16 +142,16 @@ export default class VoiceConnectionHandler {
         connection.on('disconnect', () => {
             console.log(`Disconnecting from ${connection.channel.guild.name}`)
             this.reset()
-            this.context.setVoiceConnection(null)
+            this.context.setVoiceConnection(undefined)
         })
     }
 
-    private removeVoiceStreamForUser(user: User) {
+    private removeVoiceStreamForUser(user?: User) {
         if (!user) {
             return
         }
         const timeout = setTimeout(() => {
-            Logger.i(this.context, VoiceConnectionHandler.name, `Removing ${user.tag} [${user.id}`)
+            Logger.i(VoiceConnectionHandler.name, `Removing ${user.tag} [${user.id}`, this.context)
             this.voiceStreams.delete(user.id)
             this.removedTimeouts.delete(user.id)
         }, USER_REJOIN_THRESHOLD)
@@ -157,21 +162,23 @@ export default class VoiceConnectionHandler {
     }
 
     private startVoiceStreamForUser(user: User) {
-        Logger.i(this.context, VoiceConnectionHandler.name, `Registering ${user.tag} [${user.id}]`)
+        Logger.i(VoiceConnectionHandler.name, `Registering ${user.tag} [${user.id}]`, this.context)
         const connection = this.context.getVoiceConnection()
+        if (!connection) {
+            return
+        }
         let audio = connection.receiver.createStream(user, {
             mode: 'pcm',
             end: 'manual'
         })
-        const reRegistering = this.voiceStreams.has(user.id)
-        const recorderStream = (!reRegistering) ? new RecorderStream() : this.voiceStreams.get(user.id)
+        const previousStream = this.getVoiceStreamForUser(user)
+        const recorderStream = previousStream || new RecorderStream()
         audio.pipe(recorderStream, {end: false})
         this.voiceStreams.set(user.id, recorderStream)
         const hotwordEngine = this.context.getVoiceDependencyProvider().getHotwordEngine()
         hotwordEngine.register(user.id, recorderStream, ((trigger) => {
             if (this.isListeningToCommand.has(user.id)) {
-                Logger.w(this.context, 'HotwordDetector',
-                    `Already listening for a command from ${user.tag} [${user.id}]`)
+                Logger.w('HotwordDetector', `Already listening for a command from ${user.tag} [${user.id}]`, this.context)
                 return
             }
             this.isListeningToCommand.set(user.id, true)
@@ -180,8 +187,12 @@ export default class VoiceConnectionHandler {
             recorderStream.pipe(recognitionStream)
 
             const speechRecognizer = this.context.getVoiceDependencyProvider().getSpeechRecognizer()
+            if (!speechRecognizer) {
+                Logger.w('HotwordDetector', `No SpeechRecognizer registered`, this.context)
+                return
+            }
             speechRecognizer.recognizeTextFromSpeech(recognitionStream).then((text) => {
-                Logger.i(this.context, 'HotwordDetector', `${user.tag} said ${text}`)
+                Logger.i('HotwordDetector', `${user.tag} said ${text}`, this.context)
                 CommandDispatcher.handleExplicitCommand(this.context, user, text)
             })
             setTimeout(() => {

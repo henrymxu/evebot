@@ -37,8 +37,7 @@ export default class StatusCommand extends Command {
             }
         }
         context.getProvider().getResponder()
-            .send({content: response, id: args.get('keyword'), message: message, options: {code: 'Markdown'}},
-                15)
+            .send({content: response, id: args.get('keyword'), message: message, options: {code: 'Markdown'}}, 15)
     }
 }
 
@@ -48,8 +47,10 @@ function getStatusResponse(context: GuildContext): string {
     const tableData: string[][] = []
     tableData.push(['Guild', context.getGuild().name])
     tableData.push(['Prefix', context.getPrefix()])
-    tableData.push(['TextChannel', context.getTextChannel().name])
-    tableData.push(['VoiceChannel', context.getVoiceConnection() ? context.getVoiceConnection().channel.name: "None"])
+    const textChannel = context.getTextChannel()
+    tableData.push(['TextChannel', textChannel ? textChannel.name: "None"])
+    const voiceConnection = context.getVoiceConnection()
+    tableData.push(['VoiceChannel', voiceConnection ? voiceConnection.channel.name: "None"])
 
     response += `${TableGenerator.createTable(tableHeader, tableData)}\n`
 
@@ -67,7 +68,7 @@ function getStatusResponse(context: GuildContext): string {
     const tableHeader3 = ['Registered Users']
     const tableData3: string[][] = []
     context.getProvider().getVoiceConnectionHandler().getVoiceStreams().forEach((_, userID) => {
-        tableData3.push([GuildUtils.parseUserFromUserID(context, userID).username])
+        tableData3.push([GuildUtils.parseUserFromUserID(context, userID)!.username])
     })
     response += `${TableGenerator.createTable(tableHeader3, tableData3)}`
     return response

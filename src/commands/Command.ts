@@ -4,7 +4,7 @@ import {Logger} from "../Logger"
 
 export abstract class Command {
     abstract readonly options: CommandOptions
-    protected abstract execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message)
+    protected abstract execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): void
     protected preExecute(context: GuildContext, message?: Message): Promise<void> {
         // Implemented by child classes
         return Promise.resolve()
@@ -15,11 +15,11 @@ export abstract class Command {
 
     public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         this.preExecute(context, message).then(() => {
-            Logger.d(context, Command.name,
-                `Executing command ${args.get('keyword')} with args ${JSON.stringify(Array.from(args.entries()))}`)
+            Logger.d(Command.name,
+                `Executing command ${args.get('keyword')} with args ${JSON.stringify(Array.from(args.entries()))}`, context)
             this.execute(context, source, args, message)
         }).catch(err => {
-            Logger.w(context, Command.name, `Execution failed for command ${args.get('keyword')}, reason ${err}`)
+            Logger.w(Command.name, `Execution failed for command ${args.get('keyword')}, reason ${err}`, context)
             this.onPreExecuteFailed(context, message)
         })
     }

@@ -1,6 +1,8 @@
 import {HotwordEngine} from "../Engine"
 import {Transform} from "stream"
+// @ts-ignore
 import PorcupineEngine from "@picovoice/porcupine-node"
+// @ts-ignore
 import {PORCUPINE, BUMBLEBEE, GRASSHOPPER} from "@picovoice/porcupine-node/builtin_keywords"
 import {AudioUtils} from "../../utils/AudioUtils"
 
@@ -46,7 +48,7 @@ class InternalPorcupine {
         }
         const PV_SAMPLE_RATE = 16000;
         const PV_FRAME_LENGTH = 512;
-        let hotwordDetected: string = null;
+        let hotwordDetected: string = '';
 
         while ((this.inputBuffer.length * PV_SAMPLE_RATE / inputSampleRate) > PV_FRAME_LENGTH) {
             let outputFrame = new Int16Array(PV_FRAME_LENGTH);
@@ -80,8 +82,8 @@ class InternalPorcupine {
         this.engine.release()
     }
 
-    private processPorcupine(data: Int16Array): string {
+    private processPorcupine(data: Int16Array): string | null {
         let id = this.engine.process(data);
-        return id > -1 ? this.keywords.get(id) : null
+        return id > -1 ? this.keywords.get(id)! : null
     }
 }

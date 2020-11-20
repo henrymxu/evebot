@@ -14,13 +14,13 @@ export default class SpotifyRadio extends Radio {
     start(context: RadioContext, message?: Message) {
         this.stop()
         const promises = []
-        promises.push(context.artists ? Spotify.searchArtist(context.artists[0]) : Promise.resolve())
-        promises.push(context.genres.length !== 0 ? Spotify.searchGenre(context.genres[0]) : Promise.resolve())
-        promises.push(context.tracks.length !== 0 ? Spotify.searchTrack(context.tracks[0]) : Promise.resolve())
+        promises.push(context.artists ? Spotify.searchArtist(context.artists[0]) : Promise.resolve(''))
+        promises.push(context.genres.length !== 0 ? Spotify.searchGenre(context.genres[0]) : Promise.resolve(''))
+        promises.push(context.tracks.length !== 0 ? Spotify.searchTrack(context.tracks[0]) : Promise.resolve(''))
         Promise.all(promises).then(results => {
             this.radioConfiguration = {
                 context: context,
-                currentTrack: undefined,
+                currentTrack: '',
                 playedTracks: [],
                 recommendedTracks: [],
                 message: message
@@ -30,12 +30,12 @@ export default class SpotifyRadio extends Radio {
             }
             Spotify.getTrackNamesFromSeeds(seeds.artists, seeds.genres, seeds.tracks, context.length)
                 .then((trackNames) => {
-                    this.radioConfiguration.recommendedTracks
+                    this.radioConfiguration?.recommendedTracks
                         .push(...trackNames.map(track => `${track.artist} - ${track.name}`))
                     this.resume()
                 })
         }).catch(err => {
-            Logger.e(null, TAG, err)
+            Logger.e(TAG, err)
         })
     }
 }

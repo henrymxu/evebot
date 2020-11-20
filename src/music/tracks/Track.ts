@@ -5,9 +5,9 @@ import {GuildUtils} from "../../utils/GuildUtils"
 
 export abstract class Track {
     id: string
-    metaData: TrackMetaData
+    metaData: TrackMetaData = {requesterId: "", source: undefined}
     private elapsedTimeInSeconds = 0
-    private secondsInterval: NodeJS.Timeout
+    private secondsInterval: NodeJS.Timeout | undefined
     protected state: TrackState = TrackState.QUEUED
 
     protected constructor(id: string) {
@@ -43,20 +43,24 @@ export abstract class Track {
 
     setPaused() {
         this.state = TrackState.PAUSED
-        clearInterval(this.secondsInterval)
+        if (this.secondsInterval) {
+            clearInterval(this.secondsInterval)
+        }
         this.getStream()?.pause()
         this.getStream()?.unpipe()
     }
 
     setFinished() {
         this.state = TrackState.FINISHED
-        clearInterval(this.secondsInterval)
+        if (this.secondsInterval) {
+            clearInterval(this.secondsInterval)
+        }
         this.getStream()?.removeAllListeners('finish')
         this.getStream()?.destroy()
     }
 
-    getRequester(context: GuildContext): string {
-        return GuildUtils.parseUserFromUserID(context, this.metaData.requesterId).username
+    getRequester(context: GuildContext): string | undefined {
+        return GuildUtils.parseUserFromUserID(context, this.metaData.requesterId)?.username
     }
 
     getElapsedTimeInSeconds(): number {

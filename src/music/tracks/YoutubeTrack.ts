@@ -7,7 +7,7 @@ import {Logger} from "../../Logger"
 import {SpeechGeneratorResult} from "../../speech/Interfaces"
 
 export default class YoutubeTrack extends Track {
-    private stream: Readable
+    private stream: Readable | undefined
     private readonly youtubeInfo: YoutubeTrackInfo
     private announcementLength: number = 0
 
@@ -37,23 +37,31 @@ export default class YoutubeTrack extends Track {
         return this.getYoutubeTrackInfo().length
     }
 
-    getStream(): Readable {
+    getStream(): Readable | undefined{
         return this.stream;
     }
 
     loadStream(context: GuildContext): Promise<Readable> {
         this.state = TrackState.LOADING
-        const announceResult = context.getVoiceDependencyProvider()
-            .getSpeechGenerator().asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
+        const sGen = context.getVoiceDependencyProvider()
+            .getSpeechGenerator()
+        const announceResult = sGen
+            ? sGen.asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`) : Promise.resolve()
         const songStream = ytdl(this.youtubeInfo.url, {filter: 'audioonly', opusEncoded: true})
         return new Promise<Readable>((res, rej) => {
-            Promise.all([announceResult, songStream]).then((streams: (Readable | SpeechGeneratorResult)[]) => {
-                this.stream = StreamUtils.mergeAsync((streams[0] as SpeechGeneratorResult).stream, streams[1] as Readable)
+            // @ts-ignore
+            Promise.all([announceResult, songStream]).then((streams: (Readable | SpeechGeneratorResult | void)[]) => {
+                const announceStream = streams[0] ? (streams[0] as SpeechGeneratorResult).stream : undefined
+                if (announceStream) {
+                    this.stream = StreamUtils.mergeAsync(announceStream, streams[1] as Readable)
+                } else {
+                    this.stream = streams[1] as Readable
+                }
                 this.state = TrackState.LOADED
                 this.announcementLength = (streams[0] as SpeechGeneratorResult).length
                 res(this.stream)
             }).catch(err => {
-                Logger.e(context, YoutubeTrack.name, err)
+                Logger.e(YoutubeTrack.name, err, context)
                 rej(err)
             })
         })
