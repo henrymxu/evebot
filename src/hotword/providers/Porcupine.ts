@@ -14,7 +14,7 @@ export default class Porcupine extends HotwordEngine {
         return engineInstance
     }
 
-    protected deleteDetector(userID) {
+    protected deleteDetector(userID: string) {
         this.detectors.get(userID)?.release()
     }
 

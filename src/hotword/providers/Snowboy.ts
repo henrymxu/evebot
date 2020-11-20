@@ -11,7 +11,7 @@ export default class Snowboy extends HotwordEngine {
             .pipe(AudioUtils.createDownSampleTransformStream()).pipe(detector)
     }
 
-    protected deleteDetector(userID) {
+    protected deleteDetector(userID: string) {
         this.detectors.get(userID)?.reset()
     }
 

@@ -3,7 +3,7 @@ import {Lame} from "node-lame";
 import {createReadStream} from "fs";
 import {opus, FFmpeg} from "prism-media";
 import {FileWriter} from "wav";
-import {DownSamplingStream} from "./DownSamplingStream";
+import DownSamplingStream from "./DownSamplingStream";
 
 export namespace AudioUtils {
     export function createStereoToMonoTransformStream(): Transform {
