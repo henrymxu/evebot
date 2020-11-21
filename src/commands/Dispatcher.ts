@@ -1,13 +1,4 @@
-import {
-    BitFieldResolvable,
-    Client,
-    DMChannel,
-    Message,
-    MessageAttachment,
-    Permissions, PermissionString, RecursiveReadonlyArray,
-    TextChannel,
-    User
-} from "discord.js"
+import {Client, DMChannel, Message, MessageAttachment, Permissions, PermissionString, TextChannel, User} from "discord.js"
 import {CommandParser} from "./Parser"
 import {GlobalContext} from "../GlobalContext"
 import {GuildContext} from "../guild/Context"
@@ -97,18 +88,16 @@ function handleTextChannelMessage(message: Message) {
 }
 
 function handleDMChannelMessage(message: Message) {
-
+    // TODO: handle private messages
 }
 
 function checkPermissions(context: GuildContext, user: User, command: Command): boolean {
-    const permissionsArray: RecursiveReadonlyArray<PermissionString> | undefined =
-        command.options.permissions?.map(permission => permission as PermissionString)
+    const permissionsArray = command.options.permissions?.map(permission => permission as PermissionString)
     if (!permissionsArray) {
         return true
     }
-    const permission: BitFieldResolvable<PermissionString> = permissionsArray
     const permissions = context.getGuild().member(user)?.permissions
-    return permissions ? permissions.has(new Permissions(permission)) : false
+    return permissions ? permissions.has(new Permissions(permissionsArray)) : false
 }
 
 function checkPrivileges(context: GuildContext, user: User, keyword: string): boolean {

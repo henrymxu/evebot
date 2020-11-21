@@ -1,4 +1,4 @@
-import {GuildChannel, Role, TextChannel, User} from "discord.js"
+import {Role, TextChannel, User} from "discord.js"
 import {GuildContext} from "../guild/Context"
 import {CommandRegistry} from "../commands/Registry"
 

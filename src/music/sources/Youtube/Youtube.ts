@@ -1,6 +1,5 @@
 import {SearchResult, TrackSource} from "../../Search"
 import {Keys} from "../../../Keys"
-
 import YoutubeAPI, {YouTubeSearchResults} from "youtube-search"
 
 export default class Youtube implements TrackSource {

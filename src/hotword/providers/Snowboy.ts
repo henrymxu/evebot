@@ -2,7 +2,6 @@
 // @ts-ignore
 import {HotwordModels, SnowboyDetect} from "snowboy"
 /* eslint-enable */
-
 import {AudioUtils} from "../../utils/AudioUtils"
 import {Transform} from "stream"
 import {HotwordEngine} from "../Engine"

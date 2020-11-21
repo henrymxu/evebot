@@ -1,7 +1,6 @@
 import {Transform, TransformCallback} from "stream"
-
-const pcm_convert = require("pcm-convert")
 import defaults from "defaults";
+const pcm_convert = require("pcm-convert")
 
 const TARGET_SAMPLE_RATE = 16000;
 
