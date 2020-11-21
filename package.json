@@ -1,7 +1,7 @@
 {
   "name": "evebot",
   "version": "1.0.0",
-  "description": "",
+  "description": "E.V.E Voice Enabled",
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
     "lint": "gts lint",
@@ -17,7 +17,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
     "@google-cloud/speech": "^4.1.2",
