@@ -83,7 +83,6 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
-build
 
 # Gatsby files
 .cache/
@@ -121,6 +120,7 @@ snapshots/
 .idea/
 logs/
 
+build
 keys.json
 keys
-configs/
+configs

@@ -2,4 +2,4 @@ build:
   docker:
     worker: Dockerfile
 run:
-  worker: npx ts-node src/main.ts
+  worker: node -r ts-node/register ./src/main.ts

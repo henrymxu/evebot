@@ -43,8 +43,9 @@ This is the simplest way to set up the bot, but the bot will only be on while yo
     - If you know how to set up environment variables you can do that
     - If not, you can set up a `keys.json` file in the `evebot` folder with the key value pairs
 4. Inside a terminal, navigate to the `evebot` folder
+5. Install TypeScript (`npm install -g typescript`) and ts-node (`npm install -g ts-node`)
 5. Install the dependencies using `npm install`
-6. Start the bot using `npx ts-node src/main.ts`
+6. Start the bot using `node -r ts-node/register ./src/main.ts`
 
 #### Local Installation with Docker
 
