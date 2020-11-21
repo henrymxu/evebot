@@ -67,11 +67,11 @@ function isAlreadyInChannel(channel: VoiceChannel | null, botId: string): boolea
 }
 
 function hasUserJoinedChannel(oldState: VoiceState, newState: VoiceState): boolean {
-    return oldState.channel === undefined && newState.channel !== undefined
+    return oldState.channel === null && newState.channel !== null
 }
 
 function hasUserLeftChannel(oldState: VoiceState, newState: VoiceState): boolean {
-    return oldState.channel !== undefined && newState.channel === undefined
+    return oldState.channel !== null && newState.channel === null
 }
 
 function hasUserChangedChannel(oldState: VoiceState, newState: VoiceState): boolean {

@@ -8,9 +8,8 @@ export namespace FileUtils {
         if (!existsSync(filePath)) {
             return {}
         }
-        let rawdata = readFileSync(filePath);
-        // @ts-ignore
-        return JSON.parse(rawdata)
+        let rawdata = readFileSync(filePath)
+        return JSON.parse(rawdata.toString())
     }
 
     export function deleteFile(filePath: string, sync:boolean = true, callback=()=>{}) {
@@ -27,8 +26,10 @@ export namespace FileUtils {
 
     export function downloadFile(url: string): Promise<Readable> {
         return new Promise((res, rej) => {
-            get(url, function(response: IncomingMessage) {
+            get(url, (response: IncomingMessage) => {
                 res(response)
+            }).on('error', (e: Error) => {
+                rej(e)
             })
         })
     }

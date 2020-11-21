@@ -7,8 +7,10 @@ import {Logger} from "../../Logger"
 
 const configVars = ['google_keyFileName', 'google_keyFileCred']
 export default class Google implements SpeechRecognizer, SpeechProvider {
+    /* eslint-disable */
     // @ts-ignore
     private client: SpeechClient
+    /* eslint-enable */
 
     requiredConfigVariables(): string[] {
         return configVars
