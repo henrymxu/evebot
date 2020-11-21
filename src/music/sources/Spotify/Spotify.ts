@@ -105,13 +105,18 @@ export namespace Spotify {
     }
 
     export function getTrackNamesFromAlbumID(albumID: string, accessToken?: string): Promise<ExternalTrackInfo[]> {
-        return new Promise(async (res, rej) => {
+        return new Promise((res, rej) => {
+            let accessTokenPromise: Promise<any> = Promise.resolve(accessToken)
             if (!accessToken) {
-                accessToken = await spotifyApi.clientCredentialsGrant()
+                accessTokenPromise = spotifyApi.clientCredentialsGrant()
             }
-            spotifyApi.setAccessToken(accessToken)
-            spotifyApi.getAlbumTracks(albumID).then((data: any) => {
-                res(convertResponseToSpotifyTracks(data.body.items))
+            accessTokenPromise.then((token) => {
+                spotifyApi.setAccessToken(token.body['access_token'])
+                spotifyApi.getAlbumTracks(albumID).then((data: any) => {
+                    res(convertResponseToSpotifyTracks(data.body.items))
+                }).catch((err: Error) => {
+                    rej(err)
+                })
             }).catch((err: Error) => {
                 rej(err)
             })
@@ -137,15 +142,20 @@ export namespace Spotify {
     }
 
     export function getTrackNamesFromPlaylistID(playlistID: string, accessToken?: string): Promise<ExternalTrackInfo[]> {
-        return new Promise(async (res, rej) => {
+        return new Promise((res, rej) => {
+            let accessTokenPromise: Promise<any> = Promise.resolve(accessToken)
             if (!accessToken) {
-                accessToken = await spotifyApi.clientCredentialsGrant()
+                accessTokenPromise = spotifyApi.clientCredentialsGrant()
             }
-            spotifyApi.setAccessToken(accessToken)
-            spotifyApi.getPlaylist(playlistID, {
-                fields: ['tracks']
-            }).then((data: any) => {
-                res(convertResponseToSpotifyTracks(data.body.tracks))
+            accessTokenPromise.then((token: any) => {
+                spotifyApi.setAccessToken(token.body['access_token'])
+                spotifyApi.getPlaylist(playlistID, {
+                    fields: ['tracks']
+                }).then((data: any) => {
+                    res(convertResponseToSpotifyTracks(data.body.tracks))
+                }).catch((err: Error) => {
+                    rej(err)
+                })
             }).catch((err: Error) => {
                 rej(err)
             })

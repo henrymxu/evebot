@@ -174,10 +174,14 @@ export default class AudioPlayer {
             track.setPlaying()
         }).on('finish', () => {
             this.playNext()
+        }).on('error', (error) => {
+            Logger.e(AudioPlayer.name, `An error occured ${error}`, this.context)
+            this.playNext()
         })
     }
 
     private playNext(): boolean {
+        this.state = AudioPlayerState.IDLE
         const current = this.trackQueue.shift()
         this.endTrack(current)
         const nextTrackItem = this.trackQueue[0]
@@ -190,7 +194,6 @@ export default class AudioPlayer {
             this.getConnection()?.dispatcher?.destroy()
             track.setFinished()
             this.context.getProvider().getDJ().onTrackCompleted(track)
-            this.state = AudioPlayerState.IDLE
         }
     }
 

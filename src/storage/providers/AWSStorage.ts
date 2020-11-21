@@ -12,8 +12,6 @@ export default class AWSStorage implements Storage {
     constructor() {
         config.update({
             region: Keys.get('AWS_REGION'),
-            // @ts-ignore
-            endpoint: Keys.get('AWS_ENDPOINT'),
             accessKeyId: Keys.get('AWS_ACCESS_KEY_ID'),
             secretAccessKey: Keys.get('AWS_SECRET_ACCESS_KEY')
         });

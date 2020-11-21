@@ -69,8 +69,7 @@ export function findDefaultTextChannel(context: GuildContext): TextChannel | und
     const desiredChannelId = context.getConfig().getDefaultTextChannel()
     let textChannel = GuildUtils.findTextChannelByID(context, desiredChannelId)
     if (!textChannel) {
-        // @ts-ignore
-        textChannel = guild.channels.cache.filter(channel => channel.type === 'text').first()
+        textChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text').first() as TextChannel
     }
     if (!textChannel) {
         Logger.w("FindDefaultTextChannel", `${context.getGuild()?.name} does not have defaultTextChannel`, context)

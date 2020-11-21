@@ -1,4 +1,4 @@
-import { parse } from "url"
+import {URL} from "url"
 import ytdl from "discord-ytdl-core"
 import Youtube from "./sources/Youtube/Youtube2"
 import {Utils} from "../utils/Utils"
@@ -44,62 +44,66 @@ export namespace Search {
         })
         return Promise.all(promises)
     }
+}
 
-    async function resolveSingleTrack(result: SearchResult, extraInfo?: ExternalTrackInfo): Promise<Track> {
-        let resolved = false
-        for (let info of result.infos) {
-            if (!info.url) {
-                continue
-            }
-            const basicInfo = await ytdl.getBasicInfo(info.url)
-            if (basicInfo.formats.length > 0) {
-                resolved = true
-                Logger.d(TAG, `Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
-                const id = Utils.generateUUID()
-                const youtubeInfo: YoutubeTrackInfo = {
-                    description: basicInfo.videoDetails.shortDescription,
-                    length: +basicInfo.videoDetails.lengthSeconds,
-                    title: basicInfo.videoDetails.title,
-                    url: info.url,
-                    channel: basicInfo.videoDetails.ownerChannelName,
-                    thumbnailURL: basicInfo.thumbnail_url
-                }
-                if (!extraInfo) {
-                    return new YoutubeTrack(id, youtubeInfo)
-                } else {
-                    return new ExternalTrack(id, youtubeInfo, extraInfo)
-                }
-            } else {
-                Logger.w(TAG, `${basicInfo.videoDetails.title} does not have supported formats, trying next track`)
-            }
+async function resolveSingleTrack(result: SearchResult, extraInfo?: ExternalTrackInfo): Promise<Track> {
+    let resolved = false
+    for (let info of result.infos) {
+        if (!info.url) {
+            continue
         }
-        return Promise.reject('Could not find a playable video (region locked)')
+        const basicInfo = await ytdl.getBasicInfo(info.url)
+        if (basicInfo.formats.length > 0) {
+            resolved = true
+            Logger.d(TAG, `Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
+            const id = Utils.generateUUID()
+            const youtubeInfo: YoutubeTrackInfo = {
+                description: basicInfo.videoDetails.shortDescription,
+                length: +basicInfo.videoDetails.lengthSeconds,
+                title: basicInfo.videoDetails.title,
+                url: info.url,
+                channel: basicInfo.videoDetails.ownerChannelName,
+                thumbnailURL: basicInfo.thumbnail_url
+            }
+            if (!extraInfo) {
+                return new YoutubeTrack(id, youtubeInfo)
+            } else {
+                return new ExternalTrack(id, youtubeInfo, extraInfo)
+            }
+        } else {
+            Logger.w(TAG, `${basicInfo.videoDetails.title} does not have supported formats, trying next track`)
+        }
     }
+    return Promise.reject('Could not find a playable video (region locked)')
 }
 
 function parseQueryForType(query: string): Promise<SearchResult> {
-    const result = parse(query)
-    if (result.hostname === 'www.youtube.com') {
-        switch (result.pathname) {
-            case '/watch':
-                Logger.d(TAG, `Found a Youtube video for ${query}`)
-                return Promise.resolve({
-                    infos: [{url: query}],
-                    metadata: {
-                        mode: 'single',
-                        query: query
-                    }
-                })
-            case '/playlist':
-                Logger.d(TAG, `Found a Youtube playlist for ${query}`)
-                return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
+    try {
+        const result = new URL(query)
+        if (result.hostname === 'www.youtube.com') {
+            switch (result.pathname) {
+                case '/watch':
+                    Logger.d(TAG, `Found a Youtube video for ${query}`)
+                    return Promise.resolve({
+                        infos: [{url: query}],
+                        metadata: {
+                            mode: 'single',
+                            query: query
+                        }
+                    })
+                case '/playlist':
+                    Logger.d(TAG, `Found a Youtube playlist for ${query}`)
+                    return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
+            }
+        } else if (result.hostname === 'open.spotify.com') {
+            // TODO: implement spotify song parsing
+            if (result.pathname?.includes('playlist')) {
+                //.replace('/playlist/', '')
+                // return retrieveSongsFromSpotifyPlaylist(result.pathname)
+            }
         }
-    } else if (result.hostname === 'open.spotify.com') {
-        // TODO: implement spotify song parsing
-        if (result.pathname?.includes('playlist')) {
-            //.replace('/playlist/', '')
-            // return retrieveSongsFromSpotifyPlaylist(result.pathname)
-        }
+    } catch (e) {
+
     }
     return YoutubeSource.getTrackURLFromSearch(query)
 }
