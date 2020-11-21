@@ -1,9 +1,11 @@
-import {HotwordEngine} from "../Engine"
-import {Transform} from "stream"
+/* eslint-disable */
 // @ts-ignore
 import PorcupineEngine from "@picovoice/porcupine-node"
 // @ts-ignore
 import {PORCUPINE, BUMBLEBEE, GRASSHOPPER} from "@picovoice/porcupine-node/builtin_keywords"
+/* eslint-enable */
+import {HotwordEngine} from "../Engine"
+import {Transform} from "stream"
 import {AudioUtils} from "../../utils/AudioUtils"
 
 export default class Porcupine extends HotwordEngine {

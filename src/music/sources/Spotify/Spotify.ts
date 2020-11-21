@@ -1,5 +1,4 @@
-// @ts-ignore
-import SpotifyWebAPI from "spotify-web-api-node"
+const SpotifyWebAPI = require("spotify-web-api-node")
 import {Keys} from "../../../Keys"
 import {ExternalTrackInfo} from "../../tracks/ExternalTrack"
 import {Album} from "../../tracks/Album"

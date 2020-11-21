@@ -1,5 +1,7 @@
+/* eslint-disable */
 // @ts-ignore
-import {HotwordModels, Models, SnowboyDetect} from "snowboy"
+import {HotwordModels, SnowboyDetect} from "snowboy"
+/* eslint-enable */
 
 import {AudioUtils} from "../../utils/AudioUtils"
 import {Transform} from "stream"

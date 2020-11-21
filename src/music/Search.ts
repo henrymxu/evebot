@@ -34,11 +34,13 @@ export namespace Search {
     export function searchAlbum(album: Album): Promise<Track[]> {
         const promises: Promise<Track>[] = []
         album.tracks.forEach((track) => {
-            promises.push(new Promise<Track>((res1, rej1) => {
+            promises.push(new Promise<Track>((res, rej) => {
                 parseQueryForType(`${track.artist} - ${track.name}`).then((searchResult) => {
                     resolveSingleTrack(searchResult, track).then((trackResult) => {
-                        res1(trackResult)
+                        res(trackResult)
                     })
+                }).catch((err: Error) => {
+                    rej(err)
                 })
             }))
         })
@@ -103,7 +105,7 @@ function parseQueryForType(query: string): Promise<SearchResult> {
             }
         }
     } catch (e) {
-
+        // ignore error
     }
     return YoutubeSource.getTrackURLFromSearch(query)
 }

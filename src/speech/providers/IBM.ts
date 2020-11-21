@@ -7,7 +7,6 @@ import {SpeechToTextV1} from "ibm-watson/sdk"
 const configVars = ['watson_token', 'watson_url']
 
 export default class IBM implements SpeechRecognizer, SpeechProvider {
-    // @ts-ignore
     private speechToText: SpeechToTextV1
 
     requiredConfigVariables(): string[] {

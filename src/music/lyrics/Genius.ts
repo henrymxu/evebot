@@ -1,5 +1,4 @@
-// @ts-ignore
-import genius from "genius-lyrics-api"
+const genius = require("genius-lyrics-api")
 import {Keys} from "../../Keys"
 
 export namespace GeniusLyrics {

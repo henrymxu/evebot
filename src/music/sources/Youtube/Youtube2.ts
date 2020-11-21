@@ -1,7 +1,6 @@
 import {SearchResult, TrackSource} from "../../Search"
 import {Keys} from "../../../Keys"
-// @ts-ignore
-import YoutubeAPI from "simple-youtube-api"
+const YoutubeAPI = require("simple-youtube-api")
 
 export default class Youtube2 implements TrackSource {
     private api

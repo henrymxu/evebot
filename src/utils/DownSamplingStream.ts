@@ -1,13 +1,13 @@
 import {Transform, TransformCallback} from "stream"
-// @ts-ignore
-import pcm_convert from "pcm-convert";
+
+const pcm_convert = require("pcm-convert")
 import defaults from "defaults";
 
 const TARGET_SAMPLE_RATE = 16000;
 
 //http://watson-developer-cloud.github.io/speech-javascript-sdk/master/speech-to-text_webaudio-l16-stream.js.html#line195
 export default class DownSamplingStream extends Transform {
-    private bufferUnusedSamples: Float32Array
+    private bufferUnusedSamples: Float32Array | []
     private options: any
 
     constructor(options: object) {
@@ -17,7 +17,6 @@ export default class DownSamplingStream extends Transform {
         });
         super(options);
         this.options = options
-        // @ts-ignore
         this.bufferUnusedSamples = []
     }
 
