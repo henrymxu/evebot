@@ -81,6 +81,7 @@ export default class VoiceConnectionHandler {
         if (!user) {
             return
         }
+        this.isListeningToCommand.delete(user.id)
         this.removeVoiceStreamForUser(user)
         const members = this.context.getVoiceConnection()?.channel.members
         if (members?.filter(member => member.id !== GlobalContext.getBotID()).size === 0) {

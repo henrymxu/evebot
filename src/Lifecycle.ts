@@ -5,7 +5,7 @@ import {Logger} from "./Logger"
 const TAG = 'Lifecycle'
 
 export namespace Lifecycle {
-    export function registerJoinOnJoin(client: Client) {
+    export function registerVoiceLifecycleHandler(client: Client) {
         client.on('voiceStateUpdate', (oldState, newState) => {
             if (!hasUserJoinedChannel(oldState, newState)) {
                 if (hasUserLeftChannel(oldState, newState)) {

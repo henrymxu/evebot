@@ -10,7 +10,7 @@ const client = GlobalContext.getClient()
 CommandDispatcher.register(client)
 CommandRegistry.registerCommandsIn(path.join(__dirname, 'commands'))
 
-Lifecycle.registerJoinOnJoin(client)
+Lifecycle.registerVoiceLifecycleHandler(client)
 
 client.login(Keys.get('discord_token')).then(result => {
     Logger.i('Main', `Logged in!`)
