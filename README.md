@@ -32,11 +32,26 @@ E.V.E is a voice enabled all in one discord bot.  Feel free to host your own ins
 
 The installation process for E.V.E is quite long due to all the different services it requires.
 
-#### Local Installation
 These steps are if you wish to run the bot on your local machine (i.e PC, laptop).
+E.V.E runs on Mac OS and Linux (Windows has not been tested).
 
-This is the simplest way to set up the bot, but the bot will only be on while your local machine is also on.
+Mac OS requires the following external dependencies:
+- ffmpeg
+- node / npm
 
+Linux requires the following external dependencies:
+- node / npm
+- cmake
+- lame
+- ffmpeg
+- libmagic-dev
+- libatlas-base-dev
+
+#### Installation from NPM
+
+// TODO
+
+#### Installation From Source
 1. Retrieve all the required / desired tokens from the following tables.
 2. Clone / Download the git repository
 3. Setup the environment variables and api tokens
@@ -48,6 +63,8 @@ This is the simplest way to set up the bot, but the bot will only be on while yo
 6. Start the bot using `node -r ts-node/register ./src/main.ts`
 
 #### Local Installation with Docker
+
+// TODO
 
 #### Heroku Deployment
 
