@@ -2,6 +2,8 @@ import {Duplex} from "stream"
 import RecorderStream from "./RecorderStream"
 import {CachedStream, CreateStreamFromBuffer} from "./CachedStream"
 
+const SIGNED_16_BIT_MIN = -32768
+const SIGNED_16_BIT_MAX = 32767
 export default class MergedStream implements CachedStream {
     private silenceStreams: Map<string, CachedStream> = new Map<string, RecorderStream>()
 
@@ -30,8 +32,8 @@ export default class MergedStream implements CachedStream {
             buffers.forEach((buffer: Buffer) => {
                 value += buffer.readInt16LE(i)
             })
-            value = Math.max(-32768, value)
-            value = Math.min(32767, value)
+            value = Math.max(SIGNED_16_BIT_MIN, value)
+            value = Math.min(SIGNED_16_BIT_MAX, value)
             result.writeInt16LE(value, i)
         }
         return result
