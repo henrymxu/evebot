@@ -6,6 +6,8 @@ import {PassThrough} from "stream"
 import {CommandDispatcher} from "../commands/Dispatcher"
 import {GlobalContext} from "../GlobalContext"
 import {Logger} from "../Logger"
+import MergedStream from "./MergedStream"
+import {CachedStream} from "./CachedStream"
 
 const USER_REJOIN_THRESHOLD = 5000
 const VOICE_COMMAND_LENGTH = 3000
@@ -15,6 +17,8 @@ const TAG = 'ConnectionHandler'
 
 export default class VoiceConnectionHandler {
     private readonly context: GuildContext
+    private readonly lowMemoryMode: boolean
+    private mergeStream: MergedStream = new MergedStream()
     private voiceStreams: Map<string, RecorderStream> = new Map()
     private removedTimeouts: Map<string, NodeJS.Timeout> = new Map()
     private isListeningToCommand: Map<string, boolean> = new Map()
@@ -22,13 +26,18 @@ export default class VoiceConnectionHandler {
 
     constructor(guildContext: GuildContext) {
         this.context = guildContext
+        this.lowMemoryMode = false // TODO: Implement a global? parameter
     }
 
-    getVoiceStreams(): Map<string, RecorderStream> {
+    getMergedVoiceStream(): MergedStream {
+        return this.mergeStream
+    }
+
+    getVoiceStreams(): Map<string, CachedStream> {
         return this.voiceStreams
     }
 
-    getVoiceStreamForUser(user: User): RecorderStream | undefined {
+    getVoiceStreamForUser(user: User): CachedStream | undefined {
         return this.voiceStreams.get(user.id)
     }
 
@@ -50,6 +59,7 @@ export default class VoiceConnectionHandler {
         })
         this.removedTimeouts.clear()
         this.isListeningToCommand.clear()
+        this.mergeStream.clear()
     }
 
     joinVoiceChannel(voiceChannel: VoiceChannel | undefined | null): Promise<void> {
@@ -160,6 +170,7 @@ export default class VoiceConnectionHandler {
         this.context.getVoiceConnection()?.receiver.createStream(user).emit('end')
         this.context.getVoiceDependencyProvider()
         this.context.getVoiceDependencyProvider().getHotwordEngine()?.remove(user.id)
+        this.mergeStream.removeStream(user.id)
     }
 
     private startVoiceStreamForUser(user: User) {
@@ -172,11 +183,11 @@ export default class VoiceConnectionHandler {
             mode: 'pcm',
             end: 'manual'
         })
-        const previousStream = this.getVoiceStreamForUser(user)
-        const recorderStream = previousStream || new RecorderStream()
+        const previousStream = this.voiceStreams.get(user.id)
+        const recorderStream = previousStream || new RecorderStream(true)
         audio.pipe(recorderStream, {end: false})
         this.voiceStreams.set(user.id, recorderStream)
-
+        this.mergeStream.insertStream(user.id, recorderStream)
         const speechRecognizer = this.context.getVoiceDependencyProvider().getSpeechRecognizer()
         const hotwordEngine = this.context.getVoiceDependencyProvider().getHotwordEngine()
         if (!speechRecognizer || !hotwordEngine) {
