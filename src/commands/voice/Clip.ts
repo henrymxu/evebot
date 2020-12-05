@@ -58,7 +58,7 @@ export default class ClipCommand extends VoiceCommand {
             }
         } else {
             author = context.getGuild().name
-            embedMessageContents = `Recording from ${context.getGuild().name}`
+            embedMessageContents = `Recording from ${context.getVoiceConnection()?.channel?.name}`
             stream = context.getProvider().getVoiceConnectionHandler().getMergedVoiceStream()
         }
 

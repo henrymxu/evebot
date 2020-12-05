@@ -17,6 +17,7 @@ const TAG = 'ConnectionHandler'
 
 export default class VoiceConnectionHandler {
     private readonly context: GuildContext
+    private readonly lowMemoryMode: boolean
     private mergeStream: MergedStream = new MergedStream()
     private voiceStreams: Map<string, RecorderStream> = new Map()
     private removedTimeouts: Map<string, NodeJS.Timeout> = new Map()
@@ -25,6 +26,7 @@ export default class VoiceConnectionHandler {
 
     constructor(guildContext: GuildContext) {
         this.context = guildContext
+        this.lowMemoryMode = false // TODO: Implement a global? parameter
     }
 
     getMergedVoiceStream(): MergedStream {

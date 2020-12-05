@@ -9,13 +9,13 @@ export default class RecorderStream extends Transform implements CachedStream {
     private rollingBufferWithSilence: Buffer[] = []
 
     private isWriting: Boolean = false
-    private readonly insertSilence: Boolean
+    private readonly createSilenceStream: Boolean
     private silenceDebouncer: NodeJS.Timeout | undefined = undefined
 
-    constructor(insertSilence: boolean = false) {
+    constructor(createSilenceStream: boolean = false) {
         super();
-        this.insertSilence = insertSilence
-        if (this.insertSilence) {
+        this.createSilenceStream = createSilenceStream
+        if (this.createSilenceStream) {
             this.setupSilenceInsertion()
         }
     }
@@ -50,7 +50,7 @@ export default class RecorderStream extends Transform implements CachedStream {
 
     _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
         this.insertChunk(this.rollingBuffer, chunk)
-        if (this.insertSilence) {
+        if (this.createSilenceStream) {
             this.insertChunk(this.rollingBufferWithSilence, chunk)
         }
         this.push(chunk)
