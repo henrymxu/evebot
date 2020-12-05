@@ -6,18 +6,19 @@ import {ArgumentType, CommandOptions} from "../Command"
 import {MessageGenerator} from "../../communication/MessageGenerator"
 import {GuildUtils} from "../../utils/GuildUtils"
 import {Logger} from "../../Logger"
+import {CachedStream} from "../../voice/CachedStream"
 
 export default class ClipCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Clip',
         keywords: ['clip'],
         group: 'voice',
-        descriptions: ['Create a clip of what a user has said'],
+        descriptions: ['Create a clip of what was just said!  If no user is provided, the whole channel is clipped.'],
         arguments: [
             {
                 key: 'user',
                 description: 'User you would like to clip',
-                required: true,
+                required: false,
                 type: ArgumentType.USER
             },
             {
@@ -38,22 +39,34 @@ export default class ClipCommand extends VoiceCommand {
                 default: 'Clip'
             }
         ],
-        examples: ['clip @Eve -l 5 -c Eve Funny Clip']
+        examples: ['clip', 'clip @Eve -l 5 -c Eve Funny Clip']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        let stream: CachedStream | undefined
+        let author: string
+        let embedMessageContents: string
         const user: User = args.get('user')
-        const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
-        if (!voiceStream) {
-            Logger.w(ClipCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)
-            context.getProvider().getResponder().error('No listening stream registered for user', message)
-            return
+        if (user) {
+            author = user.tag
+            embedMessageContents = `Recording from [${GuildUtils.createUserMentionString(user.id)}]`
+            stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
+            if (!stream) {
+                Logger.w(ClipCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)
+                context.getProvider().getResponder().error('No listening stream registered for user', message)
+                return
+            }
+        } else {
+            author = context.getGuild().name
+            embedMessageContents = `Recording from ${context.getGuild().name}`
+            stream = context.getProvider().getVoiceConnectionHandler().getMergedVoiceStream()
         }
+
         context.getProvider().getResponder().startTyping(message)
-        AudioUtils.convertBufferToMp3Buffer(voiceStream.getBuffer(args.get('length')), args.get('caption'), user.tag)
+        AudioUtils.convertBufferToMp3Buffer(stream.getCachedBuffer(args.get('length')), args.get('caption'), author)
             .then((buffer) => {
                 const embedMessage = MessageGenerator
-                    .createBasicEmbed(`Recording from [${GuildUtils.createUserMentionString(user.id)}]`)
+                    .createBasicEmbed(embedMessageContents)
                 const embed = MessageGenerator.attachFileToEmbed(embedMessage, buffer, `${args.get('caption')}.mp3`)
                 context.getProvider().getResponder().send({content: embed, message: message}).then((results) => {
                     context.getProvider().getResponder().stopTyping(message)})

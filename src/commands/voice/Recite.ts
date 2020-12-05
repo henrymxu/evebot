@@ -4,18 +4,19 @@ import VoiceCommand from "../../voice/VoiceCommand"
 import {ArgumentType, CommandOptions} from "../Command"
 import {Logger} from "../../Logger"
 import {GuildUtils} from "../../utils/GuildUtils"
+import {CachedStream} from "../../voice/CachedStream"
 
 export default class ReciteCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Recite',
         keywords: ['recite'],
         group: 'voice',
-        descriptions: ['Recite what a user has said'],
+        descriptions: ['Recite what was just said!  If no user is provided, the whole channel is recited.'],
         arguments: [
             {
                 key: 'user',
                 description: 'User you would like to recite',
-                required: true,
+                required: false,
                 type: ArgumentType.USER
             },
             {
@@ -35,25 +36,31 @@ export default class ReciteCommand extends VoiceCommand {
                 type: ArgumentType.FLAG,
             }
         ],
-        examples: ['recite @Eve -l 8']
+        examples: ['recite', 'recite @Eve -l 8']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        let stream: CachedStream | undefined
         const user: User = args.get('user')
-        const voiceStream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
-        if (!voiceStream) {
-            Logger.w(ReciteCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)
-            context.getProvider().getResponder().error('No listening stream registered for user', message)
-            return
+        if (user) {
+            stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
+            if (!stream) {
+                Logger.w(ReciteCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)
+                context.getProvider().getResponder().error('No listening stream registered for user', message)
+                return
+            }
+        } else {
+            stream = context.getProvider().getVoiceConnectionHandler().getMergedVoiceStream()
         }
-        context.getProvider().getInterruptService().playRawStream(voiceStream.getRecordedStream(args.get('length')))
-        if (args.get('transcribe')) {
+        const audioStream = stream.getCachedStream(args.get('length'))
+        context.getProvider().getInterruptService().playRawStream(audioStream)
+        if (user && args.get('transcribe')) {
             const speechRecognizer = context.getVoiceDependencyProvider().getSpeechRecognizer()
             if (!speechRecognizer) {
                 Logger.e(ReciteCommand.name, 'No SpeechRecognizer Registered', context)
                 return
             }
-            speechRecognizer.recognizeTextFromSpeech(voiceStream).then((transcribed) => {
+            speechRecognizer.recognizeTextFromSpeech(audioStream).then((transcribed) => {
                 const transcribedMessage = `${GuildUtils.createUserMentionString(user.id)} said ${transcribed}`
                 context.getProvider().getResponder().send({content: transcribedMessage, message: message})
             })
