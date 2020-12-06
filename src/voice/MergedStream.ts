@@ -5,7 +5,11 @@ import {CachedStream, CreateStreamFromBuffer} from "./CachedStream"
 const SIGNED_16_BIT_MIN = -32768
 const SIGNED_16_BIT_MAX = 32767
 export default class MergedStream implements CachedStream {
-    private silenceStreams: Map<string, CachedStream> = new Map<string, RecorderStream>()
+    private streams: Map<string, CachedStream>
+
+    constructor(streamsMap: Map<string, CachedStream>) {
+        this.streams = streamsMap
+    }
 
     getCachedStream(): Duplex {
         return CreateStreamFromBuffer(this.getCachedBuffer())
@@ -13,7 +17,7 @@ export default class MergedStream implements CachedStream {
 
     getCachedBuffer(): Buffer {
         const buffers: Buffer[] = []
-        this.silenceStreams.forEach((stream: CachedStream) => {
+        this.streams.forEach((stream: CachedStream) => {
             buffers.push(stream.getCachedBuffer(undefined, true))
         })
         let maxLengthOfBuffer = 0
@@ -37,17 +41,5 @@ export default class MergedStream implements CachedStream {
             result.writeInt16LE(value, i)
         }
         return result
-    }
-
-    insertStream(userID: string, stream: CachedStream) {
-        this.silenceStreams.set(userID, stream)
-    }
-
-    removeStream(userID: string) {
-        this.silenceStreams.delete(userID)
-    }
-
-    clear() {
-        this.silenceStreams.clear()
     }
 }

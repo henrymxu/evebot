@@ -2,7 +2,6 @@ import {Duplex, Transform, TransformCallback} from "stream"
 import {CachedStream, CreateStreamFromBuffer} from "./CachedStream"
 
 const MAX_BUFFER_SIZE = 500 // Buffer in seconds is approximately MAX_BUFFER_SIZE / 50
-const SAMPLING_RATE = 20 // Discord sends a chunk (if not silent) every 20 ms
 const DEBOUNCE_TIME = 30 // Debounce time for inserting silence (Don't want to accidentally insert silence)
 export default class RecorderStream extends Transform implements CachedStream {
     private rollingBuffer: Buffer[] = []
@@ -15,17 +14,6 @@ export default class RecorderStream extends Transform implements CachedStream {
     constructor(createSilenceStream: boolean = false) {
         super();
         this.createSilenceStream = createSilenceStream
-        if (this.createSilenceStream) {
-            this.setupSilenceInsertion()
-        }
-    }
-
-    private setupSilenceInsertion() {
-        setTimeout(() => {
-            const silenceChunk = Buffer.from(new Array(3840).fill(0))
-            this.insertChunk(this.rollingBufferWithSilence, silenceChunk, true)
-            this.setupSilenceInsertion()
-        }, SAMPLING_RATE)
     }
 
     getCachedStream(lengthInSeconds: number = MAX_BUFFER_SIZE / 50, withSilence: boolean = false): Duplex {
@@ -55,6 +43,10 @@ export default class RecorderStream extends Transform implements CachedStream {
         }
         this.push(chunk)
         callback()
+    }
+
+    insertSilentChunk(chunk: any) {
+        this.insertChunk(this.rollingBufferWithSilence, chunk, true)
     }
 
     private insertChunk(buffer: Buffer[], chunk: any, isSilenceChunk: boolean = false) {
