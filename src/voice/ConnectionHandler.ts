@@ -58,7 +58,7 @@ export default class VoiceConnectionHandler {
     reset() {
         this.voiceStreams.clear()
         this.context.getVoiceDependencyProvider().getHotwordEngine()?.clear()
-        this.removedTimeouts.forEach((timeout) => {
+        this.removedTimeouts.forEach((timeout: NodeJS.Timeout) => {
             clearTimeout(timeout)
         })
         this.removedTimeouts.clear()
