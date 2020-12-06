@@ -22,6 +22,8 @@ export namespace Lifecycle {
                     if (isItself(newState)) {
                         Logger.w(TAG, `Bot was moved from ${oldState.channel?.name} to ${newState.channel?.name} | New connection = ${newState.connection}`)
                         GlobalContext.get(newState.guild.id).then(context => {
+                            context.getProvider().getVoiceConnectionHandler().reset()
+                            context.setVoiceConnection(undefined)
                             context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
                         })
                         return
