@@ -4,6 +4,8 @@
 
 E.V.E is a voice enabled all in one discord bot.  Feel free to host your own instance!
 
+If you are a developer and wish to contribute / customize E.V.E bot, check out the [wiki](https://github.com/henrymxu/evebot/wiki)!
+
 ## Table of Contents
 
 - [Features](#features)
@@ -17,8 +19,10 @@ E.V.E is a voice enabled all in one discord bot.  Feel free to host your own ins
 ## Features
 
 - Play music!
-- Clip or recite users!
+- Start a radio!
+- Clip or recite voice channel activity!
 - Say anything you want with the bot!
+- And much more!
 
 ## Usage
 
@@ -68,6 +72,8 @@ Linux requires the following external dependencies:
 
 #### Heroku Deployment
 
+// TODO
+
 ### Environment Variables
 
 | Name                                                                       | Environment Variable | Description                                                                                    | Required |
@@ -79,7 +85,7 @@ Linux requires the following external dependencies:
 
 | Name                                                                       | Environment Variable | Description                                                                                    | Required |
 |----------------------------------------------------------------------------|----------------------|------------------------------------------------------------------------------------------------|----------|
-| [Discord Bot Token](https://discord.com/developers/applications)           | discord_token        | Required for the bot to login and communicate to discord.                                      | ✓        |
+| [Discord Bot Token](https://discord.com/developers/applications)           | discord_token        | Required for the bot to login and communicate with discord.                                    | ✓        |
 | [Youtube Search API Token](https://developers.google.com/youtube/v3)       | youtube_api_token    | Required for the bot to search for song URLs  (Hopefully this will be converted to a scraper). | ✓        |
 | [Genius API Token](https://docs.genius.com/)                               | genius_token         | Required for the bot to find lyrics of songs.                                                  | ✗        |
 | [Spotify API Tokens](https://developer.spotify.com/documentation/web-api/) | spotify_id           | Required for the bot to create radio playlists                                                 | ✗        |
@@ -120,18 +126,22 @@ Details on how to authenticate and configure each provider can be found in each 
 
 #### Amazon Web Services
 
-| Environment Variable  | Description |
+| Environment Variable  | Description       |
 |-----------------------|-------------------|
-| AWS_REGION | AWS Region |
-| AWS_ENDPOINT | Endpoint |
-| AWS_ACCESS_KEY_ID | Access Key ID |
+| AWS_REGION            | AWS Region        |
+| AWS_ENDPOINT          | Endpoint          |
+| AWS_ACCESS_KEY_ID     | Access Key ID     |
 | AWS_SECRET_ACCESS_KEY | Secret Access Key |
 
 ## Configurations
 
 ## Troubleshooting
 
-- If the bot seems to be unresponsive or listening to any hotwords
+- If the bot doesn't seem to recognize your voice commands
+    - Wait until you hear the chime from the bot after saying the hotword to begin your voice command
+    - Make sure the voice command doesn't get cut off by the ending chime
+
+- If the bot seems to be unresponsive or not listening to any hotwords
     - Try using the `rejoin` command
     
 - If the bot is unable to find any songs to play
