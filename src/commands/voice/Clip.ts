@@ -1,12 +1,12 @@
-import {Message, User} from "discord.js"
-import {AudioUtils} from "../../utils/AudioUtils"
-import VoiceCommand from "../../voice/VoiceCommand"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, CommandOptions} from "../Command"
-import {MessageGenerator} from "../../communication/MessageGenerator"
-import {GuildUtils} from "../../utils/GuildUtils"
-import {Logger} from "../../Logger"
-import {CachedStream} from "../../voice/CachedStream"
+import {Message, User} from 'discord.js'
+import {AudioUtils} from '../../utils/AudioUtils'
+import VoiceCommand from '../../voice/VoiceCommand'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, CommandOptions} from '../Command'
+import {MessageGenerator} from '../../communication/MessageGenerator'
+import {GuildUtils} from '../../utils/GuildUtils'
+import {Logger} from '../../Logger'
+import {CachedStream} from '../../voice/CachedStream'
 
 export default class ClipCommand extends VoiceCommand {
     readonly options: CommandOptions = {

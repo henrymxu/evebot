@@ -1,10 +1,10 @@
-import {Track, TrackState} from "./Track"
-import {Readable} from "stream"
-import ytdl from "discord-ytdl-core"
-import {GuildContext} from "../../guild/Context"
-import {StreamUtils} from "../../utils/StreamUtils"
-import {Logger} from "../../Logger"
-import {SpeechGeneratorResult} from "../../speech/Interfaces"
+import {Track, TrackState} from './Track'
+import {Readable} from 'stream'
+import ytdl from 'discord-ytdl-core'
+import {GuildContext} from '../../guild/Context'
+import {StreamUtils} from '../../utils/StreamUtils'
+import {Logger} from '../../Logger'
+import {SpeechGeneratorResult} from '../../speech/Interfaces'
 
 export default class YoutubeTrack extends Track {
     private stream: Readable | undefined

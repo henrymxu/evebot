@@ -3,7 +3,7 @@ import {GuildContext} from '../../guild/Context'
 import {ArgumentType, Command, CommandOptions, FileType} from '../Command'
 import {CommandRegistry} from '../Registry'
 import {TableGenerator} from '../../communication/TableGenerator'
-import {GuildUtils} from "../../utils/GuildUtils"
+import {GuildUtils} from '../../utils/GuildUtils'
 
 export default class HelpCommand extends Command {
     readonly options: CommandOptions = {

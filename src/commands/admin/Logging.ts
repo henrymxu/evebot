@@ -1,9 +1,9 @@
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {GuildUtils} from "../../utils/GuildUtils"
-import {GuildContext} from "../../guild/Context"
-import {Message, MessageEmbed, User} from "discord.js"
-import {Logger} from "../../Logger"
-import {MessageGenerator} from "../../communication/MessageGenerator"
+import {ArgumentType, Command, CommandOptions} from '../Command'
+import {GuildUtils} from '../../utils/GuildUtils'
+import {GuildContext} from '../../guild/Context'
+import {Message, MessageEmbed, User} from 'discord.js'
+import {Logger} from '../../Logger'
+import {MessageGenerator} from '../../communication/MessageGenerator'
 
 export default class LoggingCommand extends Command {
     readonly options: CommandOptions = {

@@ -1,10 +1,10 @@
-import {Guild, TextChannel, VoiceConnection} from "discord.js"
-import {Config} from "./Config"
-import {VoiceDependencyProvider, VoiceDependencyProviderBuilder} from "../voice/DependencyProvider"
-import GuildProvider from "./Provider"
-import {GuildUtils} from "../utils/GuildUtils"
-import {GlobalContext} from "../GlobalContext"
-import {Logger} from "../Logger"
+import {Guild, TextChannel, VoiceConnection} from 'discord.js'
+import {Config} from './Config'
+import {VoiceDependencyProvider, VoiceDependencyProviderBuilder} from '../voice/DependencyProvider'
+import GuildProvider from './Provider'
+import {GuildUtils} from '../utils/GuildUtils'
+import {GlobalContext} from '../GlobalContext'
+import {Logger} from '../Logger'
 
 export class GuildContext {
     private voiceConnection: VoiceConnection | undefined
@@ -72,7 +72,7 @@ export function findDefaultTextChannel(context: GuildContext): TextChannel | und
         textChannel = context.getGuild().channels.cache.filter(channel => channel.type === 'text').first() as TextChannel
     }
     if (!textChannel) {
-        Logger.w("FindDefaultTextChannel", `${context.getGuild()?.name} does not have defaultTextChannel`, context)
+        Logger.w('FindDefaultTextChannel', `${context.getGuild()?.name} does not have defaultTextChannel`, context)
     }
     return textChannel
 }

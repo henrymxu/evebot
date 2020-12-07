@@ -1,6 +1,6 @@
-import {Message} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {GlobalContext} from "../../GlobalContext"
+import {Message} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {GlobalContext} from '../../GlobalContext'
 
 export abstract class Radio {
     protected readonly play: (query: string, requesterId: string, message?: Message) => void

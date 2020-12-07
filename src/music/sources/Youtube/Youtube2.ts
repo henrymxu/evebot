@@ -1,6 +1,6 @@
-import {SearchResult, TrackSource} from "../../Search"
-import {Keys} from "../../../Keys"
-const YoutubeAPI = require("simple-youtube-api")
+import {SearchResult, TrackSource} from '../../Search'
+import {Keys} from '../../../Keys'
+const YoutubeAPI = require('simple-youtube-api')
 
 export default class Youtube2 implements TrackSource {
     private api
@@ -19,7 +19,7 @@ export default class Youtube2 implements TrackSource {
                 const searchResult: SearchResult = {
                     infos: results.map((result) => { return { url: result.url } }),
                     metadata: {
-                        mode: "single",
+                        mode: 'single',
                         query: query
                     }
                 }
@@ -39,7 +39,7 @@ export default class Youtube2 implements TrackSource {
                     const searchResult: SearchResult = {
                         infos: videos.map((result) => { return { url: result.url } }),
                         metadata: {
-                            mode: "playlist",
+                            mode: 'playlist',
                             query: playlistURL
                         }
                     }

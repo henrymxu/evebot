@@ -1,4 +1,4 @@
-import RecorderStream from "./RecorderStream"
+import RecorderStream from './RecorderStream'
 
 export default class SilenceInsertionHandler {
     private streams: Map<string, RecorderStream>

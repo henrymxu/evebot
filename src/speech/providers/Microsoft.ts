@@ -1,14 +1,14 @@
-import {SpeechGenerator, SpeechGeneratorResult, SpeechProvider, SpeechRecognizer} from "../Interfaces"
-import {Duplex, Readable} from "stream"
-import {AudioUtils} from "../../utils/AudioUtils"
-import {Keys} from "../../Keys"
-import {Logger} from "../../Logger"
+import {SpeechGenerator, SpeechGeneratorResult, SpeechProvider, SpeechRecognizer} from '../Interfaces'
+import {Duplex, Readable} from 'stream'
+import {AudioUtils} from '../../utils/AudioUtils'
+import {Keys} from '../../Keys'
+import {Logger} from '../../Logger'
 import {
     Recognizer,
     SpeechRecognitionEventArgs,
     SpeechRecognitionResult,
     SpeechSynthesisResult
-} from "microsoft-cognitiveservices-speech-sdk"
+} from 'microsoft-cognitiveservices-speech-sdk'
 const SpeechSDK = require('microsoft-cognitiveservices-speech-sdk')
 
 const configVars = ['microsoft_token', 'microsoft_location']
@@ -19,7 +19,7 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
     }
 
     getStatus(): string {
-        return "microsoft"
+        return 'microsoft'
     }
 
     asGenerator(): SpeechGenerator {
@@ -30,10 +30,10 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
         return this
     }
 
-    asyncGenerateSpeechFromText(message: string, voice: string = "en-CA-Linda"): Promise<SpeechGeneratorResult> {
+    asyncGenerateSpeechFromText(message: string, voice: string = 'en-CA-Linda'): Promise<SpeechGeneratorResult> {
         const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(Keys.get(configVars[0]),
             Keys.get(configVars[1]))
-        speechConfig.speechRecognitionLanguage = "en-US"
+        speechConfig.speechRecognitionLanguage = 'en-US'
         speechConfig.speechSynthesisVoiceName = voice
         let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, null)
         return new Promise<SpeechGeneratorResult>((res, rej) => {
@@ -67,7 +67,7 @@ export default class Microsoft implements SpeechGenerator, SpeechRecognizer, Spe
 
         const audioConfig = SpeechSDK.AudioConfig.fromStreamInput(pushStream)
         const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(Keys.get(configVars[0]), Keys.get(configVars[1]))
-        speechConfig.speechRecognitionLanguage = "en-US"
+        speechConfig.speechRecognitionLanguage = 'en-US'
 
         let recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig)
 

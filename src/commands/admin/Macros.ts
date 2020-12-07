@@ -1,8 +1,8 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {TableGenerator} from "../../communication/TableGenerator"
-import {GuildUtils} from "../../utils/GuildUtils"
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, Command, CommandOptions} from '../Command'
+import {TableGenerator} from '../../communication/TableGenerator'
+import {GuildUtils} from '../../utils/GuildUtils'
 
 export default class MacrosCommand extends Command {
     readonly options: CommandOptions = {

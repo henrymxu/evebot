@@ -1,7 +1,7 @@
-import {GuildContext} from "./guild/Context"
-import {TextChannel} from "discord.js"
-import {MessageGenerator} from "./communication/MessageGenerator"
-import {GlobalContext} from "./GlobalContext"
+import {GuildContext} from './guild/Context'
+import {TextChannel} from 'discord.js'
+import {MessageGenerator} from './communication/MessageGenerator'
+import {GlobalContext} from './GlobalContext'
 
 export namespace Logger {
     export function i(tag: string, log: string, context?: GuildContext) {

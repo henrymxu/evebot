@@ -1,5 +1,5 @@
-import {Duplex, Transform, TransformCallback} from "stream"
-import {CachedStream, CreateStreamFromBuffer} from "./CachedStream"
+import {Duplex, Transform, TransformCallback} from 'stream'
+import {CachedStream, CreateStreamFromBuffer} from './CachedStream'
 
 const MAX_BUFFER_SIZE = 500 // Buffer in seconds is approximately MAX_BUFFER_SIZE / 50
 const DEBOUNCE_TIME = 30 // Debounce time for inserting silence (Don't want to accidentally insert silence)

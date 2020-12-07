@@ -1,9 +1,9 @@
-import "aws-sdk/lib/node_loader"
-import {Storage} from "../Storage"
-import {config} from "aws-sdk/global"
-import {Logger} from "../../Logger"
-import {DocumentClient} from "aws-sdk/clients/dynamodb"
-import {Keys} from "../../Keys"
+import 'aws-sdk/lib/node_loader'
+import {Storage} from '../Storage'
+import {config} from 'aws-sdk/global'
+import {Logger} from '../../Logger'
+import {DocumentClient} from 'aws-sdk/clients/dynamodb'
+import {Keys} from '../../Keys'
 
 const TAG = 'AWSDynamoDB'
 
@@ -18,7 +18,7 @@ export default class AWSStorage implements Storage {
         this.client = new DocumentClient()
     }
 
-    load(params: any, defaultValue?: any): Promise<any> {
+    loadConfig(params: any, defaultValue?: any): Promise<any> {
         return new Promise((res, rej) => {
             this.client.get(params, (err, data) => {
                 if (err) {
@@ -36,7 +36,7 @@ export default class AWSStorage implements Storage {
         })
     }
 
-    save(params: any): Promise<void> {
+    saveConfig(params: any): Promise<void> {
         // TODO: implement update?
         return new Promise((res, rej) => {
             this.client.put(params, (err, data) => {

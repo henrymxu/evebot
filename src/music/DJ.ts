@@ -1,13 +1,13 @@
-import {Search} from "./Search"
-import {GuildContext} from "../guild/Context"
-import {Message} from "discord.js"
-import {Track} from "./tracks/Track"
-import {TrackMessageFactory} from "../communication/TrackMessageGenerator"
-import SpotifyRadio from "./radio/SpotifyRadio"
-import {Radio} from "./radio/Radio"
-import {Spotify} from "./sources/Spotify/Spotify"
-import {Album} from "./tracks/Album"
-import {Logger} from "../Logger"
+import {Search} from './Search'
+import {GuildContext} from '../guild/Context'
+import {Message} from 'discord.js'
+import {Track} from './tracks/Track'
+import {TrackMessageFactory} from '../communication/TrackMessageGenerator'
+import SpotifyRadio from './radio/SpotifyRadio'
+import {Radio} from './radio/Radio'
+import {Spotify} from './sources/Spotify/Spotify'
+import {Album} from './tracks/Album'
+import {Logger} from '../Logger'
 
 export default class DJ {
     private readonly context: GuildContext

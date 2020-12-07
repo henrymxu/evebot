@@ -1,6 +1,6 @@
-import {GuildContext} from "../guild/Context"
-import {Message, User} from "discord.js"
-import {Logger} from "../Logger"
+import {GuildContext} from '../guild/Context'
+import {Message, User} from 'discord.js'
+import {Logger} from '../Logger'
 
 export abstract class Command {
     abstract readonly options: CommandOptions

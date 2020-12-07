@@ -1,4 +1,4 @@
-import {FileUtils} from "./utils/FileUtils";
+import {FileUtils} from './utils/FileUtils';
 
 /**
  * Class to retrieve keys from environment variables or json file

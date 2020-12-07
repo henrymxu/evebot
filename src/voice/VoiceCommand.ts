@@ -1,7 +1,7 @@
-import {Command} from "../commands/Command"
-import {Message, VoiceChannel} from "discord.js"
-import {GuildContext} from "../guild/Context"
-import {Logger} from "../Logger"
+import {Command} from '../commands/Command'
+import {Message, VoiceChannel} from 'discord.js'
+import {GuildContext} from '../guild/Context'
+import {Logger} from '../Logger'
 
 export default abstract class VoiceCommand extends Command {
     abstract botMustBeInTheSameVoiceChannel(): boolean

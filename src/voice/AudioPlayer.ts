@@ -1,9 +1,9 @@
-import PriorityQueue from "priorityqueuejs"
-import {StreamType, VoiceConnection} from "discord.js"
-import {Readable} from "stream"
-import {GuildContext} from "../guild/Context"
-import {Track} from "../music/tracks/Track"
-import {Logger} from "../Logger"
+import PriorityQueue from 'priorityqueuejs'
+import {StreamType, VoiceConnection} from 'discord.js'
+import {Readable} from 'stream'
+import {GuildContext} from '../guild/Context'
+import {Track} from '../music/tracks/Track'
+import {Logger} from '../Logger'
 
 export default class AudioPlayer {
     private readonly context: GuildContext

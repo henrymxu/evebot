@@ -1,8 +1,8 @@
-import {GuildContext} from "../guild/Context"
-import {ArgumentType, Command} from "./Command"
-import parser from "yargs-parser"
-import {GuildUtils} from "../utils/GuildUtils"
-import {Logger} from "../Logger"
+import {GuildContext} from '../guild/Context'
+import {ArgumentType, Command} from './Command'
+import parser from 'yargs-parser'
+import {GuildUtils} from '../utils/GuildUtils'
+import {Logger} from '../Logger'
 
 const TAG = 'CommandParser'
 
@@ -25,7 +25,7 @@ export namespace CommandParser {
     export function parseArguments(context: GuildContext, command: Command, keyword: string, message: string): ParserResult {
         const allFlags: string[] = []
         command.options.arguments.forEach(arg => { allFlags.push(arg.flag || '_') })
-        const messageArgs: any = parser(message, {array: allFlags, configuration: {"short-option-groups": false}})
+        const messageArgs: any = parser(message, {array: allFlags, configuration: {'short-option-groups': false}})
         // Join all non array types, remove empty array types
         command.options.arguments.forEach(arg => {
             const flag = arg.flag || '_'

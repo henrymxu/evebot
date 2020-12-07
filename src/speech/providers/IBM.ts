@@ -1,8 +1,8 @@
-import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from "../Interfaces"
-import {Readable} from "stream"
-import {Keys} from "../../Keys"
-import Auth from "ibm-watson/auth"
-import {SpeechToTextV1} from "ibm-watson/sdk"
+import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from '../Interfaces'
+import {Readable} from 'stream'
+import {Keys} from '../../Keys'
+import Auth from 'ibm-watson/auth'
+import {SpeechToTextV1} from 'ibm-watson/sdk'
 
 const configVars = ['watson_token', 'watson_url']
 
@@ -14,7 +14,7 @@ export default class IBM implements SpeechRecognizer, SpeechProvider {
     }
 
     getStatus(): string {
-        return "IBM"
+        return 'IBM'
     }
 
     asGenerator(): SpeechGenerator | undefined {

@@ -1,7 +1,7 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {MessageGenerator} from "../../communication/MessageGenerator"
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, Command, CommandOptions} from '../Command'
+import {MessageGenerator} from '../../communication/MessageGenerator'
 
 export default class UserInfoCommand extends Command {
     readonly options: CommandOptions = {

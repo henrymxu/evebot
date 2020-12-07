@@ -1,6 +1,6 @@
-import {Role, User} from "discord.js"
-import {Storage} from "../storage/Storage"
-import {CommandRegistry} from "../commands/Registry"
+import {Role, User} from 'discord.js'
+import {Storage} from '../storage/Storage'
+import {CommandRegistry} from '../commands/Registry'
 
 export class Config {
     private readonly guildID: string
@@ -52,8 +52,8 @@ export class Config {
 
     setLogging(channelID: string, level: string) {
         return Config.setKeyValue(this, 'logging', {
-            "channelID": channelID,
-            "flags": level
+            'channelID': channelID,
+            'flags': level
         })
     }
 

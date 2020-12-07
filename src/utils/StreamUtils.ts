@@ -1,4 +1,4 @@
-import {PassThrough, Readable} from "stream"
+import {PassThrough, Readable} from 'stream'
 
 export namespace StreamUtils {
     export function merge(...streams: Readable[]): Readable {

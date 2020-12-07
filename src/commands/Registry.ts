@@ -1,7 +1,7 @@
-import requireAll from "require-all"
-import {Command} from "./Command"
-import {Utils} from "../utils/Utils"
-import {GuildContext} from "../guild/Context"
+import requireAll from 'require-all'
+import {Command} from './Command'
+import {Utils} from '../utils/Utils'
+import {GuildContext} from '../guild/Context'
 
 const commands: Map<string, Command> = new Map()
 const groups: Set<string> = new Set()
@@ -48,7 +48,7 @@ export namespace CommandRegistry {
                 if (node.default) {
                     result.push(node)
                     return
-                } else if (typeof node == "object") {
+                } else if (typeof node == 'object') {
                     result = getLeafNodes(node, result)
                 }
             })

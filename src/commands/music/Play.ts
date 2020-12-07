@@ -1,8 +1,8 @@
-import VoiceCommand from "../../voice/VoiceCommand"
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, CommandOptions} from "../Command"
-import {QueryMode} from "../../music/DJ"
+import VoiceCommand from '../../voice/VoiceCommand'
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, CommandOptions} from '../Command'
+import {QueryMode} from '../../music/DJ'
 
 export default class PlayCommand extends VoiceCommand {
     readonly options: CommandOptions = {

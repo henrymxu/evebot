@@ -1,12 +1,12 @@
-import {MessageEmbed} from "discord.js"
-import YoutubeTrack from "../music/tracks/YoutubeTrack"
-import {Track} from "../music/tracks/Track"
-import {MessageGenerator} from "./MessageGenerator"
-import {TableGenerator} from "./TableGenerator"
-import {GuildContext} from "../guild/Context"
-import {Album} from "../music/tracks/Album"
-import {Utils} from "../utils/Utils"
-import {GuildUtils} from "../utils/GuildUtils"
+import {MessageEmbed} from 'discord.js'
+import YoutubeTrack from '../music/tracks/YoutubeTrack'
+import {Track} from '../music/tracks/Track'
+import {MessageGenerator} from './MessageGenerator'
+import {TableGenerator} from './TableGenerator'
+import {GuildContext} from '../guild/Context'
+import {Album} from '../music/tracks/Album'
+import {Utils} from '../utils/Utils'
+import {GuildUtils} from '../utils/GuildUtils'
 
 namespace TrackMessageGenerator {
     export function createSongTrackNowPlayingEmbed(track: YoutubeTrack): MessageEmbed {

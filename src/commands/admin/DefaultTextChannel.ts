@@ -1,9 +1,9 @@
-import {Message, MessageEmbed, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {GuildUtils} from "../../utils/GuildUtils"
-import {MessageGenerator} from "../../communication/MessageGenerator"
-import {Logger} from "../../Logger"
+import {Message, MessageEmbed, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, Command, CommandOptions} from '../Command'
+import {GuildUtils} from '../../utils/GuildUtils'
+import {MessageGenerator} from '../../communication/MessageGenerator'
+import {Logger} from '../../Logger'
 
 export default class DefaultTextChannelCommand extends Command {
     readonly options: CommandOptions = {

@@ -1,10 +1,10 @@
-import {Message, Role, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {Privilege} from "../../guild/Config"
-import {TableGenerator} from "../../communication/TableGenerator"
-import {GuildUtils} from "../../utils/GuildUtils"
-import {CommandRegistry} from "../Registry"
+import {Message, Role, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, Command, CommandOptions} from '../Command'
+import {Privilege} from '../../guild/Config'
+import {TableGenerator} from '../../communication/TableGenerator'
+import {GuildUtils} from '../../utils/GuildUtils'
+import {CommandRegistry} from '../Registry'
 
 export default class PrivilegesCommand extends Command {
     readonly options: CommandOptions = {

@@ -1,10 +1,10 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import VoiceCommand from "../../voice/VoiceCommand"
-import {ArgumentType, CommandOptions} from "../Command"
-import {Logger} from "../../Logger"
-import {GuildUtils} from "../../utils/GuildUtils"
-import {CachedStream} from "../../voice/CachedStream"
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import VoiceCommand from '../../voice/VoiceCommand'
+import {ArgumentType, CommandOptions} from '../Command'
+import {Logger} from '../../Logger'
+import {GuildUtils} from '../../utils/GuildUtils'
+import {CachedStream} from '../../voice/CachedStream'
 
 export default class ReciteCommand extends VoiceCommand {
     readonly options: CommandOptions = {

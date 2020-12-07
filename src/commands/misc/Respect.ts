@@ -1,7 +1,7 @@
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {GuildContext} from "../../guild/Context"
-import {Message, User} from "discord.js"
-import {GuildUtils} from "../../utils/GuildUtils"
+import {ArgumentType, Command, CommandOptions} from '../Command'
+import {GuildContext} from '../../guild/Context'
+import {Message, User} from 'discord.js'
+import {GuildUtils} from '../../utils/GuildUtils'
 
 export class RespectCommand extends Command {
     readonly options: CommandOptions = {

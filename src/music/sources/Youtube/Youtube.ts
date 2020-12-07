@@ -1,6 +1,6 @@
-import {SearchResult, TrackSource} from "../../Search"
-import {Keys} from "../../../Keys"
-import YoutubeAPI, {YouTubeSearchResults} from "youtube-search"
+import {SearchResult, TrackSource} from '../../Search'
+import {Keys} from '../../../Keys'
+import YoutubeAPI, {YouTubeSearchResults} from 'youtube-search'
 
 export default class Youtube implements TrackSource {
     private readonly options: YoutubeAPI.YouTubeSearchOptions
@@ -24,7 +24,7 @@ export default class Youtube implements TrackSource {
                 const searchResult: SearchResult = {
                     infos: results.map(result => { return { url: result.link } }),
                     metadata: {
-                        mode: "single",
+                        mode: 'single',
                         query: query
                     }
                 }
@@ -37,7 +37,7 @@ export default class Youtube implements TrackSource {
         return Promise.resolve({
             infos: [],
             metadata: {
-                mode: "playlist",
+                mode: 'playlist',
                 query: playlistURL
             }
         });

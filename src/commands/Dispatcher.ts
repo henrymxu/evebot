@@ -1,12 +1,12 @@
-import {Client, DMChannel, Message, MessageAttachment, Permissions, PermissionString, TextChannel, User} from "discord.js"
-import {CommandParser} from "./Parser"
-import {GlobalContext} from "../GlobalContext"
-import {GuildContext} from "../guild/Context"
-import {CommandRegistry} from "./Registry"
-import {Logger} from "../Logger"
-import {Command, FileType} from "./Command"
+import {Client, DMChannel, Message, MessageAttachment, Permissions, PermissionString, TextChannel, User} from 'discord.js'
+import {CommandParser} from './Parser'
+import {GlobalContext} from '../GlobalContext'
+import {GuildContext} from '../guild/Context'
+import {CommandRegistry} from './Registry'
+import {Logger} from '../Logger'
+import {Command, FileType} from './Command'
 
-const TAG = "CommandDispatcher"
+const TAG = 'CommandDispatcher'
 
 export namespace CommandDispatcher {
     export function register(client: Client) {

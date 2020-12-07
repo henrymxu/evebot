@@ -1,4 +1,4 @@
-import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
+import {Message, MessageEmbed, MessageOptions, TextChannel} from 'discord.js'
 
 export namespace Communicator {
     export function acknowledge(emoji: string, message?: Message) {

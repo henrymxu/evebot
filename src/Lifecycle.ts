@@ -1,6 +1,6 @@
-import {Client, VoiceChannel, VoiceState} from "discord.js"
-import {GlobalContext} from "./GlobalContext"
-import {Logger} from "./Logger"
+import {Client, VoiceChannel, VoiceState} from 'discord.js'
+import {GlobalContext} from './GlobalContext'
+import {Logger} from './Logger'
 
 const TAG = 'Lifecycle'
 

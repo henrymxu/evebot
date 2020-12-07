@@ -1,6 +1,6 @@
-import {Duplex} from "stream"
-import RecorderStream from "./RecorderStream"
-import {CachedStream, CreateStreamFromBuffer} from "./CachedStream"
+import {Duplex} from 'stream'
+import RecorderStream from './RecorderStream'
+import {CachedStream, CreateStreamFromBuffer} from './CachedStream'
 
 const SIGNED_16_BIT_MIN = -32768
 const SIGNED_16_BIT_MAX = 32767

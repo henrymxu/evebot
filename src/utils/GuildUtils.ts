@@ -1,6 +1,6 @@
-import {Role, TextChannel, User} from "discord.js"
-import {GuildContext} from "../guild/Context"
-import {CommandRegistry} from "../commands/Registry"
+import {Role, TextChannel, User} from 'discord.js'
+import {GuildContext} from '../guild/Context'
+import {CommandRegistry} from '../commands/Registry'
 
 export namespace GuildUtils {
     export function parseUserFromUserID(context: GuildContext, userID: string): User | undefined {

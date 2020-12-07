@@ -1,4 +1,4 @@
-import {MessageAttachment, MessageEmbed} from "discord.js"
+import {MessageAttachment, MessageEmbed} from 'discord.js'
 
 export namespace MessageGenerator {
     export function getBaseEmbed(): MessageEmbed {

@@ -1,6 +1,6 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, Command, CommandOptions} from '../Command'
 
 export default class VolumeCommand extends Command {
     readonly options: CommandOptions = {

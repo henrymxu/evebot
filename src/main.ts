@@ -1,10 +1,10 @@
-import {Keys} from "./Keys"
-import {Lifecycle} from "./Lifecycle"
-import {GlobalContext} from "./GlobalContext"
-import {CommandDispatcher} from "./commands/Dispatcher"
-import {CommandRegistry} from "./commands/Registry"
-import path from "path"
-import {Logger} from "./Logger"
+import {Keys} from './Keys'
+import {Lifecycle} from './Lifecycle'
+import {GlobalContext} from './GlobalContext'
+import {CommandDispatcher} from './commands/Dispatcher'
+import {CommandRegistry} from './commands/Registry'
+import path from 'path'
+import {Logger} from './Logger'
 
 const client = GlobalContext.getClient()
 CommandDispatcher.register(client)

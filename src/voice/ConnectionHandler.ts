@@ -1,18 +1,18 @@
-import RecorderStream from "./RecorderStream"
-import {User, VoiceChannel, VoiceConnection, VoiceState} from "discord.js"
-import {GuildContext} from "../guild/Context"
-import {SilentStreamUtils} from "../utils/SilentStreamUtils"
-import {PassThrough} from "stream"
-import {CommandDispatcher} from "../commands/Dispatcher"
-import {GlobalContext} from "../GlobalContext"
-import {Logger} from "../Logger"
-import MergedStream from "./MergedStream"
-import {CachedStream} from "./CachedStream"
-import SilenceInsertionHandler from "./SilenceInsertionHandler"
+import RecorderStream from './RecorderStream'
+import {User, VoiceChannel, VoiceConnection, VoiceState} from 'discord.js'
+import {GuildContext} from '../guild/Context'
+import {SilentStreamUtils} from '../utils/SilentStreamUtils'
+import {PassThrough} from 'stream'
+import {CommandDispatcher} from '../commands/Dispatcher'
+import {GlobalContext} from '../GlobalContext'
+import {Logger} from '../Logger'
+import MergedStream from './MergedStream'
+import {CachedStream} from './CachedStream'
+import SilenceInsertionHandler from './SilenceInsertionHandler'
 
 const USER_REJOIN_THRESHOLD = 5000
 const VOICE_COMMAND_LENGTH = 3000
-const NO_USER_TIMEOUT = 15000
+const NO_USER_TIMEOUT = 60 * 1000
 
 const TAG = 'ConnectionHandler'
 

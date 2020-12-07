@@ -1,6 +1,6 @@
-import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from "./Interfaces"
-import Microsoft from "./providers/Microsoft"
-import {Keys} from "../Keys"
+import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from './Interfaces'
+import Microsoft from './providers/Microsoft'
+import {Keys} from '../Keys'
 
 const providers: SpeechProvider[] = [new Microsoft()]
 
@@ -44,7 +44,7 @@ class StubSpeechProvider implements SpeechProvider {
     }
 
     getStatus(): string {
-        return "No Registered Speech Provider";
+        return 'No Registered Speech Provider';
     }
 
     requiredConfigVariables(): string[] {

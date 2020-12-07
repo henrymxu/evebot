@@ -1,8 +1,8 @@
-import {GuildContext} from "../guild/Context"
-import {Message, MessageEmbed, MessageOptions, TextChannel} from "discord.js"
-import {Communicator} from "./Communicator"
-import {MessageGenerator} from "./MessageGenerator"
-import {Logger} from "../Logger"
+import {GuildContext} from '../guild/Context'
+import {Message, MessageEmbed, MessageOptions, TextChannel} from 'discord.js'
+import {Communicator} from './Communicator'
+import {MessageGenerator} from './MessageGenerator'
+import {Logger} from '../Logger'
 
 const TAG = 'Responder'
 const DEFAULT_EMOJIS = ['👌', '👎']

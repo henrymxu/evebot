@@ -1,9 +1,9 @@
-import {TrackSource, SearchResult} from "../../Search"
-import ytsr, {Item, Result, Video} from "ytsr"
-import ytpl from "ytpl"
-import {Logger} from "../../../Logger"
+import {TrackSource, SearchResult} from '../../Search'
+import ytsr, {Item, Result, Video} from 'ytsr'
+import ytpl from 'ytpl'
+import {Logger} from '../../../Logger'
 
-const TAG = "YoutubeSource3"
+const TAG = 'YoutubeSource3'
 
 export default class Youtube3 implements TrackSource {
     getTrackURLFromSearch(query: string): Promise<SearchResult> {
@@ -16,7 +16,7 @@ export default class Youtube3 implements TrackSource {
                 const searchResult: SearchResult = {
                     infos: videos.map((item: Item) => { return { url: (item as Video).link } }),
                     metadata: {
-                        mode: "single",
+                        mode: 'single',
                         query: query
                     }
                 }
@@ -35,7 +35,7 @@ export default class Youtube3 implements TrackSource {
                 const searchResult: SearchResult = {
                     infos: result.items.map((item) => { return { url: item.url_simple }}),
                     metadata: {
-                        mode: "single",
+                        mode: 'single',
                         query: playlistURL
                     }
                 }

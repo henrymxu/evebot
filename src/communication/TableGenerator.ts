@@ -1,11 +1,11 @@
-import {table} from "table"
-import {MessageEmbed} from "discord.js"
-import {MessageGenerator} from "./MessageGenerator"
+import {table} from 'table'
+import {MessageEmbed} from 'discord.js'
+import {MessageGenerator} from './MessageGenerator'
 
 export namespace TableGenerator {
     export function createTable(headers: string[], data: string[][]): string {
         if (data.length === 0) {
-            return headers ? table([headers]) : "Empty Table"
+            return headers ? table([headers]) : 'Empty Table'
         }
         if (headers && headers.length !== data[0].length) {
             throw new Error(`Table Header Length (${headers.length}) is not equal to Table Data Length (${data[0].length})`)

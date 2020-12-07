@@ -1,13 +1,13 @@
-import {URL} from "url"
-import ytdl from "discord-ytdl-core"
-import Youtube from "./sources/Youtube/Youtube2"
-import {Utils} from "../utils/Utils"
-import {Readable} from "stream"
-import {Track} from "./tracks/Track"
-import YoutubeTrack, {YoutubeTrackInfo} from "./tracks/YoutubeTrack"
-import {Album} from "./tracks/Album"
-import ExternalTrack, {ExternalTrackInfo} from "./tracks/ExternalTrack"
-import {Logger} from "../Logger"
+import {URL} from 'url'
+import ytdl from 'discord-ytdl-core'
+import Youtube from './sources/Youtube/Youtube2'
+import {Utils} from '../utils/Utils'
+import {Readable} from 'stream'
+import {Track} from './tracks/Track'
+import YoutubeTrack, {YoutubeTrackInfo} from './tracks/YoutubeTrack'
+import {Album} from './tracks/Album'
+import ExternalTrack, {ExternalTrackInfo} from './tracks/ExternalTrack'
+import {Logger} from '../Logger'
 
 const TAG = 'YoutubeSearch'
 const YoutubeSource = new Youtube()
@@ -15,13 +15,13 @@ export namespace Search {
     export function search(query: string): Promise<Track[]> {
         return new Promise((res, rej) => {
             parseQueryForType(query).then(async (result) => {
-                if (result.metadata.mode === "single") {
+                if (result.metadata.mode === 'single') {
                     resolveSingleTrack(result).then((trackInfo) => {
                         res([trackInfo])
                     }).catch(err => { rej(err) })
-                } else if (result.metadata.mode === "playlist") {
+                } else if (result.metadata.mode === 'playlist') {
                     // TODO: handle playlist result
-                } else if (result.metadata.mode === "stream") {
+                } else if (result.metadata.mode === 'stream') {
                     // TODO: handle stream result
                 }
             }).catch(err => {

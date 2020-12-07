@@ -1,7 +1,7 @@
-const SpotifyWebAPI = require("spotify-web-api-node")
-import {Keys} from "../../../Keys"
-import {ExternalTrackInfo} from "../../tracks/ExternalTrack"
-import {Album} from "../../tracks/Album"
+const SpotifyWebAPI = require('spotify-web-api-node')
+import {Keys} from '../../../Keys'
+import {ExternalTrackInfo} from '../../tracks/ExternalTrack'
+import {Album} from '../../tracks/Album'
 
 const spotifyApi = new SpotifyWebAPI({
     clientId: Keys.get('spotify_id'),

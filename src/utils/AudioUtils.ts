@@ -1,9 +1,9 @@
-import {Readable, Transform} from "stream";
-import {Lame} from "node-lame";
-import {createReadStream} from "fs";
-import {opus, FFmpeg} from "prism-media";
-import {FileWriter} from "wav";
-import DownSamplingStream from "./DownSamplingStream";
+import {Readable, Transform} from 'stream';
+import {Lame} from 'node-lame';
+import {createReadStream} from 'fs';
+import {opus, FFmpeg} from 'prism-media';
+import {FileWriter} from 'wav';
+import DownSamplingStream from './DownSamplingStream';
 
 export namespace AudioUtils {
     export function createStereoToMonoTransformStream(): Transform {
@@ -45,16 +45,16 @@ export namespace AudioUtils {
 
     export function convertBufferToMp3Buffer(audioBuffer: Buffer, title: string, author: string): Promise<Buffer> {
         const encoder = new Lame({
-            "output": "buffer",
-            "raw": true,
-            "sfreq": 48,
-            "bitwidth": 16,
-            "signed": true,
-            "little-endian": true,
-            "mode": 's',
-            "meta": {
-                "title": "Recording",
-                "artist": author,
+            'output': 'buffer',
+            'raw': true,
+            'sfreq': 48,
+            'bitwidth': 16,
+            'signed': true,
+            'little-endian': true,
+            'mode': 's',
+            'meta': {
+                'title': 'Recording',
+                'artist': author,
             }
         }).setBuffer(audioBuffer);
         return new Promise((res, rej) => {
@@ -88,9 +88,9 @@ export namespace AudioUtils {
 
     export function writeStreamToWavFile(audioStream: Readable, outputPath: string) {
         const wavWriter = new FileWriter(`${outputPath}`, {
-            "channels": 2,
-            "sampleRate": 48000,
-            "bitDepth": 16
+            'channels': 2,
+            'sampleRate': 48000,
+            'bitDepth': 16
         })
         audioStream.pipe(wavWriter)
     }

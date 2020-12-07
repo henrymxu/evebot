@@ -1,10 +1,10 @@
 /* eslint-disable */
 // @ts-ignore
-import {HotwordModels, SnowboyDetect} from "snowboy"
+import {HotwordModels, SnowboyDetect} from 'snowboy'
 /* eslint-enable */
-import {AudioUtils} from "../../utils/AudioUtils"
-import {Transform} from "stream"
-import {HotwordEngine} from "../Engine"
+import {AudioUtils} from '../../utils/AudioUtils'
+import {Transform} from 'stream'
+import {HotwordEngine} from '../Engine'
 
 export default class Snowboy extends HotwordEngine {
     protected createDetector(userID: string, input: Transform, callback: (trigger: string) => void): any {
@@ -28,7 +28,7 @@ export default class Snowboy extends HotwordEngine {
 
 function createRecognizer(callback: (hotword: string) => void): SnowboyDetect {
     let detector = new SnowboyDetect({
-        resource: "resources/common.res",
+        resource: 'resources/common.res',
         models: constructModels(),
         audioGain: 1.0,
         applyFrontend: true
@@ -37,9 +37,9 @@ function createRecognizer(callback: (hotword: string) => void): SnowboyDetect {
     // detector.on('sound', buffer => {});
     // detector.on('error', () => {console.log('error');});
     detector.on('hotword', function (index: number, hotword: string, buffer: Buffer) {
-        // <buffer> contains the last chunk of the audio that triggers the "hotword"
+        // <buffer> contains the last chunk of the audio that triggers the 'hotword'
         // event. It could be written to a wav stream. You will have to use it
-        // together with the <buffer> in the "sound" event if you want to get audio
+        // together with the <buffer> in the 'sound' event if you want to get audio
         // data after the hotword.
         // console.log('hotword', index, hotword)
         callback(hotword)

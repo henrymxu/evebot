@@ -1,11 +1,11 @@
-import {Readable} from "stream"
-import {Message} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {GuildUtils} from "../../utils/GuildUtils"
+import {Readable} from 'stream'
+import {Message} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {GuildUtils} from '../../utils/GuildUtils'
 
 export abstract class Track {
     id: string
-    metaData: TrackMetaData = {requesterId: "", source: undefined}
+    metaData: TrackMetaData = {requesterId: '', source: undefined}
     private elapsedTimeInSeconds = 0
     private secondsInterval: NodeJS.Timeout | undefined
     protected state: TrackState = TrackState.QUEUED

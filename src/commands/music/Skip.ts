@@ -1,7 +1,7 @@
-import VoiceCommand from "../../voice/VoiceCommand"
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {CommandOptions} from "../Command"
+import VoiceCommand from '../../voice/VoiceCommand'
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {CommandOptions} from '../Command'
 
 export default class SkipCommand extends VoiceCommand {
     readonly options: CommandOptions = {

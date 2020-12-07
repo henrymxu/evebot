@@ -1,11 +1,11 @@
-import AWSStorage from "./providers/AWSStorage"
-import {Keys} from "../Keys"
-import LocalStorage from "./providers/LocalStorage"
-import {FileUtils} from "../utils/FileUtils"
+import AWSStorage from './providers/AWSStorage'
+import {Keys} from '../Keys'
+import LocalStorage from './providers/LocalStorage'
+import {FileUtils} from '../utils/FileUtils'
 
 export interface Storage {
-    load(params: any, defaultValue?: any): Promise<any>
-    save(params: any): Promise<void>
+    loadConfig(params: any, defaultValue?: any): Promise<any>
+    saveConfig(params: any): Promise<void>
 }
 
 const storage: Storage = Keys.get('bot_environment') === 'production' ? new AWSStorage() : new LocalStorage()
@@ -19,7 +19,7 @@ export namespace Storage {
             TableName: CONFIG_TABLE_NAME,
             Key: { 'id': guildID }
         }
-        return storage.load(params, defaultConfig)
+        return storage.loadConfig(params, defaultConfig)
     }
 
     export function saveConfig(guildID: string, object: any): Promise<void> {
@@ -27,6 +27,6 @@ export namespace Storage {
             TableName: CONFIG_TABLE_NAME,
             Item: { 'id': guildID, 'config': object }
         }
-        return storage.save(params)
+        return storage.saveConfig(params)
     }
 }

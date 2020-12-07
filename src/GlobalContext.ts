@@ -1,5 +1,6 @@
-import {GuildContext} from "./guild/Context"
-import {Client} from "discord.js"
+import {GuildContext} from './guild/Context'
+import {Client} from 'discord.js'
+import {execSync} from 'child_process'
 
 const guildContexts: Map<string, GuildContext> = new Map()
 const client = new Client()
@@ -29,5 +30,20 @@ export namespace GlobalContext {
             throw Error('Bot ID should never not exist')
         }
         return id
+    }
+
+    export function getMemoryUsage(): number[] {
+        return [process.memoryUsage().heapTotal / 1000000, process.memoryUsage().external / 1000000, process.memoryUsage().rss / 1000000]
+    }
+
+    export function getBotVersion(): string {
+        let version: string
+        // execSync('git branch --show-current');
+        try {
+            version = `(Git Hash) ${execSync('git log --pretty=format:\'%h\' -n 1').toString()}`;
+        } catch (e) {
+            version = `(NPM Version) ${require('../package.json').version}` || 'Unavailable'
+        }
+        return version
     }
 }

@@ -1,9 +1,10 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {Command, CommandOptions} from "../Command"
-import {TableGenerator} from "../../communication/TableGenerator"
-import {SpeechProvider} from "../../speech/Interfaces"
-import {GuildUtils} from "../../utils/GuildUtils"
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {Command, CommandOptions} from '../Command'
+import {TableGenerator} from '../../communication/TableGenerator'
+import {SpeechProvider} from '../../speech/Interfaces'
+import {GuildUtils} from '../../utils/GuildUtils'
+import {GlobalContext} from '../../GlobalContext'
 
 export default class StatusCommand extends Command {
     readonly options: CommandOptions = {
@@ -42,15 +43,15 @@ export default class StatusCommand extends Command {
 }
 
 function getStatusResponse(context: GuildContext): string {
-    let response = ""
+    let response = ''
     const tableHeader = ['Context', 'Value']
     const tableData: string[][] = []
     tableData.push(['Guild', context.getGuild().name])
     tableData.push(['Prefix', context.getPrefix()])
     const textChannel = context.getTextChannel()
-    tableData.push(['TextChannel', textChannel ? textChannel.name: "None"])
+    tableData.push(['TextChannel', textChannel ? textChannel.name: 'None'])
     const voiceConnection = context.getVoiceConnection()
-    tableData.push(['VoiceChannel', voiceConnection ? voiceConnection.channel.name: "None"])
+    tableData.push(['VoiceChannel', voiceConnection ? voiceConnection.channel.name: 'None'])
 
     response += `${TableGenerator.createTable(tableHeader, tableData)}\n`
 
@@ -71,15 +72,17 @@ function getStatusResponse(context: GuildContext): string {
     context.getProvider().getVoiceConnectionHandler().getVoiceStreams().forEach((_, userID) => {
         tableData3.push([GuildUtils.parseUserFromUserID(context, userID)!.username])
     })
-    response += `${TableGenerator.createTable(tableHeader3, tableData3)}`
+    response += `${TableGenerator.createTable(tableHeader3, tableData3)}\n`
+    response += `Version: ${GlobalContext.getBotVersion()}`
     return response
 }
 
 function getMemoryResponse(): string {
     const tableHeaders = ['Type', 'Allocated (MBs)']
     const tableData: string[][] = []
-    tableData.push(['heapTotal', (process.memoryUsage().heapTotal / 1000000).toString()])
-    tableData.push(['external', (process.memoryUsage().external / 1000000).toString()])
-    tableData.push(['rss', (process.memoryUsage().rss / 1000000).toString()])
+    const memory = GlobalContext.getMemoryUsage()
+    tableData.push(['heapTotal', (memory[0]).toString()])
+    tableData.push(['external', (memory[1]).toString()])
+    tableData.push(['rss', (memory[2]).toString()])
     return TableGenerator.createTable(tableHeaders, tableData)
 }

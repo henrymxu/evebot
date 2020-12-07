@@ -1,4 +1,4 @@
-import YoutubeTrack, {YoutubeTrackInfo} from "./YoutubeTrack"
+import YoutubeTrack, {YoutubeTrackInfo} from './YoutubeTrack'
 
 export default class ExternalTrack extends YoutubeTrack {
     private readonly externalInfo: ExternalTrackInfo

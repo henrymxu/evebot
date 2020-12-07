@@ -1,7 +1,7 @@
-import {Readable} from "stream"
-import {existsSync, readFileSync, unlink, unlinkSync} from "fs"
-import {get} from "https"
-import {IncomingMessage} from "http"
+import {Readable} from 'stream'
+import {existsSync, readFileSync, unlink, unlinkSync} from 'fs'
+import {get} from 'https'
+import {IncomingMessage} from 'http'
 
 export namespace FileUtils {
     export function openJsonFile(filePath: string): any {

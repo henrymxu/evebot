@@ -1,8 +1,8 @@
-import {randomBytes} from "crypto"
+import {randomBytes} from 'crypto'
 
 export namespace Utils {
     export function generateUUID(): string {
-        return randomBytes(16).toString("hex")
+        return randomBytes(16).toString('hex')
     }
 
     export function convertSecondsToTimeString(totalSeconds: number): string {

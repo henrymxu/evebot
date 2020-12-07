@@ -1,9 +1,9 @@
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, Command, CommandOptions} from "../Command"
-import {GeniusLyrics} from "../../music/lyrics/Genius"
-import {MessageGenerator} from "../../communication/MessageGenerator"
-import {Logger} from "../../Logger"
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, Command, CommandOptions} from '../Command'
+import {GeniusLyrics} from '../../music/lyrics/Genius'
+import {MessageGenerator} from '../../communication/MessageGenerator'
+import {Logger} from '../../Logger'
 
 export default class LyricsCommand extends Command {
     readonly options: CommandOptions = {

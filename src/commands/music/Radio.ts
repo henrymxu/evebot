@@ -1,9 +1,9 @@
-import VoiceCommand from "../../voice/VoiceCommand"
-import {Message, User} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {ArgumentType, CommandOptions} from "../Command"
-import {TableGenerator} from "../../communication/TableGenerator"
-import {RadioConfiguration, RadioContext} from "../../music/radio/Radio"
+import VoiceCommand from '../../voice/VoiceCommand'
+import {Message, User} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {ArgumentType, CommandOptions} from '../Command'
+import {TableGenerator} from '../../communication/TableGenerator'
+import {RadioConfiguration, RadioContext} from '../../music/radio/Radio'
 
 export default class RadioCommand extends VoiceCommand {
     readonly options: CommandOptions = {

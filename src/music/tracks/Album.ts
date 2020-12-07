@@ -1,4 +1,4 @@
-import {ExternalTrackInfo} from "./ExternalTrack"
+import {ExternalTrackInfo} from './ExternalTrack'
 
 export interface Album {
     id: string

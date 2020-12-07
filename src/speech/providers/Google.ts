@@ -1,9 +1,9 @@
-import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from "../Interfaces";
-import {Readable} from "stream";
-import {AudioUtils} from "../../utils/AudioUtils"
-import {SpeechClient} from "@google-cloud/speech";
-import {Keys} from "../../Keys";
-import {Logger} from "../../Logger"
+import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from '../Interfaces';
+import {Readable} from 'stream';
+import {AudioUtils} from '../../utils/AudioUtils'
+import {SpeechClient} from '@google-cloud/speech';
+import {Keys} from '../../Keys';
+import {Logger} from '../../Logger'
 
 const configVars = ['google_keyFileName', 'google_keyFileCred']
 export default class Google implements SpeechRecognizer, SpeechProvider {
@@ -17,7 +17,7 @@ export default class Google implements SpeechRecognizer, SpeechProvider {
     }
 
     getStatus(): string {
-        return "google"
+        return 'google'
     }
 
     asGenerator(): SpeechGenerator | undefined {

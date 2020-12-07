@@ -1,5 +1,5 @@
-import {VoiceConnection} from "discord.js";
-import {Readable} from "stream";
+import {VoiceConnection} from 'discord.js';
+import {Readable} from 'stream';
 
 export namespace SilentStreamUtils {
 
@@ -8,11 +8,11 @@ export namespace SilentStreamUtils {
      * discord.js has this, but sometimes it does not work.
      */
     export function playSilentAudioStream(connection: VoiceConnection) {
-        connection.play(SilentStreamUtils.createSilenceStream(), { type: "opus" });
+        connection.play(SilentStreamUtils.createSilenceStream(), { type: 'opus' });
         setTimeout(() => {
             if (connection.dispatcher) {
                 connection.dispatcher.destroy()
-                connection.setSpeaking("SPEAKING")
+                connection.setSpeaking('SPEAKING')
             }
         }, 250)
     }

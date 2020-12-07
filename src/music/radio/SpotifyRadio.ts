@@ -1,8 +1,8 @@
-import {Message} from "discord.js"
-import {GuildContext} from "../../guild/Context"
-import {Spotify} from "../sources/Spotify/Spotify"
-import {Radio, RadioContext} from "./Radio"
-import {Logger} from "../../Logger"
+import {Message} from 'discord.js'
+import {GuildContext} from '../../guild/Context'
+import {Spotify} from '../sources/Spotify/Spotify'
+import {Radio, RadioContext} from './Radio'
+import {Logger} from '../../Logger'
 
 const TAG = 'SpotifyRadio'
 

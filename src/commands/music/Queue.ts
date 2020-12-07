@@ -1,9 +1,9 @@
-import {Command, CommandOptions} from "../Command"
-import {GuildContext} from "../../guild/Context"
-import {Message, MessageEmbed, User} from "discord.js"
-import {Track} from "../../music/tracks/Track"
-import {MessageGenerator} from "../../communication/MessageGenerator"
-import {TrackMessageFactory} from "../../communication/TrackMessageGenerator"
+import {Command, CommandOptions} from '../Command'
+import {GuildContext} from '../../guild/Context'
+import {Message, MessageEmbed, User} from 'discord.js'
+import {Track} from '../../music/tracks/Track'
+import {MessageGenerator} from '../../communication/MessageGenerator'
+import {TrackMessageFactory} from '../../communication/TrackMessageGenerator'
 
 export default class QueueCommand extends Command {
     readonly options: CommandOptions = {
