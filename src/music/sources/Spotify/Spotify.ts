@@ -137,11 +137,10 @@ export namespace Spotify {
             spotifyTokenPromise().then((token: string) => {
                 getArtistIDFromArtistName(artist).then((artistID: string) => {
                     spotifyApi.getArtistAlbums(artistID).then((data: any) => {
-                        let albumIDs = data.body.items.map((album: any) => album.id)
+                        const albumIDs = data.body.items.map((album: any) => album.id)
                         spotifyApi.getAlbums(albumIDs).then((data: any) => {
-                            let albums = data.body.albums
-                            let tracks = albums.map((album: any) => album.tracks.items).flat()
-                            let filteredTracks = tracks.filter((v: any, i: number, a: any[]) => {
+                            const tracks = data.body.albums.map((album: any) => album.tracks.items).flat()
+                            const filteredTracks = tracks.filter((v: any, i: number, a: any[]) => {
                                 return a.findIndex((t: any) => (t.id === v.id || t.name === v.name)) === i
                             })
                             res(convertResponseToSpotifyTracks(Utils.randomlySelectNElementsInArray(filteredTracks, count)))

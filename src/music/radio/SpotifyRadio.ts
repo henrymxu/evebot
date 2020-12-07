@@ -72,8 +72,8 @@ export default class SpotifyRadio extends Radio {
 
 function convertTracksToSearchableTrackNames(tracks: ExternalTrackInfo[]): string[] {
     return tracks.map(track => {
-        let filteredName = track.name
-        return `${track.artist} - ${filteredName}`
+        const filteredName = track.name
+        return `${track.artist} - ${filteredName} - (Official Audio)`
     })
 }
 

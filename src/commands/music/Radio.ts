@@ -74,7 +74,7 @@ export default class RadioCommand extends VoiceCommand {
                 Use ${context.getPrefix()}stop to clear the current queue and try again!`, message)
             return
         }
-        let shouldGenerateSeed = args.get('artist') && args.get('genre') ||
+        const shouldGenerateSeed = args.get('artist') && args.get('genre') ||
             args.get('artist') && args.get('track') ||
             args.get('genre') && args.get('track')
         let mode = Radio.ConvertStringToRadioMode(args.get('mode'))
