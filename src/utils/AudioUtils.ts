@@ -16,20 +16,6 @@ export namespace AudioUtils {
         return stereoToMonoTransformer
     }
 
-    export function convertStereoBufferToMonoBuffer(buffer: Buffer): Buffer {
-        const newBuffer = Buffer.alloc(buffer.length / 2)
-        const HI = 1
-        const LO = 0
-        for (let i = 0; i < newBuffer.length / 2; ++i) {
-            const left = (buffer[i * 4 + HI] << 8) | (buffer[i * 4 + LO] & 0xff)
-            const right = (buffer[i * 4 + 2 + HI] << 8) | (buffer[i * 4 + 2 + LO] & 0xff)
-            const avg = (left + right) / 2
-            newBuffer[i * 2 + HI] = ((avg >> 8) & 0xff)
-            newBuffer[i * 2 + LO] = (avg & 0xff)
-        }
-        return newBuffer
-    }
-
     /**
      * @returns 16kHz s16 pcm stream
      */
@@ -94,4 +80,18 @@ export namespace AudioUtils {
         })
         audioStream.pipe(wavWriter)
     }
+}
+
+function convertStereoBufferToMonoBuffer(buffer: Buffer): Buffer {
+    const newBuffer = Buffer.alloc(buffer.length / 2)
+    const HI = 1
+    const LO = 0
+    for (let i = 0; i < newBuffer.length / 2; ++i) {
+        const left = (buffer[i * 4 + HI] << 8) | (buffer[i * 4 + LO] & 0xff)
+        const right = (buffer[i * 4 + 2 + HI] << 8) | (buffer[i * 4 + 2 + LO] & 0xff)
+        const avg = (left + right) / 2
+        newBuffer[i * 2 + HI] = ((avg >> 8) & 0xff)
+        newBuffer[i * 2 + LO] = (avg & 0xff)
+    }
+    return newBuffer
 }

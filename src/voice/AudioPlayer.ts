@@ -77,7 +77,7 @@ export default class AudioPlayer {
         }
         this.endTrack(this.trackQueue.shift())
         this.trackQueue.forEach(track => { track.setFinished()})
-        this.getConnection()?.dispatcher.destroy()
+        this.getConnection()?.dispatcher?.destroy()
         this.initialize()
         return true
     }
