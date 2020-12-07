@@ -47,6 +47,12 @@ export default class RadioCommand extends VoiceCommand {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        if (context.getProvider().getDJ().getCurrentSong()) {
+            context.getProvider().getResponder()
+                .error(`Cannot start a radio while there are songs playing! 
+                Use ${context.getPrefix()}stop to clear the current queue and try again!`, message)
+            return
+        }
         if (!args.get('artist') && !args.get('genre') && !args.get('track')) {
             const radioConfiguration = context.getProvider().getDJ().getRadio().getRadioConfiguration()
             if (radioConfiguration) {
