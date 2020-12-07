@@ -85,7 +85,7 @@ function parseQueryForType(query: string): Promise<SearchResult> {
         if (result.hostname === 'www.youtube.com') {
             switch (result.pathname) {
                 case '/watch':
-                    Logger.d(TAG, `Found a Youtube video for ${query}`)
+                    Logger.d(TAG, `Found a Youtube video >> ${query}`)
                     return Promise.resolve({
                         infos: [{url: query}],
                         metadata: {

@@ -3,7 +3,7 @@ import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandOptions} from '../Command'
 import {TableGenerator} from '../../communication/TableGenerator'
-import {RadioConfiguration, RadioContext} from '../../music/radio/Radio'
+import {Radio, RadioConfiguration, RadioContext, RadioMode} from '../../music/radio/Radio'
 
 export default class RadioCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -34,6 +34,15 @@ export default class RadioCommand extends VoiceCommand {
                 type: ArgumentType.STRING
             },
             {
+                key: 'mode',
+                flag: 'm',
+                description: 'Radio mode (artist, top10, related). Artist is only for the provided artists songs, ' +
+                    'Top10 is for artists top10 current song, Related is for any songs related to provided arguments',
+                required: false,
+                type: ArgumentType.STRING,
+                validate: (context: GuildContext, arg: any) => { return arg == 'artist' || arg == 'top10' || arg == 'related'}
+            },
+            {
                 key: 'length',
                 flag: 'l',
                 description: 'Number of songs in the radio',
@@ -43,16 +52,10 @@ export default class RadioCommand extends VoiceCommand {
                 validate: (context: GuildContext, arg: any) => parseInt(arg) > 0 && parseInt(arg) <= 100
             }
         ],
-        examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop']
+        examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop', 'radio -a Taylor Swift -m top10']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        if (context.getProvider().getDJ().getCurrentSong()) {
-            context.getProvider().getResponder()
-                .error(`Cannot start a radio while there are songs playing! 
-                Use ${context.getPrefix()}stop to clear the current queue and try again!`, message)
-            return
-        }
         if (!args.get('artist') && !args.get('genre') && !args.get('track')) {
             const radioConfiguration = context.getProvider().getDJ().getRadio().getRadioConfiguration()
             if (radioConfiguration) {
@@ -65,11 +68,28 @@ export default class RadioCommand extends VoiceCommand {
             }
             return
         }
+        if (context.getProvider().getDJ().getCurrentSong()) {
+            context.getProvider().getResponder()
+                .error(`Cannot start a radio while there are songs playing! 
+                Use ${context.getPrefix()}stop to clear the current queue and try again!`, message)
+            return
+        }
+        let shouldGenerateSeed = args.get('artist') && args.get('genre') ||
+            args.get('artist') && args.get('track') ||
+            args.get('genre') && args.get('track')
+        let mode = Radio.ConvertStringToRadioMode(args.get('mode'))
+        mode = shouldGenerateSeed ? RadioMode.RELATED : mode
+        if ((mode == RadioMode.TOP_10 || mode == RadioMode.ARTIST_ONLY) && !args.get('artist')) {
+            context.getProvider().getResponder()
+                .error(`Must provide an artist for this mode! Provide one using the -a flag!`, message)
+            return
+        }
         const radioContext: RadioContext = {
             artists: [args.get('artist')],
             genres: [args.get('genre')],
             tracks: [args.get('track')],
-            length: args.get('length')
+            length: args.get('length'),
+            mode: mode
         }
         context.getProvider().getDJ().getRadio().start(radioContext, message)
     }

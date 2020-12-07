@@ -12,7 +12,24 @@ export abstract class Radio {
         this.play = play
     }
 
-    abstract start(context: RadioContext, message?: Message): void
+    start(context: RadioContext, message?: Message) {
+        this.stop()
+        switch(context.mode) {
+            case RadioMode.ARTIST_ONLY:
+                this.startArtistRadio(context, message)
+                break
+            case RadioMode.TOP_10:
+                this.startTop10Radio(context, message)
+                break
+            case RadioMode.RELATED:
+                this.startRelatedRadio(context, message)
+                break
+        }
+    }
+
+    protected abstract startTop10Radio(context: RadioContext, message?: Message): void
+    protected abstract startArtistRadio(context: RadioContext, message?: Message): void
+    protected abstract startRelatedRadio(context: RadioContext, message?: Message): void
 
     isPlaying(): boolean {
         return this.radioConfiguration !== undefined
@@ -50,6 +67,27 @@ export abstract class Radio {
             this.radioConfiguration = undefined
         }
     }
+
+    static ConvertStringToRadioMode(modeString: string): RadioMode {
+        let mode: RadioMode
+        switch(modeString) {
+            case 'top10':
+                mode = RadioMode.TOP_10
+                break
+            case 'artist':
+                mode = RadioMode.ARTIST_ONLY
+                break
+            default:
+                mode = RadioMode.RELATED
+        }
+        return mode
+    }
+}
+
+export enum RadioMode {
+    TOP_10,
+    ARTIST_ONLY,
+    RELATED
 }
 
 export interface RadioContext {
@@ -57,6 +95,7 @@ export interface RadioContext {
     tracks: string[],
     genres: string[],
     length: number
+    mode: RadioMode
 }
 
 export interface RadioConfiguration {

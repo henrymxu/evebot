@@ -19,6 +19,20 @@ export namespace Utils {
         return (input.length > maxLength) ? input.substr(0, maxLength - 1) + ' ...' : input;
     }
 
+    export function randomlySelectNElementsInArray(arr: any[], n: number): any[] {
+        let result = new Array(n),
+            len = arr.length,
+            taken = new Array(len)
+        if (n > len)
+            throw new RangeError("More elements taken than available");
+        while (n--) {
+            let x = Math.floor(Math.random() * len)
+            result[n] = arr[x in taken ? taken[x] : x];
+            taken[x] = --len in taken ? taken[len] : len;
+        }
+        return result;
+    }
+
     export function roughSizeOfObject( object: any): number {
         const objectList = []
         const stack = [object]
