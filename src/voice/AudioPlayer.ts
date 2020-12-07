@@ -75,8 +75,8 @@ export default class AudioPlayer {
         if (!this.getConnection()?.dispatcher) {
             return false
         }
-        this.endTrack(this.trackQueue.shift())
-        this.trackQueue.forEach(track => { track.setFinished()})
+        this.endTrack(this.trackQueue.shift(), true)
+        this.trackQueue.forEach(track => { track.setFinished() })
         this.getConnection()?.dispatcher?.destroy()
         this.initialize()
         return true
@@ -190,11 +190,11 @@ export default class AudioPlayer {
         return nextTrackItem !== undefined
     }
 
-    private endTrack(track?: Track) {
+    private endTrack(track?: Track, forceStop: boolean = false) {
         if (track) {
             this.getConnection()?.dispatcher?.destroy()
             track.setFinished()
-            this.context.getProvider().getDJ().onTrackCompleted(track)
+            this.context.getProvider().getDJ().onTrackCompleted(track, forceStop)
         }
     }
 

@@ -133,13 +133,13 @@ export default class DJ {
         this.context.getProvider().getResponder().send({content: embed, id: track.id, message: track.metaData.source})
     }
 
-    onTrackCompleted(track: Track) {
+    onTrackCompleted(track: Track, forceStop: boolean = false) {
         Logger.i(DJ.name, `Finished playing: ${track.getTitle()}`, this.context)
         this.context.getProvider().getResponder().delete(track.id)
         this.context.getProvider().getResponder().delete('queue')
         this.context.getProvider().getResponder().delete('song')
 
-        if (this.radio.isPlaying()) {
+        if (!forceStop && this.radio.isPlaying()) {
             this.radio.next()
             this.radio.resume()
         }
