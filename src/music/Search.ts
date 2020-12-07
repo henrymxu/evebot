@@ -1,6 +1,6 @@
 import {URL} from 'url'
 import ytdl from 'discord-ytdl-core'
-import Youtube from './sources/Youtube/Youtube2'
+import Youtube from './sources/Youtube/Youtube3'
 import {Utils} from '../utils/Utils'
 import {Readable} from 'stream'
 import {Track} from './tracks/Track'
