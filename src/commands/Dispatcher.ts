@@ -1,13 +1,4 @@
-import {
-    Client,
-    DMChannel,
-    Message,
-    MessageAttachment,
-    Permissions,
-    PermissionString,
-    TextChannel,
-    User
-} from 'discord.js'
+import {Client, DMChannel, Message, MessageAttachment, Permissions, PermissionString, TextChannel, User} from 'discord.js'
 import {CommandParser} from './Parser'
 import {GlobalContext} from '../GlobalContext'
 import {GuildContext} from '../guild/Context'

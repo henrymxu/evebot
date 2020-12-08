@@ -38,21 +38,20 @@ export default class EmojisCommand extends Command {
             },
         ],
         permissions: ['MANAGE_GUILD'],
-        examples: ['emoji okay -e 305818615712579584', 'aliases negative -e 🤡']
+        examples: ['emoji okay -e <:ayy:305818615712579584>', 'aliases negative -e 🤡']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         const emojis = context.getConfig().getEmojis()
         if (!args.get('ack')) {
-            context.getProvider().getResponder()
-                .send({content: createEmojiListEmbed(emojis),
-                    message: message, id: 'emojis', options: {code: 'Markdown'}}, 30)
+            context.getProvider().getResponder().send({content: createEmojiListEmbed(emojis),
+                message: message, id: 'emojis', options: {code: 'Markdown'}}, 30)
             return
         }
         if (args.get('ack') && !args.get('emoji') && !args.get('default')) {
             const resolvedEmoji = GuildUtils.getEmojiFromID(context, context.getConfig().getEmoji(args.get('ack')))
-            context.getProvider().getResponder().send({
-                content: `Emoji for ${args.get('ack')} is ${resolvedEmoji}`, id: 'emojis', message: message }, 30)
+            context.getProvider().getResponder().send({content: `Emoji for ${args.get('ack')} is ${resolvedEmoji}`,
+                message: message, id: 'emojis'}, 15)
             return
         }
         let emoji = !args.get('default') ? args.get('emoji') : GlobalContext.getDefaultConfig().getEmoji(args.get('ack'))
