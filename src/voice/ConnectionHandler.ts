@@ -112,7 +112,9 @@ export default class VoiceConnectionHandler {
         if (!connection) {
             return
         }
-        SilentStreamUtils.playSilentAudioStream(connection)
+        if (!this.context.getProvider().getDJ().isPlaying()) { // Happens if bot is moved around
+            SilentStreamUtils.playSilentAudioStream(connection)
+        }
         connection.on('speaking', (user, speaking) => {
             if (user === undefined || GlobalContext.getBotID() === user.id) {
                 return

@@ -10,10 +10,7 @@ export namespace SilentStreamUtils {
     export function playSilentAudioStream(connection: VoiceConnection) {
         connection.play(SilentStreamUtils.createSilenceStream(), { type: 'opus' });
         setTimeout(() => {
-            if (connection.dispatcher) {
-                connection.dispatcher.destroy()
-                connection.setSpeaking('SPEAKING')
-            }
+            connection.dispatcher?.destroy()
         }, 250)
     }
 

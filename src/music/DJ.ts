@@ -85,6 +85,10 @@ export default class DJ {
         return trackInfos[0]
     }
 
+    isPlaying(): boolean {
+        return this.getCurrentSong() !== undefined
+    }
+
     skip(): boolean {
         return this.context.getProvider().getAudioPlayer().skip()
     }
