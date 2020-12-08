@@ -45,7 +45,7 @@ export default class SpotifyRadio extends Radio {
     protected startRelatedRadio(context: RadioContext, message?: Message) {
         const promises = []
         promises.push(context.artists ? Spotify.getArtistIDFromArtistName(context.artists[0]) : Promise.resolve(''))
-        promises.push(context.genres.length !== 0 ? Spotify.getGenreIDFromGenre(context.genres[0]) : Promise.resolve(''))
+        promises.push(context.genres.length !== 0 ? Spotify.verifyGenreExists(context.genres[0]) : Promise.resolve(''))
         promises.push(context.tracks.length !== 0 ? Spotify.getTrackIDFromTrackName(context.tracks[0]) : Promise.resolve(''))
         Promise.all(promises).then(results => {
             this.radioConfiguration = {
