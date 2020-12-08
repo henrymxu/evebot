@@ -13,7 +13,7 @@ export default class Porcupine extends HotwordEngine {
         let engineInstance = new InternalPorcupine([ALEXA, OK_GOOGLE, HEY_SIRI], [0.6, 0.6, 0.6])
         input.pipe(AudioUtils.createStereoToMonoTransformStream()).on('data', (chunk) => {
             let result = engineInstance.processAudio(chunk,48000)
-            if (result) { callback(result) }
+            if (result > -1) { callback(this.getHotwords()[result]) }
         })
         return engineInstance
     }
@@ -33,24 +33,24 @@ export default class Porcupine extends HotwordEngine {
 
 class InternalPorcupine {
     private engine: PorcupineEngine
-    private keywords: Map<number, string> = new Map()
+    private keywords: Map<number, number> = new Map()
     private inputBuffer: number[] = []
     private released = false
 
-    constructor(keywords: string[], sensitivies: number[]) {
+    constructor(keywords: number[], sensitivies: number[]) {
         keywords.forEach((val, index) => {
             this.keywords.set(index, val)
         })
         this.engine = new PorcupineEngine(keywords, sensitivies)
     }
 
-    processAudio(inputFrame: Buffer, inputSampleRate: number): string {
+    processAudio(inputFrame: Buffer, inputSampleRate: number): number {
         for (let i = 0; i < inputFrame.length - 1; i += 2) {
             this.inputBuffer.push((inputFrame.readInt16LE(i)))
         }
         const PV_SAMPLE_RATE = 16000;
         const PV_FRAME_LENGTH = 512;
-        let hotwordDetected: string = '';
+        let hotwordDetected: number = -1;
 
         while ((this.inputBuffer.length * PV_SAMPLE_RATE / inputSampleRate) > PV_FRAME_LENGTH) {
             let outputFrame = new Int16Array(PV_FRAME_LENGTH);
@@ -72,7 +72,7 @@ class InternalPorcupine {
             }
             if (!this.released) {
                 let r = this.processPorcupine(outputFrame);
-                if (r) { hotwordDetected = r }
+                if (r !== undefined) { hotwordDetected = r }
             }
             this.inputBuffer = this.inputBuffer.slice(inputIndex);
         }
@@ -84,8 +84,8 @@ class InternalPorcupine {
         this.engine.release()
     }
 
-    private processPorcupine(data: Int16Array): string | null {
+    private processPorcupine(data: Int16Array): number | undefined {
         let id = this.engine.process(data);
-        return id > -1 ? this.keywords.get(id)! : null
+        return this.keywords.get(id)
     }
 }
