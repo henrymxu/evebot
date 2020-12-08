@@ -1,35 +1,34 @@
 import {Message} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {GlobalContext} from '../../GlobalContext'
+import {Track} from '../tracks/Track'
+import {ExternalTrackInfo} from '../tracks/ExternalTrack'
 
 export abstract class Radio {
-    protected readonly play: (query: string, requesterId: string, message?: Message) => void
+    protected readonly play: RadioPlay
     protected context: GuildContext
     protected radioConfiguration: RadioConfiguration | undefined
 
-    protected constructor(context: GuildContext, play: (query: string, requesterId: string, message?: Message) => void) {
+    protected constructor(context: GuildContext, play: RadioPlay) {
         this.context = context
         this.play = play
     }
 
-    start(context: RadioContext, message?: Message) {
+    start(context: RadioContext, message?: Message): Promise<void> {
         this.stop()
         switch(context.mode) {
             case RadioMode.ARTIST_ONLY:
-                this.startArtistRadio(context, message)
-                break
+                return this.startArtistRadio(context, message)
             case RadioMode.TOP_10:
-                this.startTop10Radio(context, message)
-                break
+                return this.startTop10Radio(context, message)
             case RadioMode.RELATED:
-                this.startRelatedRadio(context, message)
-                break
+                return this.startRelatedRadio(context, message)
         }
     }
 
-    protected abstract startTop10Radio(context: RadioContext, message?: Message): void
-    protected abstract startArtistRadio(context: RadioContext, message?: Message): void
-    protected abstract startRelatedRadio(context: RadioContext, message?: Message): void
+    protected abstract startTop10Radio(context: RadioContext, message?: Message): Promise<void>
+    protected abstract startArtistRadio(context: RadioContext, message?: Message): Promise<void>
+    protected abstract startRelatedRadio(context: RadioContext, message?: Message): Promise<void>
 
     isPlaying(): boolean {
         return this.radioConfiguration !== undefined
@@ -40,7 +39,9 @@ export abstract class Radio {
     }
 
     next() {
-        this.radioConfiguration?.playedTracks.unshift(this.radioConfiguration.currentTrack)
+        if (this.radioConfiguration?.currentTrack) {
+            this.radioConfiguration?.playedTracks.unshift(this.radioConfiguration.currentTrack)
+        }
     }
 
     resume() {
@@ -84,6 +85,8 @@ export abstract class Radio {
     }
 }
 
+export type RadioPlay = (info: ExternalTrackInfo, requesterId: string, message?: Message) => void
+
 export enum RadioMode {
     TOP_10,
     ARTIST_ONLY,
@@ -100,8 +103,8 @@ export interface RadioContext {
 
 export interface RadioConfiguration {
     context: RadioContext
-    currentTrack: string,
-    playedTracks: string[]
-    recommendedTracks: string[]
+    currentTrack: ExternalTrackInfo | undefined,
+    playedTracks: ExternalTrackInfo[]
+    recommendedTracks: ExternalTrackInfo[]
     message?: Message
 }

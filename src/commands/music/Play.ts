@@ -26,7 +26,10 @@ export default class PlayCommand extends VoiceCommand {
         if (args.get('keyword') === 'album') {
             mode = QueryMode.Album
         }
-        context.getProvider().getDJ().request(mode, args.get('query'), source.id, message)
+        context.getProvider().getResponder().startTyping(message)
+        context.getProvider().getDJ().request(mode, args.get('query'), source.id, message).finally(() => {
+            context.getProvider().getResponder().stopTyping(message)
+        })
     }
 
     botMustAlreadyBeInVoiceChannel(): boolean {

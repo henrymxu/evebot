@@ -12,7 +12,7 @@ import {Logger} from '../Logger'
 const TAG = 'YoutubeSearch'
 const YoutubeSource = new Youtube()
 export namespace Search {
-    export async function search(query: string): Promise<Track[]> {
+    export async function search(query: string, info?: ExternalTrackInfo): Promise<Track[]> {
         try {
             const result = await parseQueryForType(query)
             switch(result.metadata.mode) {
@@ -22,7 +22,7 @@ export namespace Search {
                 case 'stream':
                     // TODO: handle stream result
                 default:
-                    const track = await resolveSingleTrack(result)
+                    const track = await resolveSingleTrack(result, info)
                     return [track]
             }
         } catch (e) {
@@ -33,9 +33,9 @@ export namespace Search {
 
     export function searchAlbum(album: Album): Promise<Track[]> {
         const promises: Promise<Track>[] = []
-        album.tracks.forEach((track: ExternalTrackInfo) => {
-            promises.push(parseQueryForType(`${track.artist} - ${track.name}`).then((searchResult) => {
-                return resolveSingleTrack(searchResult, track)
+        album.tracks.forEach((info: ExternalTrackInfo) => {
+            promises.push(parseQueryForType(`${info.artist} - ${info.name}`).then((searchResult) => {
+                return resolveSingleTrack(searchResult, info)
             }))
         })
         return Promise.all(promises)
