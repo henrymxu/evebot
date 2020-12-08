@@ -17,5 +17,11 @@
   "defaultPrivilege": true,
   "privileges": {
 
+  },
+  "acknowledgement_emojis": {
+    "ok": "\uD83D\uDC4C",
+    "negative": "\uD83D\uDC4E",
+    "no privileges": "\uD83E\uDD21",
+    "throttled": "⏱️"
   }
 }

@@ -5,6 +5,7 @@ import {ArgumentType, CommandOptions, FileType} from '../Command'
 import {Logger} from '../../Logger'
 import {FileUtils} from '../../utils/FileUtils'
 import {AudioUtils} from '../../utils/AudioUtils'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class ReplayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -42,7 +43,7 @@ export default class ReplayCommand extends VoiceCommand {
             } else {
                 context.getProvider().getInterruptService().playUnknownStream(result)
             }
-            context.getProvider().getResponder().acknowledge(0, message)
+            context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
         })
     }
 

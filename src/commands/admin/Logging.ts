@@ -4,6 +4,7 @@ import {GuildContext} from '../../guild/Context'
 import {Message, MessageEmbed, User} from 'discord.js'
 import {Logger} from '../../Logger'
 import {MessageGenerator} from '../../communication/MessageGenerator'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class LoggingCommand extends Command {
     readonly options: CommandOptions = {
@@ -44,7 +45,7 @@ export default class LoggingCommand extends Command {
         const flag = args.get('flag') || 'e'
         context.getConfig().setLogging(textChannel.id, flag)
         Logger.i(LoggingCommand.name, `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`, context)
-        context.getProvider().getResponder().acknowledge(0, message)
+        context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
     }
 }
 

@@ -4,6 +4,7 @@ import {ArgumentType, Command, CommandOptions} from '../Command'
 import {GeniusLyrics} from '../../music/lyrics/Genius'
 import {MessageGenerator} from '../../communication/MessageGenerator'
 import {Logger} from '../../Logger'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class LyricsCommand extends Command {
     readonly options: CommandOptions = {
@@ -44,7 +45,7 @@ export default class LyricsCommand extends Command {
                     message: message, options: {code: 'Markdown', embed: embed}})
         }).catch(err => {
             Logger.e(LyricsCommand.name, `Error retrieving lyrics for ${query}, reason: ${err}`, context)
-            context.getProvider().getResponder().acknowledge(1, message)
+            context.getProvider().getResponder().acknowledge(Acknowledgement.NEGATIVE, message)
         })
     }
 }

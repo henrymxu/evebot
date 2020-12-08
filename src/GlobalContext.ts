@@ -1,9 +1,13 @@
 import {GuildContext} from './guild/Context'
 import {Client} from 'discord.js'
 import {execSync} from 'child_process'
+import {Config} from './guild/Config'
+import {FileUtils} from './utils/FileUtils'
+import {DefaultConfig} from './guild/DefaultConfig'
 
 const guildContexts: Map<string, GuildContext> = new Map()
 const client = new Client()
+const defaultConfig = new DefaultConfig(FileUtils.openJsonFile('./default_config.json'))
 
 export namespace GlobalContext {
     export async function get(guildID: string): Promise<GuildContext> {
@@ -14,6 +18,10 @@ export namespace GlobalContext {
             await context.initialize()
         }
         return context
+    }
+
+    export function getDefaultConfig(): Config {
+        return defaultConfig
     }
 
     export function remove(guildID: string) {

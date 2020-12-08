@@ -1,10 +1,11 @@
 import {Guild, TextChannel, VoiceConnection} from 'discord.js'
-import {Config} from './Config'
+import {ConfigImplementation} from './ConfigImplementation'
 import {VoiceDependencyProvider, VoiceDependencyProviderBuilder} from '../voice/DependencyProvider'
 import GuildProvider from './Provider'
 import {GuildUtils} from '../utils/GuildUtils'
 import {GlobalContext} from '../GlobalContext'
 import {Logger} from '../Logger'
+import {Config} from './Config'
 
 export class GuildContext {
     private voiceConnection: VoiceConnection | undefined
@@ -19,7 +20,7 @@ export class GuildContext {
     constructor(id: string) {
         this.id = id
         this.guildProvider = new GuildProvider(this)
-        this.config = new Config(id)
+        this.config = new ConfigImplementation(id)
         this.voiceDependencyProvider = VoiceDependencyProviderBuilder.build(this.config)
     }
 

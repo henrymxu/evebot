@@ -3,12 +3,13 @@ import {Message, MessageEmbed, MessageOptions, TextChannel} from 'discord.js'
 import {Communicator} from './Communicator'
 import {MessageGenerator} from './MessageGenerator'
 import {Logger} from '../Logger'
+import {GlobalContext} from '../GlobalContext'
+import {GuildUtils} from '../utils/GuildUtils'
 
 const TAG = 'Responder'
-const DEFAULT_EMOJIS = ['👌', '👎', '⏲️', '🤡']
 
 export default class Responder {
-    private context: GuildContext
+    private readonly context: GuildContext
     private messageCache: Map<string, Message[]> = new Map()
     private typingStatus: Set<string> = new Set()
     constructor(context: GuildContext) {
@@ -20,8 +21,11 @@ export default class Responder {
         this.send({content: embed, message: message}, 30)
     }
 
-    acknowledge(mode: number, message?: Message) {
-        Communicator.acknowledge(DEFAULT_EMOJIS[mode], message)
+    acknowledge(type: Acknowledgement | string, message: Message | undefined) {
+        const typeString = (typeof type === 'string') ? type : convertAcknowledgementTypeToString(type)
+        const emojiID = this.context.getConfig().getEmoji(typeString) || GlobalContext.getDefaultConfig().getEmoji(typeString)
+        const emoji = GuildUtils.parseEmojiFromEmojiID(this.context, emojiID) || GlobalContext.getDefaultConfig().getEmoji(typeString)
+        Communicator.acknowledge(emoji, message)
     }
 
     send(message: BotMessage, removeAfter: number = 0): Promise<Message[]> {
@@ -85,9 +89,29 @@ export default class Responder {
     }
 }
 
+function convertAcknowledgementTypeToString(type: Acknowledgement): string {
+    switch(type) {
+        case Acknowledgement.OK:
+            return "ok"
+        case Acknowledgement.NEGATIVE:
+            return "negative"
+        case Acknowledgement.MISSING_PRIVILEGES:
+            return 'no privileges'
+        case Acknowledgement.USER_THROTTLED:
+            return 'throttled'
+    }
+}
+
 interface BotMessage {
     content: string | MessageEmbed
     id?: string
     message?: Message
     options?: MessageOptions
+}
+
+export enum Acknowledgement {
+    OK,
+    NEGATIVE,
+    MISSING_PRIVILEGES,
+    USER_THROTTLED
 }

@@ -3,6 +3,7 @@ import {GuildContext} from '../../guild/Context'
 import VoiceCommand from '../../voice/VoiceCommand'
 import {ArgumentType, CommandOptions} from '../Command'
 import {Logger} from '../../Logger'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class SayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -40,7 +41,7 @@ export default class SayCommand extends VoiceCommand {
         context.getVoiceDependencyProvider().getSpeechGenerator()!.asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
             .then((result) => {
                 context.getProvider().getInterruptService().playOpusStream(result.stream)
-                context.getProvider().getResponder().acknowledge(0, message)
+                context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
             })
     }
 

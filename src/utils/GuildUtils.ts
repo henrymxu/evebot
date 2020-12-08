@@ -1,6 +1,7 @@
-import {Role, TextChannel, User} from 'discord.js'
+import {Emoji, Role, TextChannel, User} from 'discord.js'
 import {GuildContext} from '../guild/Context'
 import {CommandRegistry} from '../commands/Registry'
+import {GlobalContext} from '../GlobalContext'
 
 export namespace GuildUtils {
     export function parseUserFromUserID(context: GuildContext, userID: string): User | undefined {
@@ -10,6 +11,11 @@ export namespace GuildUtils {
     export function parseRoleFromRoleID(context: GuildContext, roleID: string): Role | undefined {
         const role = context.getGuild()?.roles?.resolve(roleID)
         return role || undefined
+    }
+
+    export function parseEmojiFromEmojiID(context: GuildContext, emojiID: string): Emoji | string | undefined {
+        const id = parseIdFromEmoji(emojiID)
+        return id ? GlobalContext.getClient().emojis.cache.find(emoji => emoji.id === id) : emojiID
     }
 
     export function createUserMentionString(userID: string): string {
@@ -61,7 +67,12 @@ export namespace GuildUtils {
 }
 
 function parseIdFromMention(input: string): string | undefined {
-    const parsedId = input.match(/^<@!?(\d+)>$/)
+    const parsedId = input.match(/^<@.?(\d+)>$/)
+    return parsedId?.[1]
+}
+
+function parseIdFromEmoji(input: string): string | undefined {
+    const parsedId = input.match(/^<:.*:(\d+)?>$/)
     return parsedId?.[1]
 }
 
