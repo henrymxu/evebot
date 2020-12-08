@@ -10,7 +10,7 @@ export default class RadioCommand extends VoiceCommand {
         name: 'Radio',
         keywords: ['radio'],
         group: 'music',
-        descriptions: ['Start a radio with some parameters'],
+        descriptions: ['Start a radio with some parameters.  Use the different modes to change the song list!'],
         arguments: [
             {
                 key: 'artist',
@@ -34,13 +34,18 @@ export default class RadioCommand extends VoiceCommand {
                 type: ArgumentType.STRING
             },
             {
-                key: 'mode',
+                key: 'masters',
                 flag: 'm',
-                description: 'Radio mode (artist, top10, related). Artist is only for the provided artists songs, ' +
-                    'Top10 is for artists top10 current song, Related is for any songs related to provided arguments',
+                description: 'Sets radio mode to play all songs from artist\'s masters',
                 required: false,
-                type: ArgumentType.STRING,
-                validate: (context: GuildContext, arg: any) => { return arg == 'artist' || arg == 'top10' || arg == 'related'}
+                type: ArgumentType.FLAG,
+            },
+            {
+                key: 'popular',
+                flag: 'p',
+                description: 'Sets radio mode to play artists top 10 current songs',
+                required: false,
+                type: ArgumentType.FLAG,
             },
             {
                 key: 'length',
@@ -52,7 +57,7 @@ export default class RadioCommand extends VoiceCommand {
                 validate: (context: GuildContext, arg: any) => parseInt(arg) > 0 && parseInt(arg) <= 100
             }
         ],
-        examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop', 'radio -a Taylor Swift -m top10']
+        examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop', 'radio -a Taylor Swift -m']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
@@ -76,7 +81,12 @@ export default class RadioCommand extends VoiceCommand {
         const shouldGenerateSeed = args.get('artist') && args.get('genre') ||
             args.get('artist') && args.get('track') ||
             args.get('genre') && args.get('track')
-        let mode = Radio.ConvertStringToRadioMode(args.get('mode'))
+        let mode: RadioMode = RadioMode.RELATED
+        if (args.get('masters')) {
+            mode = RadioMode.ARTIST_ONLY
+        } else if (args.get('popular')) {
+            mode = RadioMode.TOP_10
+        }
         mode = shouldGenerateSeed ? RadioMode.RELATED : mode
         if ((mode == RadioMode.TOP_10 || mode == RadioMode.ARTIST_ONLY) && !args.get('artist')) {
             context.getProvider().getResponder()
