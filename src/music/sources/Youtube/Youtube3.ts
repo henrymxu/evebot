@@ -7,7 +7,7 @@ const TAG = 'YoutubeSource3'
 
 export default class Youtube3 implements TrackSource {
     getTrackURLFromSearch(query: string): Promise<SearchResult> {
-        return ytsr(query, {limit: 5}).then((result: Result) => {
+        return ytsr(query, { limit: 3 }).then((result: Result) => {
             const videos = result.items.filter((item: Item) => item.type === 'video')
             if (videos.length === 0) {
                 throw new Error(`No search results found for ${query}`)
