@@ -16,11 +16,11 @@ export namespace Spotify {
             return ''
         }
         const token = await spotifyTokenPromise()
-        const data = await spotifyApi.searchArtists(artist, { limit: 1 })
-        if (data.body.artists.items.length === 0) {
+        const artistsResponse = await spotifyApi.searchArtists(artist, { limit: 1 })
+        if (artistsResponse.body.artists.items.length === 0) {
             throw new Error('No artists found')
         }
-        return data.body.artists.items[0].id
+        return artistsResponse.body.artists.items[0].id
     }
 
     export async function getTrackIDFromTrackName(track: string): Promise<string> {
@@ -28,11 +28,11 @@ export namespace Spotify {
             return ''
         }
         const token = await spotifyTokenPromise()
-        const data = await spotifyApi.searchTracks(track, { limit: 1 })
-        if (data.body.tracks.items.length === 0) {
+        const tracksResponse = await spotifyApi.searchTracks(track, { limit: 1 })
+        if (tracksResponse.body.tracks.items.length === 0) {
             throw new Error('No tracks found')
         }
-        return data.body.tracks.items[0].id
+        return tracksResponse.body.tracks.items[0].id
     }
 
     export async function verifyGenreExists(genre: string): Promise<string> {
@@ -40,8 +40,8 @@ export namespace Spotify {
             return ''
         }
         const token = await spotifyTokenPromise()
-        const data = await spotifyApi.getAvailableGenreSeeds()
-        if (data.body.genres.indexOf(genre) === -1) {
+        const genreResponse = await spotifyApi.getAvailableGenreSeeds()
+        if (genreResponse.body.genres.indexOf(genre) === -1) {
             throw new Error('No genre found')
         }
         return genre
@@ -61,43 +61,43 @@ export namespace Spotify {
 
     export async function getTrackNamesFromAlbumSearch(query: string): Promise<Album> {
         const token = await spotifyTokenPromise()
-        const data = await spotifyApi.searchAlbums(query, {limit: 1})
-        if (data.body.albums.items.length === 0) {
+        const albumResponse = await spotifyApi.searchAlbums(query, {limit: 1})
+        if (albumResponse.body.albums.items.length === 0) {
             throw new Error('No albums found')
         }
-        const album = data.body.albums.items[0]
+        const album = albumResponse.body.albums.items[0]
         const tracks = await getTrackNamesFromAlbumID(album.id, token)
         return convertResponseToSpotifyAlbum(album, tracks)
     }
 
     export async function getTrackNamesFromAlbumID(albumID: string, accessToken?: string): Promise<ExternalTrackInfo[]> {
         const token = await spotifyTokenPromise(accessToken)
-        const data = await spotifyApi.getAlbumTracks(albumID)
-        return convertResponseToSpotifyTracks(data.body.items)
+        const albumResponse = await spotifyApi.getAlbumTracks(albumID)
+        return convertResponseToSpotifyTracks(albumResponse.body.items)
     }
 
     export async function getTrackNamesFromPlaylistSearch(query: string): Promise<ExternalTrackInfo[]> {
         const token = await spotifyTokenPromise()
-        const data = await spotifyApi.searchPlaylists(query)
-        if (data.body.playlists.items.length === 0) {
+        const playlistResponse = await spotifyApi.searchPlaylists(query)
+        if (playlistResponse.body.playlists.items.length === 0) {
             throw new Error('No playlists found')
         }
-        return getTrackNamesFromPlaylistID(data.body.playlists.items[0].id, token)
+        return getTrackNamesFromPlaylistID(playlistResponse.body.playlists.items[0].id, token)
     }
 
     export async function getTrackNamesFromPlaylistID(playlistID: string, accessToken?: string): Promise<ExternalTrackInfo[]> {
         const token = await spotifyTokenPromise(accessToken)
-        const data = await spotifyApi.getPlaylist(playlistID, { fields: ['tracks'] })
-        return convertResponseToSpotifyTracks(data.body.tracks)
+        const playlistResponse = await spotifyApi.getPlaylist(playlistID, { fields: ['tracks'] })
+        return convertResponseToSpotifyTracks(playlistResponse.body.tracks)
     }
 
     export async function getRandomizedTrackNamesFromArtistName(artist: string, count: number = 25): Promise<ExternalTrackInfo[]> {
         const token = await spotifyTokenPromise()
         const artistID = await getArtistIDFromArtistName(artist)
-        const data = await spotifyApi.getArtistAlbums(artistID)
-        const albumIDs = data.body.items.map((album: any) => album.id)
-        const data2 = await spotifyApi.getAlbums(albumIDs)
-        const tracks = data2.body.albums.map((album: any) => album.tracks.items).flat()
+        const artistResponse = await spotifyApi.getArtistAlbums(artistID)
+        const albumIDs = artistResponse.body.items.map((album: any) => album.id)
+        const albumResponse = await spotifyApi.getAlbums(albumIDs)
+        const tracks = albumResponse.body.albums.map((album: any) => album.tracks.items).flat()
         const filteredTracks = tracks.filter((v: any, i: number, a: any[]) => {
             return a.findIndex((t: any) => (t.id === v.id || t.name === v.name)) === i
         })
@@ -107,8 +107,8 @@ export namespace Spotify {
     export async function getTop10TracksNamesFromArtistName(artist: string): Promise<ExternalTrackInfo[]> {
         const token = await spotifyTokenPromise()
         const artistID = await getArtistIDFromArtistName(artist)
-        const data = await spotifyApi.getArtistTopTracks(artistID, 'US')
-        return convertResponseToSpotifyTracks(data.body.tracks)
+        const topTracksResponse = await spotifyApi.getArtistTopTracks(artistID, 'US')
+        return convertResponseToSpotifyTracks(topTracksResponse.body.tracks)
     }
 }
 
