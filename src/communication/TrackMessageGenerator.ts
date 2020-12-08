@@ -32,21 +32,21 @@ export namespace TrackMessageFactory {
         if (track instanceof YoutubeTrack) {
             return TrackMessageGenerator.createSongTrackNowPlayingEmbed(track)
         }
-        throw(Error('Missing implementation for Track Embed'))
+        throw new Error('Missing implementation for Track Embed')
     }
 
     export function createCurrentlyPlayingEmbed(track: Track): MessageEmbed {
         if (track instanceof YoutubeTrack) {
             return TrackMessageGenerator.createLinkTrackCurrentlyPlayingEmbed(track, track.getYoutubeTrackInfo().url)
         }
-        throw(Error('Missing implementation for Track Embed'))
+        throw new Error('Missing implementation for Track Embed')
     }
 
     export function createTrackNewlyQueuedEmbed(track: Track): MessageEmbed {
         if (track instanceof YoutubeTrack) {
             return TrackMessageGenerator.createLinkTrackNewlyQueuedEmbed(track, track.getYoutubeTrackInfo().url)
         }
-        throw(Error('Missing implementation for Track Embed'))
+        throw new Error('Missing implementation for Track Embed')
     }
 
     export function createQueuedTracksMessage(context: GuildContext, tracks: Track[]): string {

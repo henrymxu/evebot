@@ -67,18 +67,13 @@ export default class VoiceConnectionHandler {
 
     joinVoiceChannel(voiceChannel: VoiceChannel | undefined | null): Promise<void> {
         if (!voiceChannel) {
-            Promise.reject('VoiceChannel is undefined')
+            throw new Error('VoiceChannel is undefined')
         }
-        return new Promise((res, rej) =>  {
-            voiceChannel?.join().then((connection: VoiceConnection) => {
-                if (!this.context.getVoiceConnection()) {
-                    this.context.setVoiceConnection(connection)
-                    this.initializeConnection()
-                }
-                res()
-            }).catch(err => {
-                rej(err)
-            })
+        return voiceChannel.join().then((connection: VoiceConnection) => {
+            if (!this.context.getVoiceConnection()) {
+                this.context.setVoiceConnection(connection)
+                this.initializeConnection()
+            }
         })
     }
 

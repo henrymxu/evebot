@@ -27,7 +27,7 @@ export namespace GlobalContext {
     export function getBotID(): string {
         const id = client.user?.id
         if (!id) {
-            throw Error('Bot ID should never not exist')
+            throw new Error('Bot ID should never not exist')
         }
         return id
     }

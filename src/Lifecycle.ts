@@ -58,7 +58,7 @@ function isAlreadyInChannel(channel: VoiceChannel | null, botId: string): boolea
         channel?.guild.channels.cache.filter(channel => channel.type === 'voice').forEach(channel => {
             channel.members.forEach(member => {
                 if (member.user && member.user.id === botId) {
-                    throw Error()
+                    throw new Error()
                 }
             })
         })

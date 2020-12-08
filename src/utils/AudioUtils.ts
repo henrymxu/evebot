@@ -43,12 +43,8 @@ export namespace AudioUtils {
                 'artist': author,
             }
         }).setBuffer(audioBuffer);
-        return new Promise((res, rej) => {
-            encoder.encode().then(() => {
-                res(encoder.getBuffer())
-            }).catch(err => {
-                rej(err)
-            })
+        return encoder.encode().then(() => {
+            return encoder.getBuffer()
         })
     }
 
