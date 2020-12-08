@@ -1,6 +1,7 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {ArgumentType, Command, CommandOptions} from '../Command'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class VolumeCommand extends Command {
     readonly options: CommandOptions = {
@@ -21,6 +22,6 @@ export default class VolumeCommand extends Command {
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         context.getProvider().getDJ().volume(args.get('volume'))
-        context.getProvider().getResponder().acknowledge(0, message)
+        context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
     }
 }

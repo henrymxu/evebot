@@ -2,6 +2,7 @@ import VoiceCommand from '../../voice/VoiceCommand'
 import {Message, User} from 'discord.js'
 import {CommandOptions} from '../Command'
 import {GuildContext} from '../../guild/Context'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class ReconnectCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -17,7 +18,7 @@ export default class ReconnectCommand extends VoiceCommand {
         context.getProvider().getVoiceConnectionHandler().disconnect().then(() => {
             setTimeout(() => {
                 context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(currentVoiceChannel).then(() => {
-                    context.getProvider().getResponder().acknowledge(0, message)
+                    context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
                 })
             }, 2500)
         })

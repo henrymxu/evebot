@@ -5,6 +5,7 @@ import {Privilege} from '../../guild/Config'
 import {TableGenerator} from '../../communication/TableGenerator'
 import {GuildUtils} from '../../utils/GuildUtils'
 import {CommandRegistry} from '../Registry'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class PrivilegesCommand extends Command {
     readonly options: CommandOptions = {
@@ -67,7 +68,7 @@ export default class PrivilegesCommand extends Command {
         const privilegeName = CommandRegistry.getCommand(context, args.get('privilegeName'))!.options.name.toLowerCase()
         if (args.get('delete')) {
             context.getConfig().deletePrivilege(privilegeName)
-            context.getProvider().getResponder().acknowledge(0, message)
+            context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
             return
         }
         if (args.get('grant') || args.get('deny') || args.get('remove')) {

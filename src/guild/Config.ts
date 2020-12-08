@@ -1,239 +1,78 @@
-import {Role, User} from 'discord.js'
-import {Storage} from '../storage/Storage'
-import {CommandRegistry} from '../commands/Registry'
+import {Role, User } from "discord.js"
 
-export class Config {
-    private readonly guildID: string
-    private json: any
+export interface Config {
+    load(): Promise<void>
 
-    constructor(guildID: string) {
-        this.guildID = guildID
-    }
+    save(): void
 
-    public async load() {
-        this.json = await Storage.loadConfig(this.guildID)
-    }
+    getJSON(): string
 
-    public save() {
-        Storage.saveConfig(this.guildID, this.json)
-    }
+    getPrefix(): string
 
-    getJSON(): string {
-        return JSON.stringify(this.json, null, 4)
-    }
+    setPrefix(prefix: string): void
 
-    getPrefix(): string {
-        return this.json['prefix']
-    }
+    getDefaultPrivilege(): boolean
 
-    setPrefix(prefix: string) {
-        Config.setKeyValue(this, 'prefix', prefix)
-    }
+    setDefaultPrivilege(privilege: boolean): void
 
-    getDefaultPrivilege(): boolean {
-        return this.json['defaultPrivilege']
-    }
+    getDefaultTextChannel(): string
 
-    setDefaultPrivilege(privilege: boolean) {
-        return Config.setKeyValue(this, 'defaultPrivilege', privilege)
-    }
+    setDefaultTextChannel(textChannelID: string): void
 
-    getDefaultTextChannel(): string {
-        return this.json['defaultTextChannel']
-    }
+    getLogging(): Logging
 
-    setDefaultTextChannel(textChannelID: string) {
-        return Config.setKeyValue(this, 'defaultTextChannel', textChannelID)
-    }
+    setLogging(channelID: string, level: string): void
 
-    getLogging(): Logging {
-        return this.json['logging']
-    }
+    getUserIDForNickname(nickname: string): string
 
-    setLogging(channelID: string, level: string) {
-        return Config.setKeyValue(this, 'logging', {
-            'channelID': channelID,
-            'flags': level
-        })
-    }
+    getNicknames(userID: string): Nicknames
 
-    getUserIDForNickname(nickname: string): string {
-        return this.json['nicknames'][nickname]
-    }
+    removeNicknames(userID: string, nicknames: string[]): void
 
-    getNicknames(userID: string): Nicknames {
-        return Config.getValuesOfUniqueKeyAsSet(this, 'nicknames', userID)
-    }
+    addNicknames(userID: string, nicknames: string[]): Error | null
 
-    removeNicknames(userID: string, nicknames: string[]) {
-        Config.removeKeysFromMap(this, 'nicknames', nicknames)
-    }
+    getCommandNameFromAlias(alias: string): string
 
-    addNicknames(userID: string, nicknames: string[]): Error | null {
-        return Config.addUniqueKeyToMap(this, 'nicknames', nicknames, userID, (config, key) => {
-            return config.json['nicknames'][key]
-        })
-    }
+    getAliases(command: string): Aliases
 
-    getCommandNameFromAlias(alias: string): string {
-        return this.json['aliases'][alias]
-    }
+    removeAliases(command: string, aliases: string[]): void
 
-    getAliases(command: string): Aliases {
-        return Config.getValuesOfUniqueKeyAsSet(this, 'aliases', command)
-    }
+    addAliases(command: string, aliases: string[]): Error | null
 
-    removeAliases(command: string, aliases: string[]) {
-        Config.removeKeysFromMap(this, 'aliases', aliases)
-    }
+    getMacro(macroKey: string): Macro
 
-    addAliases(command: string, aliases: string[]): Error | null {
-        return Config.addUniqueKeyToMap(this, 'aliases', aliases, command, Config.isAlreadyProtectedKeyword)
-    }
+    getMacros(): Map<string, Macro>
 
-    getMacro(macroKey: string): Macro {
-        return this.json['macros'][macroKey]
-    }
+    removeMacro(macroKey: string): void
 
-    getMacros(): Map<string, Macro> {
-        return new Map<string, Macro>(Object.entries(this.json['macros']))
-    }
+    addMacro(macroKey: string, macro: Macro): Error | null
 
-    removeMacro(macroKey: string) {
-        delete this.json['macros'][macroKey]
-        this.save()
-    }
+    getPrivileges(): Privilege[]
 
-    addMacro(macroKey: string, macro: Macro): Error | null {
-        if (Config.isAlreadyProtectedKeyword(this, macroKey)) {
-            return Error('Keyword already exists as Macro / Alias / Command')
-        }
-        this.json['macros'][macroKey] = macro
-        this.save()
-        return null
-    }
+    hasPrivilege(key: string): boolean
 
-    getPrivileges(): Privilege[] {
-        const privileges: Privilege[] = []
-        Object.keys(this.json['privileges']).forEach(key => {
-            privileges.push(this.getPrivilege(key)!)
-        })
-        return privileges
-    }
+    getPrivilege(key: string): Privilege | undefined
 
-    hasPrivilege(key: string): boolean {
-        return this.json['privileges'][key] !== undefined
-    }
+    deletePrivilege(name: string): void
 
-    getPrivilege(key: string): Privilege | undefined {
-        let privilege = this.json['privileges'][key]
-        return privilege ? {
-            command: key,
-            grantedRoles: new Set(privilege.grantedRoles || []),
-            grantedUsers: new Set(privilege.grantedUsers || []),
-            deniedRoles: new Set(privilege.deniedRoles || []),
-            deniedUsers: new Set(privilege.deniedUsers || [])
-        } : undefined
-    }
+    grantEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]): void
 
-    deletePrivilege(name: string) {
-        delete this.json['privileges'][name]
-        this.save()
-    }
+    denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]): void
 
-    grantEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
-        entities.forEach(entity => {
-            Config.modifyEntityPrivilege(this, privilegeName, entity, true)
-        })
-    }
+    removeEntitiesFromPrivilege(privilegeName: string, entities: (User | Role)[]): void
 
-    denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]) {
-        entities.forEach(entity => {
-            Config.modifyEntityPrivilege(this, privilegeName, entity, false)
-        })
-    }
+    getEmoji(type: string): string
 
-    removeEntitiesFromPrivilege(privilegeName: string, entities: (User | Role)[]) {
-        let privilege = this.json['privileges'][privilegeName]
-        if (privilege) {
-            const ids = entities.map(entity => entity.id)
-            privilege.grantedRoles = removeArrayFromArray(privilege.grantedRoles, ids)
-            privilege.deniedRoles = removeArrayFromArray(privilege.deniedRoles, ids)
-            privilege.grantedUsers = removeArrayFromArray(privilege.grantedUsers, ids)
-            privilege.deniedUsers = removeArrayFromArray(privilege.deniedUsers, ids)
-        }
-    }
+    getEmojis(): Emojis
 
-    private static modifyEntityPrivilege(config: Config, privilegeName: string, entity: User | Role, isGranting: boolean) {
-        let privilege = config.json['privileges'][privilegeName] || createPrivilege()
-        let baseKey = entity instanceof User ? 'Users' : 'Roles'
-        let addingToKey = `${isGranting ? 'granted' : 'denied'}${baseKey}`
-        let removingFromKey = `${isGranting ? 'denied' : 'granted'}${baseKey}`
-        privilege[removingFromKey] = removeArrayFromArray(privilege[removingFromKey], [entity.id])
-        privilege[addingToKey] = addArrayToArray(privilege[addingToKey], [entity.id])
-        config.json.privileges[privilegeName] = privilege
-        config.save()
-    }
-
-    private static setKeyValue(config: Config, key: string, value: any) {
-        config.json[key] = value
-        config.save()
-    }
-
-    private static addUniqueKeyToMap(config: Config, entry: string, keys: string[], value: string,
-                                     validate?: (arg0: Config, arg1: string) => boolean): Error | null {
-        const alreadyHad: string[] = []
-        keys.forEach(key => {
-            if (validate && validate(config, key)) {
-                alreadyHad.push(`${key} => ${config.json[entry][key]}`)
-            }
-            config.json[entry][key] = value
-        })
-        config.save()
-        return alreadyHad.length > 0 ? new Error(alreadyHad.join('\n')) : null
-    }
-
-    private static removeKeysFromMap(config: Config, entry: string, keys: string[]) {
-        keys.forEach(key => {
-            config.json[entry]?.delete(key)
-        })
-        config.save()
-    }
-
-    private static getValuesOfUniqueKeyAsSet(config: Config, entry: string, value: string): Set<string> {
-        let values: string[] = Object.values(config.json[entry]).filter(val => val === value) as string[]
-        return new Set(values || [])
-    }
-
-    private static isAlreadyProtectedKeyword(config: Config, keyword: string): boolean {
-        return !!(config.getMacro(keyword) || config.getCommandNameFromAlias(keyword) || CommandRegistry.getCommands().has(keyword))
-
-    }
-}
-
-function createPrivilege(): object {
-    return {
-        grantedRoles: [],
-        grantedUsers: [],
-        deniedRoles: [],
-        deniedUsers: []
-    }
-}
-
-function addArrayToArray(current: string[], adds: string[]): string[] {
-    adds.forEach(add => {
-        if (current.indexOf(add) === -1) { current.push(add) }
-    })
-    return current
-}
-
-function removeArrayFromArray(current: string[] ,removes: string[]): string[] {
-    return current.filter(n => removes.indexOf(n) === -1)
+    setEmoji(type: string, emoji: string): void
 }
 
 export type Nicknames = Set<string>
 
 export type Aliases = Set<string>
+
+export type Emojis = Map<string, string>
 
 export type Macro = {
     command: string

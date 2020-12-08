@@ -1,10 +1,20 @@
-import {Client, DMChannel, Message, MessageAttachment, Permissions, PermissionString, TextChannel, User} from 'discord.js'
+import {
+    Client,
+    DMChannel,
+    Message,
+    MessageAttachment,
+    Permissions,
+    PermissionString,
+    TextChannel,
+    User
+} from 'discord.js'
 import {CommandParser} from './Parser'
 import {GlobalContext} from '../GlobalContext'
 import {GuildContext} from '../guild/Context'
 import {CommandRegistry} from './Registry'
 import {Logger} from '../Logger'
 import {Command, FileType} from './Command'
+import {Acknowledgement} from '../communication/Responder'
 
 const TAG = 'CommandDispatcher'
 
@@ -50,23 +60,23 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
     }
     if (!checkPermissions(context, source, command)) {
         Logger.w(command.options.name, `${source.username} does not have permissions to execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(3, message)
+        context.getProvider().getResponder().acknowledge(Acknowledgement.MISSING_PRIVILEGES, message)
         return
     }
     if (!checkPrivileges(context, source, keywordResult.keyword)) {
         Logger.w(command.options.name, `${source.username} does not have privileges to execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(3, message)
+        context.getProvider().getResponder().acknowledge(Acknowledgement.MISSING_PRIVILEGES, message)
         return
     }
     if (context.getProvider().getThrottler().shouldThrottleCommand(source, command)) {
         Logger.w(command.options.name, `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(2, message)
+        context.getProvider().getResponder().acknowledge(Acknowledgement.USER_THROTTLED, message)
         return
     }
     const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
     if (result.error) {
         Logger.w(TAG, `Could not parse arguments for ${commandString}, reason ${result.error}`, context)
-        context.getProvider().getResponder().acknowledge(1, message)
+        context.getProvider().getResponder().acknowledge(Acknowledgement.NEGATIVE, message)
         return
     }
     if (result.help) {

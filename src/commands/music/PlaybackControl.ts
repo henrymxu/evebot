@@ -2,6 +2,7 @@ import VoiceCommand from '../../voice/VoiceCommand'
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {CommandOptions} from '../Command'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class PlaybackControlCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -26,7 +27,7 @@ export default class PlaybackControlCommand extends VoiceCommand {
                 break
         }
         if (result) {
-            context.getProvider().getResponder().acknowledge(0, message)
+            context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
         }
     }
 

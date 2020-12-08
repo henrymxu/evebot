@@ -1,6 +1,7 @@
 import {GuildContext} from '../guild/Context'
 import {Message, User} from 'discord.js'
 import {Logger} from '../Logger'
+import {Acknowledgement} from '../communication/Responder'
 
 export abstract class Command {
     abstract readonly options: CommandOptions
@@ -10,7 +11,7 @@ export abstract class Command {
         return Promise.resolve()
     }
     protected onPreExecuteFailed(context: GuildContext, message?: Message) {
-        context.getProvider().getResponder().acknowledge(1, message)
+        context.getProvider().getResponder().acknowledge(Acknowledgement.NEGATIVE, message)
     }
 
     public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {

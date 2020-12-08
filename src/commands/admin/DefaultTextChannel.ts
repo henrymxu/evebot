@@ -4,6 +4,7 @@ import {ArgumentType, Command, CommandOptions} from '../Command'
 import {GuildUtils} from '../../utils/GuildUtils'
 import {MessageGenerator} from '../../communication/MessageGenerator'
 import {Logger} from '../../Logger'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class DefaultTextChannelCommand extends Command {
     readonly options: CommandOptions = {
@@ -33,7 +34,7 @@ export default class DefaultTextChannelCommand extends Command {
         const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))!
         context.getConfig().setDefaultTextChannel(textChannel.id)
         Logger.i(DefaultTextChannelCommand.name, `Successfully set DefaultTextChannel to ${textChannel.name} | ${textChannel.id}`, context)
-        context.getProvider().getResponder().acknowledge(0, message)
+        context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
     }
 }
 

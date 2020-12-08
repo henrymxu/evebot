@@ -4,6 +4,7 @@ import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandOptions} from '../Command'
 import {Radio, RadioContext, RadioMode} from '../../music/radio/Radio'
 import {TrackMessageFactory} from '../../communication/TrackMessageGenerator'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class RadioCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -102,7 +103,7 @@ export default class RadioCommand extends VoiceCommand {
         }
         context.getProvider().getResponder().startTyping()
         context.getProvider().getDJ().getRadio().start(radioContext, message).then(() => {
-            context.getProvider().getResponder().acknowledge(0, message)
+            context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
         }).finally(() => {
             context.getProvider().getResponder().stopTyping()
         })
