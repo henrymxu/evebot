@@ -50,17 +50,17 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
     }
     if (!checkPermissions(context, source, command)) {
         Logger.w(command.options.name, `${source.username} does not have permissions to execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(1, message)
+        context.getProvider().getResponder().acknowledge(3, message)
         return
     }
     if (!checkPrivileges(context, source, keywordResult.keyword)) {
         Logger.w(command.options.name, `${source.username} does not have privileges to execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(1, message)
+        context.getProvider().getResponder().acknowledge(3, message)
         return
     }
     if (context.getProvider().getThrottler().shouldThrottleCommand(source, command)) {
         Logger.w(command.options.name, `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(1, message)
+        context.getProvider().getResponder().acknowledge(2, message)
         return
     }
     const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)

@@ -5,7 +5,7 @@ import {MessageGenerator} from './MessageGenerator'
 import {Logger} from '../Logger'
 
 const TAG = 'Responder'
-const DEFAULT_EMOJIS = ['👌', '👎']
+const DEFAULT_EMOJIS = ['👌', '👎', '⏲️', '🤡']
 
 export default class Responder {
     private context: GuildContext
