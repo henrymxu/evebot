@@ -13,10 +13,10 @@ export default class SayCommand extends VoiceCommand {
         arguments: [
             {
                 key: 'message',
-                description: 'Message the bot should say (must be less than 2000 characters)',
+                description: 'Message the bot should say (must be less than 500 characters)',
                 required: true,
                 type: ArgumentType.STRING,
-                validate: (context, arg) => { return arg.length < 2000 }
+                validate: (context, arg) => { return arg.length < 500 }
             },
             {
                 key: 'voice',
