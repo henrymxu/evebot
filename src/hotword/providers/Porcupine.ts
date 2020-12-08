@@ -2,7 +2,7 @@
 // @ts-ignore
 import PorcupineEngine from '@picovoice/porcupine-node'
 // @ts-ignore
-import {PORCUPINE, BUMBLEBEE, GRASSHOPPER} from '@picovoice/porcupine-node/builtin_keywords'
+import {ALEXA, HEY_GOOGLE, HEY_SIRI} from '@picovoice/porcupine-node/builtin_keywords'
 /* eslint-enable */
 import {HotwordEngine} from '../Engine'
 import {Transform} from 'stream'
@@ -10,7 +10,7 @@ import {AudioUtils} from '../../utils/AudioUtils'
 
 export default class Porcupine extends HotwordEngine {
     protected createDetector(userID: string, input: Transform, callback: (trigger: string) => void): any {
-        let engineInstance = new InternalPorcupine([PORCUPINE, GRASSHOPPER, BUMBLEBEE], [0.5, 0.5, 0.65])
+        let engineInstance = new InternalPorcupine([ALEXA, HEY_GOOGLE, HEY_SIRI], [0.6, 0.6, 0.6])
         input.pipe(AudioUtils.createStereoToMonoTransformStream()).on('data', (chunk) => {
             let result = engineInstance.processAudio(chunk,48000)
             if (result) { callback(result) }
@@ -27,7 +27,7 @@ export default class Porcupine extends HotwordEngine {
     }
 
     getHotwords(): string[] {
-        return ['Porcupine', 'Grasshopper', 'Bumblebee']
+        return ['ALEXA', 'HEY_GOOGLE', 'HEY_SIRI']
     }
 }
 

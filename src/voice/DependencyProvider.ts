@@ -2,6 +2,7 @@ import {HotwordEngine} from '../hotword/Engine'
 import {SpeechGenerator, SpeechRecognizer} from '../speech/Interfaces'
 import Snowboy from '../hotword/providers/Snowboy'
 import {SpeechEngine} from '../speech/Engine'
+import Porcupine from '../hotword/providers/Porcupine'
 
 export class VoiceDependencyProvider {
     private readonly hotwordEngine: HotwordEngine
@@ -25,6 +26,6 @@ export class VoiceDependencyProvider {
 
 export namespace VoiceDependencyProviderBuilder {
     export function build(config: object): VoiceDependencyProvider {
-        return new VoiceDependencyProvider(new Snowboy())
+        return new VoiceDependencyProvider(new Porcupine())
     }
 }
