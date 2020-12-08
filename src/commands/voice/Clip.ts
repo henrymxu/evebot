@@ -49,7 +49,7 @@ export default class ClipCommand extends VoiceCommand {
         const user: User = args.get('user')
         if (user) {
             author = user.tag
-            embedMessageContents = `Recording from [${GuildUtils.createUserMentionString(user.id)}]`
+            embedMessageContents = `Recording from [${user}]`
             stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
             if (!stream) {
                 Logger.w(ClipCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)

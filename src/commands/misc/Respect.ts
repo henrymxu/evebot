@@ -41,14 +41,14 @@ export class RespectCommand extends Command {
 
 function respect(context: GuildContext, source: User, target: User): string {
     if (!target) {
-        return `here's free 69 respects\n ${GuildUtils.createUserMentionString(source.id)} you have 69(free respects claimable in [right now]!`
+        return `here's free 69 respects\n ${source} you have 69(free respects claimable in [right now]!`
     }
-    return `${GuildUtils.createUserMentionString(source.id)} respected ${GuildUtils.createUserMentionString(target.id)}! (Total respect: 69)`
+    return `${source} respected ${target}! (Total respect: 69)`
 }
 
 function disrespect(context: GuildContext, source: User, target: User): string {
     if (!target) {
         return 'You must choose someone to disrespect!'
     }
-    return `${GuildUtils.createUserMentionString(source.id)} just spent 2 respects to disrespect ${GuildUtils.createUserMentionString(target.id)}! (Remaining respect: -9007199254740991)`
+    return `${source} just spent 2 respects to disrespect ${target}! (Remaining respect: -9007199254740991)`
 }

@@ -61,7 +61,7 @@ export default class ReciteCommand extends VoiceCommand {
                 return
             }
             speechRecognizer.recognizeTextFromSpeech(audioStream).then((transcribed) => {
-                const transcribedMessage = `${GuildUtils.createUserMentionString(user.id)} said ${transcribed}`
+                const transcribedMessage = `${user} said ${transcribed}`
                 context.getProvider().getResponder().send({content: transcribedMessage, message: message})
             })
         }
