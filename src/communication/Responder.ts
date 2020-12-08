@@ -24,7 +24,7 @@ export default class Responder {
     acknowledge(type: Acknowledgement | string, message: Message | undefined) {
         const typeString = (typeof type === 'string') ? type : convertAcknowledgementTypeToString(type)
         const emojiID = this.context.getConfig().getEmoji(typeString) || GlobalContext.getDefaultConfig().getEmoji(typeString)
-        const emoji = GuildUtils.getEmojiFromID(this.context, emojiID) || emojiID
+        const emoji = GuildUtils.parseEmojiFromEmojiID(this.context, emojiID) || GlobalContext.getDefaultConfig().getEmoji(typeString)
         Communicator.acknowledge(emoji, message)
     }
 

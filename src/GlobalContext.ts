@@ -7,7 +7,7 @@ import {DefaultConfig} from './guild/DefaultConfig'
 
 const guildContexts: Map<string, GuildContext> = new Map()
 const client = new Client()
-const config = new DefaultConfig(FileUtils.openJsonFile('./default_config.json'))
+const defaultConfig = new DefaultConfig(FileUtils.openJsonFile('./default_config.json'))
 
 export namespace GlobalContext {
     export async function get(guildID: string): Promise<GuildContext> {
@@ -21,7 +21,7 @@ export namespace GlobalContext {
     }
 
     export function getDefaultConfig(): Config {
-        return config
+        return defaultConfig
     }
 
     export function remove(guildID: string) {

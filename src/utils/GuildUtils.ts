@@ -13,7 +13,7 @@ export namespace GuildUtils {
         return role || undefined
     }
 
-    export function getEmojiFromID(context: GuildContext, emojiID: string): Emoji | string | undefined {
+    export function parseEmojiFromEmojiID(context: GuildContext, emojiID: string): Emoji | string | undefined {
         const id = parseIdFromEmoji(emojiID)
         return id ? GlobalContext.getClient().emojis.cache.find(emoji => emoji.id === id) : emojiID
     }

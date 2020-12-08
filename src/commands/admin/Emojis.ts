@@ -27,7 +27,7 @@ export default class EmojisCommand extends Command {
                 description: 'The new emoji for the specified acknowledgement',
                 required: false,
                 type: ArgumentType.STRING,
-                validate: (context, arg) => { return GuildUtils.getEmojiFromID(context, arg) !== undefined }
+                validate: (context, arg) => { return GuildUtils.parseEmojiFromEmojiID(context, arg) !== undefined }
             },
             {
                 key: 'default',
@@ -49,7 +49,7 @@ export default class EmojisCommand extends Command {
             return
         }
         if (args.get('ack') && !args.get('emoji') && !args.get('default')) {
-            const resolvedEmoji = GuildUtils.getEmojiFromID(context, context.getConfig().getEmoji(args.get('ack')))
+            const resolvedEmoji = GuildUtils.parseEmojiFromEmojiID(context, context.getConfig().getEmoji(args.get('ack')))
             context.getProvider().getResponder().send({content: `Emoji for ${args.get('ack')} is ${resolvedEmoji}`,
                 message: message, id: 'emojis'}, 15)
             return
