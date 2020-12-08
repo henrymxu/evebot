@@ -7,6 +7,7 @@ import {GuildContext} from '../guild/Context'
 import {Album} from '../music/tracks/Album'
 import {Utils} from '../utils/Utils'
 import {GuildUtils} from '../utils/GuildUtils'
+import {RadioConfiguration} from '../music/radio/Radio'
 
 namespace TrackMessageGenerator {
     export function createSongTrackNowPlayingEmbed(track: YoutubeTrack): MessageEmbed {
@@ -61,14 +62,14 @@ export namespace TrackMessageFactory {
             tableData.push([title, track.getArtist(), track.getRequester(context) || '', length])
             totalLength += track.getLength()
             if (track.isPlaying() || track.isPaused()) {
-                currentTrackProgress = createProgressBar(track)
+                currentTrackProgress = createTrackProgressBar(track)
             }
         })
-        let response = TableGenerator.createTable(tableHeaders, tableData)
+        let response = `${TableGenerator.createTable(tableHeaders, tableData)}\n`
         if (currentTrackProgress) {
-            response += `\nCurrent Song: ${currentTrackProgress}`
+            response += `${currentTrackProgress}\n`
         }
-        response += `\n# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}`
+        response += `# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}`
         return response
     }
 
@@ -80,9 +81,35 @@ export namespace TrackMessageFactory {
         embed.setImage(album.metadata.imageURL)
         return embed
     }
+
+    export function createRadioMessage(context: GuildContext, radioConfiguration: RadioConfiguration): string {
+        let response = ''
+        const tableHeaders = ['Artist', 'Genre', 'Track', 'Tracks Remaining']
+        const source = radioConfiguration.context
+        const artists = source.artists ? source.artists.toString() : ' - '
+        const genres = source.genres ? source.genres.toString() : ' - '
+        const tracks = source.tracks ? source.tracks.toString() : ' - '
+        const tableData = [[artists, genres, tracks, radioConfiguration.recommendedTracks.length.toString()]]
+        response += `${TableGenerator.createTable(tableHeaders, tableData)}\n`
+        const tableHeaders2 = ['Previous Track', 'Current Track', 'Next Track']
+
+        const previousTrackName = radioConfiguration.playedTracks[0]?.name || ''
+        const nextTrackName = radioConfiguration.recommendedTracks[0]?.name || ''
+        const trackNames = [previousTrackName, radioConfiguration.currentTrack!.name, nextTrackName]
+        const previousTrackArtist = radioConfiguration.playedTracks[0]?.artist || ''
+        const nextTrackArtist = radioConfiguration.recommendedTracks[0]?.artist || ''
+        const trackArtists = [previousTrackArtist, radioConfiguration.currentTrack!.artist, nextTrackArtist]
+        const tableData2 = [trackNames, trackArtists]
+        response += TableGenerator.createTable(tableHeaders2, tableData2)
+        const currentSong = context.getProvider().getDJ().getCurrentSong()
+        if (currentSong) {
+            response += `${createTrackProgressBar(currentSong)}`
+        }
+        return response
+    }
 }
 
-function createProgressBar(track: Track): string {
+function createTrackProgressBar(track: Track): string {
     const barLength = 25
     const filledLength = Math.floor(barLength * (track.getElapsedTimeInSeconds() / track.getLength()))
     const numberOfBrackets = filledLength > 2 ? 1 : 0 // Open and close brackets

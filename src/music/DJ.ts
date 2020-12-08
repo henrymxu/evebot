@@ -8,6 +8,7 @@ import {Radio} from './radio/Radio'
 import {Spotify} from './sources/Spotify/Spotify'
 import {Album} from './tracks/Album'
 import {Logger} from '../Logger'
+import {ExternalTrackInfo} from './tracks/ExternalTrack'
 
 export default class DJ {
     private readonly context: GuildContext
@@ -15,8 +16,8 @@ export default class DJ {
 
     constructor(context: GuildContext) {
         this.context = context
-        this.radio = new SpotifyRadio(context, (query: string, requesterId: string, message?: Message) => {
-            return this.play(query, requesterId, message)
+        this.radio = new SpotifyRadio(context, (info: ExternalTrackInfo, requesterId: string, message?: Message) => {
+            this.playWithExternalTrackInfo(info, requesterId, message)
         })
     }
 
@@ -24,8 +25,7 @@ export default class DJ {
         this.context.getProvider().getAudioPlayer().setVolume(volume, relative)
     }
 
-    request(mode: QueryMode, query: string, requesterId: string, message?: Message) {
-        this.context.getProvider().getResponder().startTyping(message)
+    request(mode: QueryMode, query: string, requesterId: string, message?: Message): Promise<void> {
         if (this.radio.isPlaying()) {
             this.radio.stop()
         }
@@ -40,19 +40,24 @@ export default class DJ {
                 break
             }
         }
-        this.executePlay(playFunc, query, message)
+        return this.executePlay(playFunc, query, message)
     }
 
-    private executePlay(playFunc: () => Promise<void>, query: string, message?: Message) {
-        playFunc().catch((err: Error) => {
+    private executePlay(playFunc: () => Promise<void>, query: string, message?: Message): Promise<void> {
+        return playFunc().catch((err: Error) => {
             Logger.e(DJ.name, `Error queuing ${query}, reason: ${err}`, this.context)
-        }).finally(() => {
-            this.context.getProvider().getResponder().stopTyping(message)
         })
     }
 
     private play(query: string, requesterId: string, message?: Message): Promise<void> {
         return Search.search(query).then((tracks) => {
+            this.playTracks(tracks, requesterId, message)
+        })
+    }
+
+    private playWithExternalTrackInfo(info: ExternalTrackInfo, requesterId: string, message?: Message): Promise<void> {
+        const query = DJ.convertTrackToSearchableTrack(info)
+        return Search.search(query, info).then((tracks) => {
             this.playTracks(tracks, requesterId, message)
         })
     }
@@ -75,7 +80,7 @@ export default class DJ {
         return this.context.getProvider().getAudioPlayer().getQueue()
     }
 
-    getCurrentSong(): Track {
+    getCurrentSong(): Track | undefined {
         const trackInfos = this.context.getProvider().getAudioPlayer().getQueue()
         return trackInfos[0]
     }
@@ -143,6 +148,11 @@ export default class DJ {
             this.radio.next()
             this.radio.resume()
         }
+    }
+
+    private static convertTrackToSearchableTrack(info: ExternalTrackInfo): string {
+        const filteredName = info.name
+        return `${info.artist} - ${filteredName} - (Official Audio)`
     }
 }
 

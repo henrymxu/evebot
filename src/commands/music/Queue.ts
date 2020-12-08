@@ -17,7 +17,7 @@ export default class QueueCommand extends Command {
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         switch(args.get('keyword')) {
             case 'queue': {
-                const response = createQueueMessage(context, context.getProvider().getDJ().getQueue())
+                let response = createQueueMessage(context, context.getProvider().getDJ().getQueue())
                 let options = undefined
                 if (!(response instanceof MessageEmbed)) {
                     options = {code: 'Markdown'}
@@ -38,11 +38,14 @@ export default class QueueCommand extends Command {
 function createQueueMessage(context: GuildContext, tracks: Track[]): MessageEmbed | string {
     if (tracks.length === 0) {
         return createErrorMessage(context)
+    } else if (context.getProvider().getDJ().getRadio().isPlaying()) {
+        return TrackMessageFactory
+            .createRadioMessage(context, context.getProvider().getDJ().getRadio().getRadioConfiguration()!)
     }
     return TrackMessageFactory.createQueuedTracksMessage(context, tracks)
 }
 
-function createSongMessage(context: GuildContext, track: Track): MessageEmbed {
+function createSongMessage(context: GuildContext, track: Track | undefined): MessageEmbed {
     if (!track) {
         return createErrorMessage(context)
     }

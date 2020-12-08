@@ -2,8 +2,8 @@ import VoiceCommand from '../../voice/VoiceCommand'
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandOptions} from '../Command'
-import {TableGenerator} from '../../communication/TableGenerator'
-import {Radio, RadioConfiguration, RadioContext, RadioMode} from '../../music/radio/Radio'
+import {Radio, RadioContext, RadioMode} from '../../music/radio/Radio'
+import {TrackMessageFactory} from '../../communication/TrackMessageGenerator'
 
 export default class RadioCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -60,7 +60,7 @@ export default class RadioCommand extends VoiceCommand {
             const radioConfiguration = context.getProvider().getDJ().getRadio().getRadioConfiguration()
             if (radioConfiguration) {
                 context.getProvider().getResponder().send(
-                    {content: createRadioMessage(radioConfiguration),
+                    {content: TrackMessageFactory.createRadioMessage(context, radioConfiguration),
                         message: message, options: {code: 'Markdown'}}, 30)
             } else {
                 context.getProvider().getResponder()
@@ -91,7 +91,12 @@ export default class RadioCommand extends VoiceCommand {
             length: args.get('length'),
             mode: mode
         }
-        context.getProvider().getDJ().getRadio().start(radioContext, message)
+        context.getProvider().getResponder().startTyping()
+        context.getProvider().getDJ().getRadio().start(radioContext, message).then(() => {
+            context.getProvider().getResponder().acknowledge(0, message)
+        }).finally(() => {
+            context.getProvider().getResponder().stopTyping()
+        })
     }
 
     botMustAlreadyBeInVoiceChannel(): boolean {
@@ -105,26 +110,4 @@ export default class RadioCommand extends VoiceCommand {
     userMustBeInVoiceChannel(): boolean {
         return true;
     }
-}
-
-function createRadioMessage(radioConfiguration: RadioConfiguration): string {
-    let response = ''
-    const tableHeaders = ['Artist', 'Genre', 'Track']
-    const source = radioConfiguration.context
-    const artists = source.artists ? source.artists.toString() : ' - '
-    const genres = source.genres ? source.genres.toString() : ' - '
-    const tracks = source.tracks ? source.tracks.toString() : ' - '
-    const tableData = [[artists, genres, tracks]]
-    response += `${TableGenerator.createTable(tableHeaders, tableData)}\n`
-
-    const tableHeaders2 = ['Previous Track', 'Current Track', 'Next Track']
-    const tableData2 = [[radioConfiguration.playedTracks[0],
-        radioConfiguration.currentTrack, radioConfiguration.recommendedTracks[0]]]
-    response += `${TableGenerator.createTable(tableHeaders2, tableData2)}\n`
-
-    const tableHeaders3 = ['Tracks Played', 'Tracks Remaining']
-    const tableData3 = [[radioConfiguration.playedTracks.length.toString(),
-        radioConfiguration.recommendedTracks.length.toString()]]
-    response += `${TableGenerator.createTable(tableHeaders3, tableData3)}`
-    return response
 }

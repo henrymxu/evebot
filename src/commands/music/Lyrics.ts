@@ -30,7 +30,7 @@ export default class LyricsCommand extends Command {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        const query = args.get('query') || context.getProvider().getDJ().getCurrentSong().getTitle()
+        const query = args.get('query') || context.getProvider().getDJ().getCurrentSong()?.getTitle()
         if (!query) {
             context.getProvider().getResponder().error(`There is no song playing! Provide a song name for some lyrics`, message)
         }
