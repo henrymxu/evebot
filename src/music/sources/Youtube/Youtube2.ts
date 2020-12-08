@@ -9,47 +9,37 @@ export default class Youtube2 implements TrackSource {
     }
 
     getTrackURLFromSearch(query: string): Promise<SearchResult> {
-        return new Promise((res, rej) => {
-            this.api.searchVideos(query, 3, {
-                'relevanceLanguage': 'en'
-            }).then((results: any[]) => {
-                if (results.length === 0) {
-                    rej(`No search results found for ${query}`)
+        return this.api.searchVideos(query, 3, { 'relevanceLanguage': 'en' }).then((results: any[]) => {
+            if (results.length === 0) {
+                throw new Error(`No search results found for ${query}`)
+            }
+            const searchResult: SearchResult = {
+                infos: results.map((result) => { return { url: result.url } }),
+                metadata: {
+                    mode: 'single',
+                    query: query
                 }
-                const searchResult: SearchResult = {
-                    infos: results.map((result) => { return { url: result.url } }),
-                    metadata: {
-                        mode: 'single',
-                        query: query
-                    }
-                }
-                res(searchResult)
-            }).catch((err: Error) => {
-                rej(`Unable to find search results from YoutubeAPI ${err.message}`)
-            })
+            }
+            return searchResult
+        }).catch((err: Error) => {
+            throw new Error(`Unable to find search results from YoutubeAPI ${err.message}`)
         })
     }
 
     getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
-        return new Promise((res, rej) => {
-            this.api.getPlaylist(playlistURL).then((playlist: any) => {
-                console.log(`The playlist's title is ${playlist.title}`)
-                playlist.getVideos().then((videos: any[]) => {
-                    console.log(`This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
-                    const searchResult: SearchResult = {
-                        infos: videos.map((result) => { return { url: result.url } }),
-                        metadata: {
-                            mode: 'playlist',
-                            query: playlistURL
-                        }
-                    }
-                    res(searchResult)
-                }).catch((err: Error) => {
-                    rej(err)
-                })
-            }).catch((err: Error) => {
-                rej(err)
-            })
+        return this.api.getPlaylist(playlistURL).then((playlist: any) => {
+            console.log(`The playlist's title is ${playlist.title}`)
+            return playlist.getVideos()
+        }).then((videos: any[]) => {
+            console.log(`This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
+            const searchResult: SearchResult = {
+                infos: videos.map((result) => { return { url: result.url } }),
+                metadata: {
+                    mode: 'playlist',
+                    query: playlistURL
+                }
+            }
+            return searchResult
         })
     }
 }

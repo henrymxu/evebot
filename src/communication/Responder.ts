@@ -30,30 +30,27 @@ export default class Responder {
         }
         const options = message.options || {}
         options.split = true
-        return new Promise((res, rej) => {
-            const textChannel = message.message ? (message.message.channel as TextChannel) : this.context.getTextChannel()
-            if (!textChannel) {
-                rej(`TextChannel is undefined`)
-                return
+        const textChannel = message.message ? (message.message.channel as TextChannel) : this.context.getTextChannel()
+        if (!textChannel) {
+            throw new Error(`TextChannel is undefined`)
+        }
+        return Communicator.send(message.content, options, textChannel).then((result) => {
+            const results: Message[] = result instanceof Message ? [result] : result
+            if (message.id) {
+                this.messageCache.set(message.id, results)
             }
-            Communicator.send(message.content, options, textChannel).then((result) => {
-                const results: Message[] = result instanceof Message ? [result] : result
-                if (message.id) {
-                    this.messageCache.set(message.id, results)
+            results.forEach((messageResult) => {
+                if (message.id && this.typingStatus.has(message.id)) {
+                    this.stopTyping(message.message)
+                    this.typingStatus.delete(message.id)
                 }
-                results.forEach((messageResult) => {
-                    if (message.id && this.typingStatus.has(message.id)) {
-                        this.stopTyping(message.message)
-                        this.typingStatus.delete(message.id)
-                    }
-                    if (removeAfter > 0) {
-                        this.delete(messageResult, removeAfter)
-                    }
-                })
-                res(results)
-            }).catch(err => {
-                rej(`Sending message failed ${err.toString}`)
+                if (removeAfter > 0) {
+                    this.delete(messageResult, removeAfter)
+                }
             })
+            return results
+        }).catch(err => {
+            throw new Error(`Sending message failed ${err.toString}`)
         })
     }
 

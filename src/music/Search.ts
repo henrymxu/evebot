@@ -12,36 +12,30 @@ import {Logger} from '../Logger'
 const TAG = 'YoutubeSearch'
 const YoutubeSource = new Youtube()
 export namespace Search {
-    export function search(query: string): Promise<Track[]> {
-        return new Promise((res, rej) => {
-            parseQueryForType(query).then(async (result) => {
-                if (result.metadata.mode === 'single') {
-                    resolveSingleTrack(result).then((trackInfo) => {
-                        res([trackInfo])
-                    }).catch(err => { rej(err) })
-                } else if (result.metadata.mode === 'playlist') {
+    export async function search(query: string): Promise<Track[]> {
+        try {
+            const result = await parseQueryForType(query)
+            switch(result.metadata.mode) {
+                case 'single':
+                case 'playlist':
                     // TODO: handle playlist result
-                } else if (result.metadata.mode === 'stream') {
+                case 'stream':
                     // TODO: handle stream result
-                }
-            }).catch(err => {
-                Logger.e(TAG, `Error searching for track ${query}, reason: ${err}`)
-                rej(err)
-            })
-        })
+                default:
+                    const track = await resolveSingleTrack(result)
+                    return [track]
+            }
+        } catch (e) {
+            Logger.e(TAG, `Error searching for track ${query}, reason: ${e}`)
+            throw(e)
+        }
     }
 
     export function searchAlbum(album: Album): Promise<Track[]> {
         const promises: Promise<Track>[] = []
-        album.tracks.forEach((track) => {
-            promises.push(new Promise<Track>((res, rej) => {
-                parseQueryForType(`${track.artist} - ${track.name}`).then((searchResult) => {
-                    resolveSingleTrack(searchResult, track).then((trackResult) => {
-                        res(trackResult)
-                    })
-                }).catch((err: Error) => {
-                    rej(err)
-                })
+        album.tracks.forEach((track: ExternalTrackInfo) => {
+            promises.push(parseQueryForType(`${track.artist} - ${track.name}`).then((searchResult) => {
+                return resolveSingleTrack(searchResult, track)
             }))
         })
         return Promise.all(promises)
@@ -76,7 +70,7 @@ async function resolveSingleTrack(result: SearchResult, extraInfo?: ExternalTrac
             Logger.w(TAG, `${basicInfo.videoDetails.title} does not have supported formats, trying next track`)
         }
     }
-    return Promise.reject('Could not find a playable video (region locked)')
+    throw new Error('Could not find a playable video (region locked)')
 }
 
 function parseQueryForType(query: string): Promise<SearchResult> {

@@ -47,18 +47,16 @@ export default class YoutubeTrack extends Track {
         const announceResult = sGen ? sGen.asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
             : Promise.resolve(undefined)
         const songStream = ytdl(this.youtubeInfo.url, {filter: 'audioonly', opusEncoded: true})
-        return new Promise<Readable>((res, rej) => {
-            Promise.all([announceResult, songStream]).then((streams: (Readable | SpeechGeneratorResult | undefined)[]) => {
-                const announceStream = streams[0] ? (streams[0] as SpeechGeneratorResult).stream : undefined
-                this.stream = announceStream ?
-                    StreamUtils.mergeAsync(announceStream, streams[1] as Readable) : streams[1] as Readable
-                this.state = TrackState.LOADED
-                this.announcementLength = (streams[0] as SpeechGeneratorResult).length
-                res(this.stream)
-            }).catch(err => {
-                Logger.e(YoutubeTrack.name, err, context)
-                rej(err)
-            })
+        return Promise.all([announceResult, songStream]).then((streams: (Readable | SpeechGeneratorResult | undefined)[]) => {
+            const announceStream = streams[0] ? (streams[0] as SpeechGeneratorResult).stream : undefined
+            this.stream = announceStream ?
+                StreamUtils.mergeAsync(announceStream, streams[1] as Readable) : streams[1] as Readable
+            this.state = TrackState.LOADED
+            this.announcementLength = (streams[0] as SpeechGeneratorResult).length
+            return this.stream
+        }).catch(err => {
+            Logger.e(YoutubeTrack.name, err, context)
+            throw err
         })
     }
 }
