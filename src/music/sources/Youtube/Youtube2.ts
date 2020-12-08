@@ -1,7 +1,9 @@
 import {SearchResult, TrackSource} from '../../Search'
 import {Keys} from '../../../Keys'
+import {Logger} from '../../../Logger'
 const YoutubeAPI = require('simple-youtube-api')
 
+const TAG = "YoutubeSource2 (simple-youtube-api)"
 export default class Youtube2 implements TrackSource {
     private api
     constructor() {
@@ -28,10 +30,10 @@ export default class Youtube2 implements TrackSource {
 
     getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
         return this.api.getPlaylist(playlistURL).then((playlist: any) => {
-            console.log(`The playlist's title is ${playlist.title}`)
+            Logger.i(TAG, `The playlist's title is ${playlist.title}`)
             return playlist.getVideos()
         }).then((videos: any[]) => {
-            console.log(`This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
+            Logger.i(TAG, `This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
             const searchResult: SearchResult = {
                 infos: videos.map((result) => { return { url: result.url } }),
                 metadata: {

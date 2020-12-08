@@ -3,8 +3,7 @@ import ytsr, {Item, Result, Video} from 'ytsr'
 import ytpl from 'ytpl'
 import {Logger} from '../../../Logger'
 
-const TAG = 'YoutubeSource3'
-
+const TAG = 'YoutubeSource3 (ytsr)'
 export default class Youtube3 implements TrackSource {
     getTrackURLFromSearch(query: string): Promise<SearchResult> {
         return ytsr(query, { limit: 3 }).then((result: Result) => {

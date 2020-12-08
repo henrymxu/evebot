@@ -18,7 +18,7 @@ export default class Throttler {
             return true
         }
         prevCommands.push({})
-        this.cache.set(key, prevCommands)
+        this.cache.set(key, prevCommands, command.options.throttleRate.seconds)
         return false
     }
 }
