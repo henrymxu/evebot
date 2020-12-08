@@ -90,7 +90,7 @@ export namespace TrackMessageFactory {
         const genres = source.genres ? source.genres.toString() : ' - '
         const tracks = source.tracks ? source.tracks.toString() : ' - '
         const tableData = [[artists, genres, tracks, radioConfiguration.recommendedTracks.length.toString()]]
-        response += `${TableGenerator.createTable(tableHeaders, tableData)}\n`
+        response += TableGenerator.createTable(tableHeaders, tableData)
         const tableHeaders2 = ['Previous Track', 'Current Track', 'Next Track']
 
         const previousTrackName = radioConfiguration.playedTracks[0]?.name || ''
