@@ -1,7 +1,7 @@
 import VoiceCommand from '../../voice/VoiceCommand'
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, CommandOptions} from '../Command'
+import {ArgumentType, CommandAck, CommandOptions} from '../Command'
 import {QueryMode} from '../../music/DJ'
 
 export default class PlayCommand extends VoiceCommand {
@@ -21,13 +21,13 @@ export default class PlayCommand extends VoiceCommand {
         examples: ['play Blank Space']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let mode: QueryMode = QueryMode.Play
         if (args.get('keyword') === 'album') {
             mode = QueryMode.Album
         }
         context.getProvider().getResponder().startTyping(message)
-        context.getProvider().getDJ().request(mode, args.get('query'), source.id, message).finally(() => {
+        return context.getProvider().getDJ().request(mode, args.get('query'), source.id, message).finally(() => {
             context.getProvider().getResponder().stopTyping(message)
         })
     }

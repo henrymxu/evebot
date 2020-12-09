@@ -1,4 +1,4 @@
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command'
 import {GuildUtils} from '../../utils/GuildUtils'
 import {GuildContext} from '../../guild/Context'
 import {Message, MessageEmbed, User} from 'discord.js'
@@ -34,18 +34,17 @@ export default class LoggingCommand extends Command {
         permissions: ['MANAGE_CHANNELS'],
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         // TODO: Implement way to modify / remove flags / channel
         if (!args.get('channel')) {
-            context.getProvider().getResponder().send(
-                {content: createCurrentLoggingTextChannelEmbed(context), message: message}, 20)
-            return
+            return Promise.resolve({content: createCurrentLoggingTextChannelEmbed(context),
+                message: message, removeAfter: 20})
         }
         const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))!
         const flag = args.get('flag') || 'e'
         context.getConfig().setLogging(textChannel.id, flag)
         Logger.i(LoggingCommand.name, `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`, context)
-        context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
+        return Promise.resolve(Acknowledgement.OK)
     }
 }
 

@@ -1,28 +1,63 @@
 import {GuildContext} from '../guild/Context'
 import {Message, User} from 'discord.js'
 import {Logger} from '../Logger'
-import {Acknowledgement} from '../communication/Responder'
+import {Acknowledgement, BotMessage} from '../communication/Responder'
 
 export abstract class Command {
     abstract readonly options: CommandOptions
-    protected abstract execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): void
+    protected abstract execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck>
+
+    protected onExecuteSucceeded(context: GuildContext, acknowledge: CommandAck, message?: Message) {
+        if (acknowledge === undefined) {
+            return
+        }
+        const acks = Array.isArray(acknowledge) ? acknowledge : [acknowledge]
+        acks.forEach(ack => {
+            if (ack.hasOwnProperty('content')) {
+                context.getProvider().getResponder().send(ack as BotMessage)
+            } else {
+                context.getProvider().getResponder().acknowledge(ack as Acknowledgement | string, message)
+            }
+        })
+    }
+
+    protected onExecutedFailed(context: GuildContext, error: CommandExecutionError, message?: Message) {
+        if (error.emoji) {
+            context.getProvider().getResponder().acknowledge(error.emoji, message)
+        }
+        if (error.message) {
+            context.getProvider().getResponder().error(error.message, message)
+        }
+    }
+
     protected preExecute(context: GuildContext, message?: Message): Promise<void> {
         // Implemented by child classes
         return Promise.resolve()
     }
-    protected onPreExecuteFailed(context: GuildContext, message?: Message) {
-        context.getProvider().getResponder().acknowledge(Acknowledgement.NEGATIVE, message)
-    }
 
     public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
         this.preExecute(context, message).then(() => {
-            Logger.d(Command.name,
-                `Executing command ${args.get('keyword')} with args ${JSON.stringify(Array.from(args.entries()))}`, context)
-            this.execute(context, source, args, message)
-        }).catch(err => {
-            Logger.w(Command.name, `Execution failed for command ${args.get('keyword')}, reason ${err}`, context)
-            this.onPreExecuteFailed(context, message)
+            const argString = JSON.stringify(Array.from(args.entries()))
+            Logger.d(Command.name, `Executing command ${args.get('keyword')} with args ${argString}`, context)
+            return this.execute(context, source, args, message)
+        }).then((result) => {
+            this.onExecuteSucceeded(context, result, message)
+        }).catch((err: CommandExecutionError) => {
+            Logger.w(Command.name, `Execution failed for command ${args.get('keyword')}\nReason: ${err.msg}`, context)
+            this.onExecutedFailed(context, err, message)
         })
+    }
+}
+
+export type CommandAck = (Acknowledgement | string | BotMessage) | (Acknowledgement | string | BotMessage)[] | void
+
+export class CommandExecutionError extends Error {
+    readonly emoji?: Acknowledgement | string
+    readonly msg?: string
+    constructor(msg?: string, emoji?: Acknowledgement | string) {
+        super();
+        this.msg = msg
+        this.emoji = emoji
     }
 }
 

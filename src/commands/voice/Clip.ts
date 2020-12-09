@@ -2,10 +2,8 @@ import {Message, User} from 'discord.js'
 import {AudioUtils} from '../../utils/AudioUtils'
 import VoiceCommand from '../../voice/VoiceCommand'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, CommandOptions} from '../Command'
+import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {MessageGenerator} from '../../communication/MessageGenerator'
-import {GuildUtils} from '../../utils/GuildUtils'
-import {Logger} from '../../Logger'
 import {CachedStream} from '../../voice/CachedStream'
 
 export default class ClipCommand extends VoiceCommand {
@@ -42,7 +40,7 @@ export default class ClipCommand extends VoiceCommand {
         examples: ['clip', 'clip @Eve -l 5 -c Eve Funny Clip']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let stream: CachedStream | undefined
         let author: string
         let embedMessageContents: string
@@ -52,9 +50,7 @@ export default class ClipCommand extends VoiceCommand {
             embedMessageContents = `Recording from [${user}]`
             stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
             if (!stream) {
-                Logger.w(ClipCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)
-                context.getProvider().getResponder().error('No listening stream registered for user', message)
-                return
+                throw new CommandExecutionError(`No listening stream registered for user ${user}`)
             }
         } else {
             author = context.getGuild().name
@@ -63,15 +59,15 @@ export default class ClipCommand extends VoiceCommand {
         }
 
         context.getProvider().getResponder().startTyping(message)
-        AudioUtils.convertBufferToMp3Buffer(stream.getCachedBuffer(args.get('length')), args.get('caption'), author)
+        return AudioUtils.convertBufferToMp3Buffer(stream.getCachedBuffer(args.get('length')), args.get('caption'), author)
             .then((buffer) => {
                 const embedMessage = MessageGenerator
                     .createBasicEmbed(embedMessageContents)
                 const embed = MessageGenerator.attachFileToEmbed(embedMessage, buffer, `${args.get('caption')}.mp3`)
-                context.getProvider().getResponder().send({content: embed, message: message}).then((results) => {
-                    context.getProvider().getResponder().stopTyping(message)})
+                context.getProvider().getResponder().stopTyping(message)
+                return [{content: embed, message: message}, 'surveillance']
             }).catch((err) => {
-                Logger.e(ClipCommand.name, `There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`, context)
+                throw new CommandExecutionError(`There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`)
             })
     }
 

@@ -1,6 +1,6 @@
 import {Message, MessageEmbed, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {GlobalContext} from '../../GlobalContext'
 import {GuildUtils} from '../../utils/GuildUtils'
 import {MessageGenerator} from '../../communication/MessageGenerator'
@@ -41,27 +41,24 @@ export default class EmojisCommand extends Command {
         examples: ['emoji okay -e <:ayy:305818615712579584>', 'aliases negative -e 🤡']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         const emojis = context.getConfig().getEmojis()
         if (!args.get('ack')) {
-            context.getProvider().getResponder().send({content: createEmojiListEmbed(emojis),
-                message: message, id: 'emojis', options: {code: 'Markdown'}}, 30)
-            return
+            return Promise.resolve({content: createEmojiListEmbed(emojis),
+                message: message, id: 'emojis', options: {code: 'Markdown'}, removeAfter: 30})
         }
         if (args.get('ack') && !args.get('emoji') && !args.get('default')) {
             const resolvedEmoji = GuildUtils.parseEmojiFromEmojiID(context, context.getConfig().getEmoji(args.get('ack')))
-            context.getProvider().getResponder().send({content: `Emoji for ${args.get('ack')} is ${resolvedEmoji}`,
-                message: message, id: 'emojis'}, 15)
-            return
+            return Promise.resolve({content: `Emoji for ${args.get('ack')} is ${resolvedEmoji}`,
+                message: message, id: 'emojis', removeAfter: 15})
         }
         let emoji = !args.get('default') ? args.get('emoji') : GlobalContext.getDefaultConfig().getEmoji(args.get('ack'))
         if (Array.from(emojis.values()).includes(emoji)) {
             const errMsg = `Duplicate emoji provided, each emoji must be unique`
-            context.getProvider().getResponder().error(errMsg, message)
-            return
+            throw new CommandExecutionError(errMsg)
         }
         context.getConfig().setEmoji(args.get('ack'), emoji)
-        context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
+        return Promise.resolve(Acknowledgement.OK)
     }
 }
 

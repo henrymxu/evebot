@@ -18,7 +18,7 @@ export default class Responder {
 
     error(error: string | Error, message?: Message) {
         const embed = MessageGenerator.createErrorEmbed(error instanceof Error ? error.message : error)
-        this.send({content: embed, message: message}, 30)
+        this.send({content: embed, message: message, removeAfter: 30})
     }
 
     acknowledge(type: Acknowledgement | string, message: Message | undefined) {
@@ -28,7 +28,7 @@ export default class Responder {
         Communicator.acknowledge(emoji, message)
     }
 
-    send(message: BotMessage, removeAfter: number = 0): Promise<Message[]> {
+    send(message: BotMessage): Promise<Message[]> {
         if (message.id && this.messageCache.has(message.id)) {
             this.delete(message.id)
         }
@@ -48,8 +48,8 @@ export default class Responder {
                     this.stopTyping(message.message)
                     this.typingStatus.delete(message.id)
                 }
-                if (removeAfter > 0) {
-                    this.delete(messageResult, removeAfter)
+                if (message.removeAfter) {
+                    this.delete(messageResult, message.removeAfter)
                 }
             })
             return results
@@ -102,11 +102,12 @@ function convertAcknowledgementTypeToString(type: Acknowledgement): string {
     }
 }
 
-interface BotMessage {
+export interface BotMessage {
     content: string | MessageEmbed
     id?: string
     message?: Message
     options?: MessageOptions
+    removeAfter?: number
 }
 
 export enum Acknowledgement {

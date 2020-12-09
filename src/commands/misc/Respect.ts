@@ -1,7 +1,6 @@
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command'
 import {GuildContext} from '../../guild/Context'
 import {Message, User} from 'discord.js'
-import {GuildUtils} from '../../utils/GuildUtils'
 
 export class RespectCommand extends Command {
     readonly options: CommandOptions = {
@@ -19,7 +18,7 @@ export class RespectCommand extends Command {
         ]
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let func: (context: GuildContext, source: User, target: User) => string
         switch(args.get('keyword')) {
             case 'respect': {
@@ -35,7 +34,7 @@ export class RespectCommand extends Command {
             }
         }
         const response = func(context, source, args.get('user'))
-        context.getProvider().getResponder().send({content: response, id: 'disrespect', message: message}, 30)
+        return Promise.resolve({content: response, id: 'disrespect', message: message, removeAfter: 30})
     }
 }
 

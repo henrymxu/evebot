@@ -1,6 +1,6 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command'
 import {Nicknames} from '../../guild/Config'
 import {TableGenerator} from '../../communication/TableGenerator'
 
@@ -45,7 +45,7 @@ export default class NicknamesCommand extends Command {
         examples: ['nicknames @Jonathan -a Johnny John', 'nicknames @Jonathan -l']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         const user = args.get('user')
         if (!args.get('list') && (args.get('add') || args.get('remove'))) {
             context.getConfig().addNicknames(user.id, args.get('add') || [])
@@ -53,6 +53,6 @@ export default class NicknamesCommand extends Command {
         }
         const embed = TableGenerator.createBasicListEmbed(user.tag, context.getConfig().getNicknames(user.id),
             'Nicknames')
-        context.getProvider().getResponder().send({content: embed, message: message}, 20)
+        return Promise.resolve({content: embed, message: message, removeAfter: 20})
     }
 }

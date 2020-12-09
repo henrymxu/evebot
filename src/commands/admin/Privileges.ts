@@ -1,6 +1,6 @@
 import {Message, Role, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command'
 import {Privilege} from '../../guild/Config'
 import {TableGenerator} from '../../communication/TableGenerator'
 import {GuildUtils} from '../../utils/GuildUtils'
@@ -57,19 +57,17 @@ export default class PrivilegesCommand extends Command {
         examples: ['privileges play -grant Liam @Olivia Admins -deny @Kevin Newcomers']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         if (!args.get('privilegeName')) {
             const response = createPrivilegesListMessage(context.getConfig().getPrivileges())
-            context.getProvider().getResponder()
-                .send({content: response, message: message, id: 'privileges', options: {code: 'Markdown'}},
-                    30)
-            return
+            return Promise.resolve({content: response, message: message,
+                id: 'privileges', options: {code: 'Markdown'}, removeAfter: 30})
         }
         const privilegeName = CommandRegistry.getCommand(context, args.get('privilegeName'))!.options.name.toLowerCase()
         if (args.get('delete')) {
             context.getConfig().deletePrivilege(privilegeName)
             context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
-            return
+            return Promise.resolve(Acknowledgement.OK)
         }
         if (args.get('grant') || args.get('deny') || args.get('remove')) {
             context.getConfig().grantEntitiesPrivilege(privilegeName, (args.get('grant') || [])
@@ -80,9 +78,8 @@ export default class PrivilegesCommand extends Command {
                 .map((name: string) => mapNameToUserOrRole(context, name)))
         }
         const response = createPrivilegeMessage(context, context.getConfig().getPrivilege(privilegeName))
-        context.getProvider().getResponder().send(
-            {content: response, message: message, id: 'privilege', options: {code: true}}, 30)
-        return
+        return Promise.resolve({content: response, message: message,
+            id: 'privilege', options: {code: true}, removeAfter: 30})
     }
 }
 

@@ -1,9 +1,10 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions, FileType} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandOptions, FileType} from '../Command'
 import {CommandRegistry} from '../Registry'
 import {TableGenerator} from '../../communication/TableGenerator'
 import {GuildUtils} from '../../utils/GuildUtils'
+import {BotMessage} from '../../communication/Responder'
 
 export default class HelpCommand extends Command {
     readonly options: CommandOptions = {
@@ -23,7 +24,8 @@ export default class HelpCommand extends Command {
         examples: ['help voice']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
+        let botMessage: BotMessage | BotMessage[]
         if (args.get('query')) {
             let response = ''
             const command = CommandRegistry.getCommand(context, args.get('query'))
@@ -37,15 +39,14 @@ export default class HelpCommand extends Command {
                     response = createMultipleCommandHelpMessage(context, map)[0]
                 }
             }
-            context.getProvider().getResponder()
-                .send({content: response, message: message, options: {code: 'Markdown'}}, 30)
+            botMessage = {content: response, message: message, options: {code: 'Markdown'}, removeAfter: 30}
         } else {
             const responses = createMultipleCommandHelpMessage(context, CommandRegistry.getCommandsByGroup())
-            responses.forEach((response) => {
-                context.getProvider().getResponder()
-                    .send({content: response, message: message, options: {code: 'Markdown'}}, 30)
+            botMessage = responses.map((response: string) => {
+                return {content: response, message: message, options: {code: 'Markdown'}, removeAfter: 30}
             })
         }
+        return Promise.resolve(botMessage)
     }
 }
 
