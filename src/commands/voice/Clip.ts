@@ -5,6 +5,7 @@ import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {MessageGenerator} from '../../communication/MessageGenerator'
 import {CachedStream} from '../../voice/CachedStream'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class ClipCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -65,7 +66,7 @@ export default class ClipCommand extends VoiceCommand {
                     .createBasicEmbed(embedMessageContents)
                 const embed = MessageGenerator.attachFileToEmbed(embedMessage, buffer, `${args.get('caption')}.mp3`)
                 context.getProvider().getResponder().stopTyping(message)
-                return [{content: embed, message: message}, 'surveillance']
+                return [{content: embed, message: message}, Acknowledgement.SURVEILLANCE]
             }).catch((err) => {
                 throw new CommandExecutionError(`There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`)
             })

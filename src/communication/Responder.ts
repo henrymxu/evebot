@@ -2,7 +2,6 @@ import {GuildContext} from '../guild/Context'
 import {Message, MessageEmbed, MessageOptions, TextChannel} from 'discord.js'
 import {Communicator} from './Communicator'
 import {MessageGenerator} from './MessageGenerator'
-import {Logger} from '../Logger'
 import {GlobalContext} from '../GlobalContext'
 import {GuildUtils} from '../utils/GuildUtils'
 
@@ -21,10 +20,9 @@ export default class Responder {
         this.send({content: embed, message: message, removeAfter: 30})
     }
 
-    acknowledge(type: Acknowledgement | string, message: Message | undefined) {
-        const typeString = (typeof type === 'string') ? type : convertAcknowledgementTypeToString(type)
-        const emojiID = this.context.getConfig().getEmoji(typeString) || GlobalContext.getDefaultConfig().getEmoji(typeString)
-        const emoji = GuildUtils.parseEmojiFromEmojiID(this.context, emojiID) || GlobalContext.getDefaultConfig().getEmoji(typeString)
+    acknowledge(type: Acknowledgement, message: Message | undefined) {
+        const emojiID = this.context.getConfig().getEmoji(type) || GlobalContext.getDefaultConfig().getEmoji(type)
+        const emoji = GuildUtils.parseEmojiFromEmojiID(this.context, emojiID) || GlobalContext.getDefaultConfig().getEmoji(type)
         Communicator.acknowledge(emoji, message)
     }
 
@@ -87,21 +85,6 @@ export default class Responder {
     }
 }
 
-function convertAcknowledgementTypeToString(type: Acknowledgement): string {
-    switch(type) {
-        case Acknowledgement.OK:
-            return "ok"
-        case Acknowledgement.NEGATIVE:
-            return "negative"
-        case Acknowledgement.MISSING_PRIVILEGES:
-            return 'no privileges'
-        case Acknowledgement.USER_THROTTLED:
-            return 'throttled'
-        case Acknowledgement.UNNECESSARY:
-            return 'unnecessary'
-    }
-}
-
 export interface BotMessage {
     content: string | MessageEmbed
     id?: string
@@ -111,9 +94,12 @@ export interface BotMessage {
 }
 
 export enum Acknowledgement {
-    OK,
-    NEGATIVE,
-    MISSING_PRIVILEGES,
-    USER_THROTTLED,
-    UNNECESSARY
+    OK = 'ok',
+    NEGATIVE = 'negative',
+    MISSING_PRIVILEGES = 'no privileges',
+    USER_THROTTLED = 'throttled',
+    UNNECESSARY = 'unnecessary',
+    MUSIC = 'music',
+    SURVEILLANCE = 'surveillance',
+    UPDATED = 'updated'
 }

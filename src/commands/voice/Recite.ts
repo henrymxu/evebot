@@ -59,7 +59,7 @@ export default class ReciteCommand extends VoiceCommand {
             }
             return speechRecognizer.recognizeTextFromSpeech(audioStream).then((transcribed) => {
                 const transcribedMessage = createTranscriptionEmbed(user, transcribed)
-                return [{content: transcribedMessage, message: message}, 'surveillance']
+                return [{content: transcribedMessage, message: message}, Acknowledgement.SURVEILLANCE]
             })
         } else {
             return Promise.resolve(Acknowledgement.OK)

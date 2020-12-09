@@ -79,7 +79,7 @@ export default class PrivilegesCommand extends Command {
         }
         const response = createPrivilegeMessage(context, context.getConfig().getPrivilege(privilegeName))
         return Promise.resolve({content: response, message: message,
-            id: 'privilege', options: {code: true}, removeAfter: 30})
+            id: 'privilege', options: {code: true}, removeAfter: 20})
     }
 }
 

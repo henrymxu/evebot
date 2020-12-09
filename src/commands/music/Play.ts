@@ -3,6 +3,7 @@ import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandAck, CommandOptions} from '../Command'
 import {QueryMode} from '../../music/DJ'
+import {Acknowledgement} from '../../communication/Responder'
 
 export default class PlayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -27,7 +28,9 @@ export default class PlayCommand extends VoiceCommand {
             mode = QueryMode.Album
         }
         context.getProvider().getResponder().startTyping(message)
-        return context.getProvider().getDJ().request(mode, args.get('query'), source.id, message).finally(() => {
+        return context.getProvider().getDJ().request(mode, args.get('query'), source.id, message).then(() => {
+            return Acknowledgement.MUSIC
+        }).finally(() => {
             context.getProvider().getResponder().stopTyping(message)
         })
     }

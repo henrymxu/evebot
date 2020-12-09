@@ -32,7 +32,7 @@ export default class DefaultTextChannelCommand extends Command {
         const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))!
         context.getConfig().setDefaultTextChannel(textChannel.id)
         Logger.i(DefaultTextChannelCommand.name, `Successfully set DefaultTextChannel to ${textChannel.name} | ${textChannel.id}`, context)
-        return Promise.resolve(Acknowledgement.OK)
+        return Promise.resolve(Acknowledgement.UPDATED)
     }
 }
 
