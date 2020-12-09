@@ -22,9 +22,9 @@ export namespace Storage {
         return storage.loadConfig(params, GlobalContext.getDefaultConfig()).then((config: any) => {
             if (keys.length == 0) {
                 keys = Object.keys(GlobalContext.getDefaultConfig().getJSON())
-                keys.concat(Utils.getAllNestedKeysOfObject(GlobalContext.getDefaultConfig().getJSON()))
+                keys.push(...Utils.getAllNestedKeysOfObject(GlobalContext.getDefaultConfig().getJSON()))
             }
-            if (checkConfigUpToDate(config, GlobalContext.getDefaultConfig().getJSON(), keys)) {
+            if (!checkConfigUpToDate(config, GlobalContext.getDefaultConfig().getJSON(), keys)) {
                 saveConfig(guildID, config)
             }
             return config
@@ -41,14 +41,14 @@ export namespace Storage {
 }
 
 function checkConfigUpToDate(config: any, defaultConfig: any, defaultConfigKeys: string[]): boolean {
-    let updated = false
+    let updated = true
     defaultConfigKeys.forEach((key: string) => {
         try {
             const value = key.split('.').reduce((o,i) => o[i], config)
             if (value === undefined) {
                 const defaultValue = key.split('.').reduce((o,i) => o[i], defaultConfig)
                 Utils.dynamicallySetObjectKeyValue(config, key, defaultValue)
-                updated = true
+                updated = false
             }
         } catch(e) {
             // Ignore
