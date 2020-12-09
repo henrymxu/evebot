@@ -1,9 +1,10 @@
-import {Message, User} from 'discord.js'
+import {Message, MessageEmbed, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import VoiceCommand from '../../voice/VoiceCommand'
 import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {CachedStream} from '../../voice/CachedStream'
 import {Acknowledgement} from '../../communication/Responder'
+import {MessageGenerator} from '../../communication/MessageGenerator'
 
 export default class ReciteCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -57,7 +58,7 @@ export default class ReciteCommand extends VoiceCommand {
                 throw new CommandExecutionError('No SpeechRecognizer Registered')
             }
             return speechRecognizer.recognizeTextFromSpeech(audioStream).then((transcribed) => {
-                const transcribedMessage = `${user} said ${transcribed}`
+                const transcribedMessage = createTranscriptionEmbed(user, transcribed)
                 return [{content: transcribedMessage, message: message}, 'surveillance']
             })
         } else {
@@ -80,4 +81,15 @@ export default class ReciteCommand extends VoiceCommand {
     botShouldNotJoinVoiceChannelIfNotReady(): boolean {
         return true
     }
+}
+
+function createTranscriptionEmbed(user: User, message: string): MessageEmbed {
+    const embed = MessageGenerator.getBaseEmbed()
+    embed.author = {
+        name: user.tag,
+        iconURL: user.avatarURL() || user.defaultAvatarURL
+    }
+    embed.timestamp = Date.now()
+    embed.description = `\`\`\`${message}\`\`\``
+    return embed
 }
