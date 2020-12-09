@@ -51,7 +51,7 @@ async function resolveSingleTrack(result: SearchResult, extraInfo?: ExternalTrac
         const basicInfo = await ytdl.getBasicInfo(info.url)
         if (basicInfo.formats.length > 0) {
             resolved = true
-            Logger.d(TAG, `Found ${basicInfo.videoDetails.title} for ${result.metadata.query}`)
+            Logger.d(TAG, `Found ${basicInfo.videoDetails.title} >> ${result.metadata.query}`)
             const id = Utils.generateUUID()
             const youtubeInfo: YoutubeTrackInfo = {
                 description: basicInfo.videoDetails.shortDescription,
@@ -88,7 +88,7 @@ function parseQueryForType(query: string): Promise<SearchResult> {
                         }
                     })
                 case '/playlist':
-                    Logger.d(TAG, `Found a Youtube playlist for ${query}`)
+                    Logger.d(TAG, `Found a Youtube playlist >> ${query}`)
                     return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
             }
         } else if (result.hostname === 'open.spotify.com') {

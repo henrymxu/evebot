@@ -19,8 +19,8 @@ export class ConfigImplementation implements Config {
         Storage.saveConfig(this.guildID, this.json)
     }
 
-    getJSON(): string {
-        return JSON.stringify(this.json, null, 4)
+    getJSON(): any {
+        return this.json
     }
 
     getPrefix(): string {

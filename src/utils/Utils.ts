@@ -33,6 +33,28 @@ export namespace Utils {
         return result;
     }
 
+    export function getAllNestedKeysOfObject(obj: object) {
+        const isObject = (val: any) => typeof val === 'object' && !Array.isArray(val)
+        const addDelimiter = (a: any, b: any) => a ? `${a}.${b}` : b
+        const paths = (obj: object = {}, head: string = ''): any => {
+            return Object.entries(obj).reduce((product, [key, value]) => {
+                let fullPath = addDelimiter(head, key)
+                return isObject(value) ? product.concat(paths(value, fullPath)) : product.concat(fullPath)}, [])
+        }
+        return paths(obj);
+    }
+
+    export function dynamicallySetObjectKeyValue(obj: any, key: any, value: any): any {
+        if (typeof key == 'string')
+            return dynamicallySetObjectKeyValue(obj,key.split('.'), value);
+        else if (key.length == 1 && value !== undefined)
+            return obj[key[0]] = value;
+        else if (key.length==0)
+            return obj;
+        else
+            return dynamicallySetObjectKeyValue(obj[key[0]],key.slice(1), value);
+    }
+
     export function roughSizeOfObject( object: any): number {
         const objectList = []
         const stack = [object]

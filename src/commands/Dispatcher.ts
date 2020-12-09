@@ -79,6 +79,9 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
             result.args.set('file', attachment)
         }
     }
+    if (message) {
+        context.setTextChannel(message.channel as TextChannel)
+    }
     command.run(context, source, result.args, message)
 }
 
@@ -87,7 +90,6 @@ function handleTextChannelMessage(message: Message) {
         return
     }
     GlobalContext.get(message.guild.id).then(context => {
-        context.setTextChannel(message.channel as TextChannel)
         handleGuildCommand(context, message.content, message.author, message)
     })
 }

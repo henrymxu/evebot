@@ -33,7 +33,7 @@ export default class StatusCommand extends Command {
                 break
             }
             case 'config': {
-                response = context.getConfig().getJSON()
+                response = JSON.stringify(context.getConfig().getJSON(), null, 4)
                 break
             }
         }

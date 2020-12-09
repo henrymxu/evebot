@@ -111,6 +111,9 @@ function createPrivilegeMessage(context: GuildContext, privilege?: Privilege): s
                 rows.push(['Role', role])
             }
         })
+        if (rows.length == 0) {
+            rows.push(['-', '-'])
+        }
         return rows
     }
     let tableData = []
