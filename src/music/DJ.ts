@@ -102,7 +102,9 @@ export default class DJ {
     }
 
     stop() {
-        this.radio.stop()
+        if (this.radio.stop()) {
+            return true
+        }
         return this.context.getProvider().getAudioPlayer().stop()
     }
 

@@ -72,9 +72,6 @@ export default class AudioPlayer {
     }
 
     stop(): boolean {
-        if (!this.getConnection()?.dispatcher) {
-            return false
-        }
         this.endTrack(this.trackQueue.shift(), true)
         this.trackQueue.forEach(track => { track.setFinished() })
         this.getConnection()?.dispatcher?.destroy()
@@ -83,8 +80,7 @@ export default class AudioPlayer {
     }
 
     skip(): boolean {
-        this.playNext()
-        return true
+        return this.playNext()
     }
 
     queueInterrupt(stream: Readable, audioType: string, priority: number, callback: ()=>any = ()=>{}) {
@@ -185,9 +181,8 @@ export default class AudioPlayer {
         this.state = AudioPlayerState.IDLE
         const current = this.trackQueue.shift()
         this.endTrack(current)
-        const nextTrackItem = this.trackQueue[0]
         this.prepareToPlay(false)
-        return nextTrackItem !== undefined
+        return current !== undefined
     }
 
     private endTrack(track?: Track, forceStop: boolean = false) {

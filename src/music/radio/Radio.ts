@@ -1,7 +1,6 @@
 import {Message} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {GlobalContext} from '../../GlobalContext'
-import {Track} from '../tracks/Track'
 import {ExternalTrackInfo} from '../tracks/ExternalTrack'
 
 export abstract class Radio {
@@ -62,26 +61,12 @@ export abstract class Radio {
         this.play(this.radioConfiguration.currentTrack, GlobalContext.getBotID(), this.radioConfiguration.message)
     }
 
-    stop() {
+    stop(): boolean {
         if (this.radioConfiguration) {
             this.context.getProvider().getAudioPlayer().stop()
             this.radioConfiguration = undefined
         }
-    }
-
-    static ConvertStringToRadioMode(modeString: string): RadioMode {
-        let mode: RadioMode
-        switch(modeString) {
-            case 'top10':
-                mode = RadioMode.TOP_10
-                break
-            case 'artist':
-                mode = RadioMode.ARTIST_ONLY
-                break
-            default:
-                mode = RadioMode.RELATED
-        }
-        return mode
+        return this.radioConfiguration !== undefined
     }
 }
 
