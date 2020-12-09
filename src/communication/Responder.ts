@@ -62,10 +62,8 @@ export default class Responder {
         const messages = !(source instanceof Message) ? this.messageCache.get(source) : [source]
         if (messages) {
             messages.forEach((message) => {
-                message.delete({
-                    timeout: delay * 1000
-                }).catch(err => {
-                    Logger.e(TAG, err)
+                message.delete({ timeout: delay * 1000 }).catch(err => {
+                    // Ignore error
                 })
             })
         }

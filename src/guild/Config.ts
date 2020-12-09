@@ -5,7 +5,7 @@ export interface Config {
 
     save(): void
 
-    getJSON(): string
+    getJSON(): any
 
     getPrefix(): string
 
