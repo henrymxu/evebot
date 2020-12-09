@@ -1,10 +1,10 @@
-import {Message, User} from 'discord.js'
+import {Message, MessageEmbed, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import VoiceCommand from '../../voice/VoiceCommand'
-import {ArgumentType, CommandOptions} from '../Command'
-import {Logger} from '../../Logger'
-import {GuildUtils} from '../../utils/GuildUtils'
+import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {CachedStream} from '../../voice/CachedStream'
+import {Acknowledgement} from '../../communication/Responder'
+import {MessageGenerator} from '../../communication/MessageGenerator'
 
 export default class ReciteCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -39,15 +39,13 @@ export default class ReciteCommand extends VoiceCommand {
         examples: ['recite', 'recite @Eve -l 8']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let stream: CachedStream | undefined
         const user: User = args.get('user')
         if (user) {
             stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
             if (!stream) {
-                Logger.w(ReciteCommand.name, `No audioStream for ${user.tag} [${user.id}]`, context)
-                context.getProvider().getResponder().error('No listening stream registered for user', message)
-                return
+                throw new CommandExecutionError(`No listening stream registered for user ${user}`)
             }
         } else {
             stream = context.getProvider().getVoiceConnectionHandler().getMergedVoiceStream()
@@ -57,13 +55,14 @@ export default class ReciteCommand extends VoiceCommand {
         if (user && args.get('transcribe')) {
             const speechRecognizer = context.getVoiceDependencyProvider().getSpeechRecognizer()
             if (!speechRecognizer) {
-                Logger.e(ReciteCommand.name, 'No SpeechRecognizer Registered', context)
-                return
+                throw new CommandExecutionError('No SpeechRecognizer Registered')
             }
-            speechRecognizer.recognizeTextFromSpeech(audioStream).then((transcribed) => {
-                const transcribedMessage = `${user} said ${transcribed}`
-                context.getProvider().getResponder().send({content: transcribedMessage, message: message})
+            return speechRecognizer.recognizeTextFromSpeech(audioStream).then((transcribed) => {
+                const transcribedMessage = createTranscriptionEmbed(user, transcribed)
+                return [{content: transcribedMessage, message: message}, 'surveillance']
             })
+        } else {
+            return Promise.resolve(Acknowledgement.OK)
         }
     }
 
@@ -82,4 +81,15 @@ export default class ReciteCommand extends VoiceCommand {
     botShouldNotJoinVoiceChannelIfNotReady(): boolean {
         return true
     }
+}
+
+function createTranscriptionEmbed(user: User, message: string): MessageEmbed {
+    const embed = MessageGenerator.getBaseEmbed()
+    embed.author = {
+        name: user.tag,
+        iconURL: user.avatarURL() || user.defaultAvatarURL
+    }
+    embed.timestamp = Date.now()
+    embed.description = `\`\`\`${message}\`\`\``
+    return embed
 }

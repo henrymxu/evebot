@@ -1,9 +1,8 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {GeniusLyrics} from '../../music/lyrics/Genius'
 import {MessageGenerator} from '../../communication/MessageGenerator'
-import {Logger} from '../../Logger'
 import {Acknowledgement} from '../../communication/Responder'
 
 export default class LyricsCommand extends Command {
@@ -30,22 +29,20 @@ export default class LyricsCommand extends Command {
         examples: ['lyrics', 'lyrics Wildest Dreams']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         const query = args.get('query') || context.getProvider().getDJ().getCurrentSong()?.getTitle()
         if (!query) {
-            context.getProvider().getResponder().error(`There is no song playing! Provide a song name for some lyrics`, message)
+            throw new CommandExecutionError(`There is no song playing! Provide a song name for some lyrics`)
         }
-        GeniusLyrics.get(query, args.get('artist')).then((result) => {
+        return GeniusLyrics.get(query, args.get('artist')).then((result) => {
             const embed = MessageGenerator.getBaseEmbed()
             embed.setImage(result.albumArt)
             embed.setTitle(query)
             embed.setURL(result.url)
-            context.getProvider().getResponder().send(
-                {content: result.lyrics,
-                    message: message, options: {code: 'Markdown', embed: embed}})
+            return {content: result.lyrics,
+                    message: message, options: {code: 'Markdown', embed: embed}}
         }).catch(err => {
-            Logger.e(LyricsCommand.name, `Error retrieving lyrics for ${query}, reason: ${err}`, context)
-            context.getProvider().getResponder().acknowledge(Acknowledgement.NEGATIVE, message)
+            throw new CommandExecutionError(`Error retrieving lyrics for ${query}, reason: ${err}`, Acknowledgement.NEGATIVE)
         })
     }
 }

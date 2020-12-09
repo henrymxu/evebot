@@ -1,7 +1,7 @@
 import VoiceCommand from '../../voice/VoiceCommand'
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {CommandOptions} from '../Command'
+import {CommandAck, CommandOptions} from '../Command'
 import {Acknowledgement} from '../../communication/Responder'
 
 export default class PlaybackControlCommand extends VoiceCommand {
@@ -13,7 +13,7 @@ export default class PlaybackControlCommand extends VoiceCommand {
         arguments: []
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let result: boolean = false
         switch(args.get('keyword')) {
             case 'resume':
@@ -26,9 +26,7 @@ export default class PlaybackControlCommand extends VoiceCommand {
                 result = context.getProvider().getDJ().stop()
                 break
         }
-        if (result) {
-            context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
-        }
+        return Promise.resolve(result ? Acknowledgement.OK : Acknowledgement.UNNECESSARY)
     }
 
     botMustAlreadyBeInVoiceChannel(): boolean {

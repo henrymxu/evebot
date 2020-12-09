@@ -1,8 +1,7 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import VoiceCommand from '../../voice/VoiceCommand'
-import {ArgumentType, CommandOptions} from '../Command'
-import {Logger} from '../../Logger'
+import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {Acknowledgement} from '../../communication/Responder'
 
 export default class SayCommand extends VoiceCommand {
@@ -32,16 +31,15 @@ export default class SayCommand extends VoiceCommand {
         examples: ['say hello my name is eve -v en-IN-Heera-Apollo']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         const speechGenerator = context.getVoiceDependencyProvider().getSpeechGenerator()
         if (!speechGenerator) {
-            Logger.e(SayCommand.name, 'No SpeechGenerator Registered', context)
-            return
+            throw new CommandExecutionError('No SpeechGenerator Registered')
         }
-        context.getVoiceDependencyProvider().getSpeechGenerator()!.asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
+        return speechGenerator.asyncGenerateSpeechFromText(args.get('message'), args.get('voice'))
             .then((result) => {
                 context.getProvider().getInterruptService().playOpusStream(result.stream)
-                context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
+                return Acknowledgement.OK
             })
     }
 

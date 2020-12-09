@@ -1,6 +1,6 @@
 import {Message, MessageEmbed, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command'
 import {GuildUtils} from '../../utils/GuildUtils'
 import {MessageGenerator} from '../../communication/MessageGenerator'
 import {Logger} from '../../Logger'
@@ -24,17 +24,15 @@ export default class DefaultTextChannelCommand extends Command {
         permissions: ['MANAGE_CHANNELS'],
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         // TODO: Implement way to remove channel
         if (!args.get('channel')) {
-            context.getProvider().getResponder().send(
-                {content: createCurrentDefaultTextChannelEmbed(context), message: message}, 20)
-            return
+            return Promise.resolve({content: createCurrentDefaultTextChannelEmbed(context), message: message, removeAfter: 20})
         }
         const textChannel = GuildUtils.findTextChannelByName(context, args.get('channel'))!
         context.getConfig().setDefaultTextChannel(textChannel.id)
         Logger.i(DefaultTextChannelCommand.name, `Successfully set DefaultTextChannel to ${textChannel.name} | ${textChannel.id}`, context)
-        context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
+        return Promise.resolve(Acknowledgement.OK)
     }
 }
 

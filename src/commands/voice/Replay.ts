@@ -1,8 +1,7 @@
 import {Message, MessageAttachment, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import VoiceCommand from '../../voice/VoiceCommand'
-import {ArgumentType, CommandOptions, FileType} from '../Command'
-import {Logger} from '../../Logger'
+import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions, FileType} from '../Command'
 import {FileUtils} from '../../utils/FileUtils'
 import {AudioUtils} from '../../utils/AudioUtils'
 import {Acknowledgement} from '../../communication/Responder'
@@ -25,7 +24,7 @@ export default class ReplayCommand extends VoiceCommand {
         examples: ['replay']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let url = ''
         if (args.get('file')) {
             const messageAttachment: MessageAttachment = args.get('file')
@@ -33,17 +32,16 @@ export default class ReplayCommand extends VoiceCommand {
         } else if (args.get('url')) {
             url = args.get('url')
         } else {
-            Logger.e(ReplayCommand.name, 'no file provided for replay', context)
-            return
+            throw new CommandExecutionError('No file provided for replay')
         }
-        FileUtils.downloadFile(url).then((result) => {
+        return FileUtils.downloadFile(url).then((result) => {
             // TODO: check file types?
             if (url.endsWith('mp3')) {
                 context.getProvider().getInterruptService().playOpusStream(AudioUtils.convertMp3StreamToOpusStream(result))
             } else {
                 context.getProvider().getInterruptService().playUnknownStream(result)
             }
-            context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
+            return Acknowledgement.OK
         })
     }
 

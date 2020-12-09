@@ -1,6 +1,6 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {Command, CommandOptions} from '../Command'
+import {Command, CommandAck, CommandOptions} from '../Command'
 import {TableGenerator} from '../../communication/TableGenerator'
 import {SpeechProvider} from '../../speech/Interfaces'
 import {GuildUtils} from '../../utils/GuildUtils'
@@ -17,7 +17,7 @@ export default class StatusCommand extends Command {
         permissions: ['ADMINISTRATOR']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let response = ''
         switch(args.get('keyword')) {
             case 'status': {
@@ -37,8 +37,8 @@ export default class StatusCommand extends Command {
                 break
             }
         }
-        context.getProvider().getResponder()
-            .send({content: response, id: args.get('keyword'), message: message, options: {code: 'Markdown'}}, 15)
+        return Promise.resolve({content: response, id: args.get('keyword'),
+            message: message, options: {code: 'Markdown'}, removeAfter: 15})
     }
 }
 

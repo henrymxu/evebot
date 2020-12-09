@@ -22,6 +22,8 @@
     "ok": "\uD83D\uDC4C",
     "negative": "\uD83D\uDC4E",
     "no privileges": "\uD83E\uDD21",
-    "throttled": "⏱️"
+    "throttled": "⏱️",
+    "surveillance": "\uD83D\uDC6E",
+    "unnecessary": "\uD83E\uDD14"
   }
 }

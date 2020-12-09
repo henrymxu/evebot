@@ -1,6 +1,6 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command'
 import {Aliases} from '../../guild/Config'
 import {TableGenerator} from '../../communication/TableGenerator'
 import {CommandRegistry} from '../Registry'
@@ -48,7 +48,7 @@ export default class AliasesCommand extends Command {
         examples: ['aliases play -a sing', 'aliases play -l']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         const command = CommandRegistry.getCommand(context, args.get('command'))!
         if (!args.get('list') && (args.get('add') || args.get('remove'))) {
             context.getConfig().addAliases(command.options.name.toLowerCase(), args.get('add') || [])
@@ -56,6 +56,6 @@ export default class AliasesCommand extends Command {
         }
         const embed = TableGenerator.createBasicListEmbed(command.options.name,
             context.getConfig().getAliases(command.options.name), 'Aliases')
-        context.getProvider().getResponder().send({content: embed, message: message}, 20)
+        return Promise.resolve({content: embed, message: message, removeAfter: 20})
     }
 }

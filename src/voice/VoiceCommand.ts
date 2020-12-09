@@ -1,4 +1,4 @@
-import {Command} from '../commands/Command'
+import {Command, CommandExecutionError} from '../commands/Command'
 import {Message, VoiceChannel} from 'discord.js'
 import {GuildContext} from '../guild/Context'
 import {Logger} from '../Logger'
@@ -21,12 +21,12 @@ export default abstract class VoiceCommand extends Command {
         }
         if (status === Status.NEEDS_JOIN) {
             if (this.botShouldNotJoinVoiceChannelIfNotReady()) {
-                return Promise.reject(new Error('Bot needs to be in the voice channel before this command is called'))
+                return Promise.reject(new CommandExecutionError('Bot needs to be in the voice channel before this command is called'))
             } else {
                 return this.joinVoiceChannel(context, message)
             }
         }
-        return Promise.reject(new Error('Bot is not ready to perform this command'))
+        return Promise.reject(new CommandExecutionError('Bot is not ready to perform this command'))
     }
 
     protected checkBotVoiceChannelStatus(context: GuildContext, message?: Message): Status {
@@ -64,7 +64,7 @@ export default abstract class VoiceCommand extends Command {
         try {
             await context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(message?.member?.voice?.channel)
         } catch {
-            throw new Error('Error joining voice channel')
+            throw new CommandExecutionError('Error joining voice channel')
         }
     }
 }

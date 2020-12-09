@@ -1,6 +1,6 @@
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandOptions} from '../Command'
+import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command'
 import {MessageGenerator} from '../../communication/MessageGenerator'
 
 export default class UserInfoCommand extends Command {
@@ -20,7 +20,7 @@ export default class UserInfoCommand extends Command {
         examples: ['userinfo @George']
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         const user: User = args.get('user')
         const embed = MessageGenerator.createBasicEmbed(user.tag)
         embed.addField('Username', user.username)
@@ -34,6 +34,6 @@ export default class UserInfoCommand extends Command {
         if (avatar) {
             embed.setThumbnail(avatar)
         }
-        context.getProvider().getResponder().send({content: embed, id: user.id, message: message}, 30)
+        return Promise.resolve({content: embed, id: user.id, message: message, removeAfter: 30})
     }
 }

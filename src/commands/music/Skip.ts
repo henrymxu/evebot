@@ -1,7 +1,7 @@
 import VoiceCommand from '../../voice/VoiceCommand'
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {CommandOptions} from '../Command'
+import {CommandAck, CommandOptions} from '../Command'
 import {Acknowledgement} from '../../communication/Responder'
 
 export default class SkipCommand extends VoiceCommand {
@@ -13,10 +13,8 @@ export default class SkipCommand extends VoiceCommand {
         arguments: []
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        if (context.getProvider().getDJ().skip()) {
-            context.getProvider().getResponder().acknowledge(Acknowledgement.OK, message)
-        }
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
+        return Promise.resolve(context.getProvider().getDJ().skip() ? Acknowledgement.OK : Acknowledgement.UNNECESSARY)
     }
 
     botMustAlreadyBeInVoiceChannel(): boolean {

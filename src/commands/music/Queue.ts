@@ -1,4 +1,4 @@
-import {Command, CommandOptions} from '../Command'
+import {Command, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {GuildContext} from '../../guild/Context'
 import {Message, MessageEmbed, User} from 'discord.js'
 import {Track} from '../../music/tracks/Track'
@@ -14,7 +14,7 @@ export default class QueueCommand extends Command {
         arguments: []
     }
 
-    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+    execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         switch(args.get('keyword')) {
             case 'queue': {
                 const response = createQueueMessage(context, context.getProvider().getDJ().getQueue())
@@ -22,14 +22,15 @@ export default class QueueCommand extends Command {
                 if (!(response instanceof MessageEmbed)) {
                     options = {code: 'Markdown'}
                 }
-                context.getProvider().getResponder()
-                    .send({content: response, id: 'queue', message: message, options: options}, 30)
-                return
+                return Promise.resolve({content: response, id: 'queue',
+                    message: message, options: options, removeAfter: 30})
             }
             case 'song': {
                 const embed = createSongMessage(context, context.getProvider().getDJ().getCurrentSong())
-                context.getProvider().getResponder().send({content: embed, id: 'song', message: message})
-                return
+                return Promise.resolve({content: embed, id: 'song', message: message, removeAfter: 30})
+            }
+            default: {
+                throw new CommandExecutionError('Command was executed with incorrect keywords')
             }
         }
     }
