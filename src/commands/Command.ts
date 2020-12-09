@@ -25,8 +25,8 @@ export abstract class Command {
         if (error.emoji) {
             context.getProvider().getResponder().acknowledge(error.emoji, message)
         }
-        if (error.message) {
-            context.getProvider().getResponder().error(error.message, message)
+        if (error.msg) {
+            context.getProvider().getResponder().error(error.msg, message)
         }
     }
 
@@ -36,14 +36,15 @@ export abstract class Command {
     }
 
     public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
+        const argString = JSON.stringify(Array.from(args.entries()))
         this.preExecute(context, message).then(() => {
-            const argString = JSON.stringify(Array.from(args.entries()))
             Logger.d(Command.name, `Executing command ${args.get('keyword')} with args ${argString}`, context)
             return this.execute(context, source, args, message)
         }).then((result) => {
             this.onExecuteSucceeded(context, result, message)
         }).catch((err: CommandExecutionError) => {
-            Logger.w(Command.name, `Execution failed for command ${args.get('keyword')}\nReason: ${err.msg}`, context)
+            Logger.w(Command.name,
+                `Execution failed for command ${args.get('keyword')} with args ${argString}\nReason: ${err.msg}`, context)
             this.onExecutedFailed(context, err, message)
         })
     }
