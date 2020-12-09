@@ -14,7 +14,7 @@ export default class SkipCommand extends VoiceCommand {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
-        return Promise.resolve(context.getProvider().getDJ().skip() ? Acknowledgement.OK : undefined)
+        return Promise.resolve(context.getProvider().getDJ().skip() ? Acknowledgement.OK : Acknowledgement.UNNECESSARY)
     }
 
     botMustAlreadyBeInVoiceChannel(): boolean {

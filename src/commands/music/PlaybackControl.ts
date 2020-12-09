@@ -26,7 +26,7 @@ export default class PlaybackControlCommand extends VoiceCommand {
                 result = context.getProvider().getDJ().stop()
                 break
         }
-        return Promise.resolve(result ? Acknowledgement.OK : undefined)
+        return Promise.resolve(result ? Acknowledgement.OK : Acknowledgement.UNNECESSARY)
     }
 
     botMustAlreadyBeInVoiceChannel(): boolean {

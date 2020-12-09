@@ -99,6 +99,8 @@ function convertAcknowledgementTypeToString(type: Acknowledgement): string {
             return 'no privileges'
         case Acknowledgement.USER_THROTTLED:
             return 'throttled'
+        case Acknowledgement.UNNECESSARY:
+            return 'unnecessary'
     }
 }
 
@@ -114,5 +116,6 @@ export enum Acknowledgement {
     OK,
     NEGATIVE,
     MISSING_PRIVILEGES,
-    USER_THROTTLED
+    USER_THROTTLED,
+    UNNECESSARY
 }
