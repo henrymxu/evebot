@@ -44,7 +44,7 @@ export default class LoggingCommand extends Command {
         const flag = args.get('flag') || 'e'
         context.getConfig().setLogging(textChannel.id, flag)
         Logger.i(LoggingCommand.name, `Successfully set LoggingTextChannel to ${textChannel.name} | ${textChannel.id}`, context)
-        return Promise.resolve(Acknowledgement.OK)
+        return Promise.resolve(Acknowledgement.UPDATED)
     }
 }
 

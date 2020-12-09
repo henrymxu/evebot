@@ -16,7 +16,7 @@ export abstract class Command {
             if (ack.hasOwnProperty('content')) {
                 context.getProvider().getResponder().send(ack as BotMessage)
             } else {
-                context.getProvider().getResponder().acknowledge(ack as Acknowledgement | string, message)
+                context.getProvider().getResponder().acknowledge(ack as Acknowledgement, message)
             }
         })
     }
@@ -50,12 +50,12 @@ export abstract class Command {
     }
 }
 
-export type CommandAck = (Acknowledgement | string | BotMessage) | (Acknowledgement | string | BotMessage)[] | void
+export type CommandAck = (Acknowledgement | BotMessage) | (Acknowledgement | BotMessage)[] | void
 
 export class CommandExecutionError extends Error {
-    readonly emoji?: Acknowledgement | string
+    readonly emoji?: Acknowledgement
     readonly msg?: string
-    constructor(msg?: string, emoji?: Acknowledgement | string) {
+    constructor(msg?: string, emoji?: Acknowledgement) {
         super();
         this.msg = msg
         this.emoji = emoji

@@ -45,12 +45,12 @@ export default class EmojisCommand extends Command {
         const emojis = context.getConfig().getEmojis()
         if (!args.get('ack')) {
             return Promise.resolve({content: createEmojiListEmbed(emojis),
-                message: message, id: 'emojis', options: {code: 'Markdown'}, removeAfter: 30})
+                message: message, id: 'emojis', options: {code: 'Markdown'}, removeAfter: 20})
         }
         if (args.get('ack') && !args.get('emoji') && !args.get('default')) {
             const resolvedEmoji = GuildUtils.parseEmojiFromEmojiID(context, context.getConfig().getEmoji(args.get('ack')))
             return Promise.resolve({content: `Emoji for ${args.get('ack')} is ${resolvedEmoji}`,
-                message: message, id: 'emojis', removeAfter: 15})
+                message: message, id: 'emojis', removeAfter: 20})
         }
         let emoji = !args.get('default') ? args.get('emoji') : GlobalContext.getDefaultConfig().getEmoji(args.get('ack'))
         if (Array.from(emojis.values()).includes(emoji)) {
@@ -58,7 +58,7 @@ export default class EmojisCommand extends Command {
             throw new CommandExecutionError(errMsg)
         }
         context.getConfig().setEmoji(args.get('ack'), emoji)
-        return Promise.resolve(Acknowledgement.OK)
+        return Promise.resolve(Acknowledgement.UPDATED)
     }
 }
 
