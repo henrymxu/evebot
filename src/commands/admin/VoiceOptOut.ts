@@ -8,7 +8,8 @@ export default class VoiceOptionsCommand extends Command {
         name: 'VoiceOptions',
         keywords: ['voiceoptout', 'voiceoptin'],
         group: 'admin',
-        descriptions: ['Opt out of E.V.E voice related features', 'Opt in to E.V.E voice related features'],
+        descriptions: ['Opt out of E.V.E voice related features (commands / clipping / reciting)',
+            'Opt in to E.V.E voice related features (commands / clipping / reciting)'],
         arguments: [],
         examples: ['voiceoptout', 'voiceoptin']
     }
