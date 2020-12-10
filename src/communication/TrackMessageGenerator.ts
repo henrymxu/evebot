@@ -88,12 +88,14 @@ export namespace TrackMessageFactory {
 
     export function createRadioMessage(context: GuildContext, radioConfiguration: RadioConfiguration): string {
         let response = ''
-        const tableHeaders = ['Artist', 'Genre', 'Track', 'Tracks Remaining']
+        const tableHeaders = ['Artist', 'Genre', 'Track', 'Tracks Remaining', 'Tracks Played']
         const source = radioConfiguration.context
         const artists = source.artists ? source.artists.toString() : ' - '
         const genres = source.genres ? source.genres.toString() : ' - '
         const tracks = source.tracks ? source.tracks.toString() : ' - '
-        const tableData = [[artists, genres, tracks, radioConfiguration.recommendedTracks.length.toString()]]
+        const tracksRemaining = radioConfiguration.recommendedTracks.length.toString()
+        const tracksPlayed = radioConfiguration.playedTracks.length.toString()
+        const tableData = [[artists, genres, tracks, tracksRemaining, tracksPlayed]]
         response += TableGenerator.createTable(tableHeaders, tableData)
         const tableHeaders2 = ['Previous Track', 'Current Track', 'Next Track']
 
