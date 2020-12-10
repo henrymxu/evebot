@@ -21,19 +21,14 @@ export abstract class Radio {
 
     request(context: RadioContext, message?: Message): Promise<void> {
         this.radioConfiguration = undefined
-        let setupPromise: Promise<void>
         switch(context.mode) {
             case RadioMode.ARTIST_ONLY:
-                setupPromise = this.startArtistRadio(context, message)
-                break
+                return this.startArtistRadio(context, message)
             case RadioMode.TOP_10:
-                setupPromise = this.startTop10Radio(context, message)
-                break
+                return this.startTop10Radio(context, message)
             case RadioMode.RELATED:
-                setupPromise = this.startRelatedRadio(context, message)
-                break
+                return this.startRelatedRadio(context, message)
         }
-        return setupPromise
     }
 
     isPlaying(): boolean {
