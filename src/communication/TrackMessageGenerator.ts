@@ -107,9 +107,11 @@ export namespace TrackMessageFactory {
         const trackArtists = [previousTrackArtist, radioConfiguration.currentTrack?.artist || '', nextTrackArtist]
         const tableData2 = [trackNames, trackArtists]
         response += TableGenerator.createTable(tableHeaders2, tableData2)
-        const currentSong = context.getProvider().getDJ().getCurrentSong()
-        if (currentSong) {
-            response += `${createTrackProgressBar(currentSong)}`
+        if (context.getProvider().getDJ().getRadio().isPlaying()) {
+            const currentSong = context.getProvider().getDJ().getCurrentSong()
+            if (currentSong) {
+                response += `${createTrackProgressBar(currentSong)}`
+            }
         }
         return response
     }
