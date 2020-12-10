@@ -176,6 +176,23 @@ export class ConfigImplementation implements Config {
         this.save()
     }
 
+    getUserVoiceOptOut(userID: string): boolean {
+        return this.json['voice_opt_out_list'].includes(userID)
+    }
+
+    setUserVoiceOptOut(userID: string, optOut: boolean): void {
+        if (optOut && this.getUserVoiceOptOut(userID) || !optOut && !this.getUserVoiceOptOut(userID)) {
+            return
+        }
+        if (optOut) {
+            this.json['voice_opt_out_list'].push(userID)
+        } else {
+            const index = this.json['voice_opt_out_list'].indexOf(userID)
+            index > -1 ? this.json['voice_opt_out_list'].splice(index, 1) : false
+        }
+        this.save()
+    }
+
     private static modifyEntityPrivilege(config: ConfigImplementation, privilegeName: string, entity: User | Role, isGranting: boolean) {
         let privilege = config.json['privileges'][privilegeName] || createPrivilege()
         let baseKey = entity instanceof User ? 'Users' : 'Roles'

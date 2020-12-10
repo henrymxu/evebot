@@ -66,6 +66,10 @@ export interface Config {
     getEmojis(): Emojis
 
     setEmoji(type: string, emoji: string): void
+
+    getUserVoiceOptOut(userID: string): boolean
+
+    setUserVoiceOptOut(userID: string, optOut: boolean): void
 }
 
 export type Nicknames = Set<string>

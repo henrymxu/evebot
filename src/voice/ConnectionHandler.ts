@@ -45,6 +45,14 @@ export default class VoiceConnectionHandler {
         return this.voiceStreams.get(user.id)
     }
 
+    addVoiceStreamForUser(user: User) {
+        this.startVoiceStreamForUser(user)
+    }
+
+    deleteVoiceStreamForUser(user: User) {
+        this.removeVoiceStreamForUser(user)
+    }
+
     disconnect(): Promise<void> {
         return new Promise((res, rej) => {
             this.context.getVoiceConnection()?.on('disconnect', () => {
@@ -124,6 +132,9 @@ export default class VoiceConnectionHandler {
                 clearTimeout(timeout)
                 this.removedTimeouts.delete(user.id)
             } else if (this.voiceStreams.has(user.id) || user.bot) {
+                return
+            }
+            if (this.context.getConfig().getUserVoiceOptOut(user.id)) {
                 return
             }
             this.startVoiceStreamForUser(user)
