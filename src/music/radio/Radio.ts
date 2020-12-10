@@ -2,12 +2,13 @@ import {Message} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {GlobalContext} from '../../GlobalContext'
 import {ExternalTrackInfo} from '../tracks/ExternalTrack'
+import {Logger} from '../../Logger'
 
 export abstract class Radio {
     protected readonly play: RadioPlay
     protected context: GuildContext
     protected radioConfiguration: RadioConfiguration | undefined
-    protected started: boolean = false
+    protected isLive: boolean = false
 
     protected constructor(context: GuildContext, play: RadioPlay) {
         this.context = context
@@ -36,7 +37,7 @@ export abstract class Radio {
     }
 
     isPlaying(): boolean {
-        return this.started
+        return this.isLive
     }
 
     isQueued(): boolean {
@@ -57,7 +58,10 @@ export abstract class Radio {
         if (!this.radioConfiguration) {
             return
         }
-        this.started = true
+        if (!this.isLive) {
+            this.isLive = true
+            Logger.d(Radio.name, `Starting queued radio`)
+        }
         while(this.radioConfiguration.playedTracks.length > 0 &&
         this.radioConfiguration.playedTracks.indexOf(this.radioConfiguration.recommendedTracks[0]) !== -1) {
             this.radioConfiguration.recommendedTracks.shift()
@@ -74,9 +78,11 @@ export abstract class Radio {
 
     stop(): boolean {
         if (this.radioConfiguration) {
+            Logger.d(Radio.name, `Stopping radio`)
             this.context.getProvider().getAudioPlayer().stop()
             this.radioConfiguration = undefined
         }
+        this.isLive = false
         return this.radioConfiguration !== undefined
     }
 }
