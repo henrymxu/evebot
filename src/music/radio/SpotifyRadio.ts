@@ -21,7 +21,6 @@ export default class SpotifyRadio extends Radio {
                 recommendedTracks: tracks,
                 message: message
             }
-            this.resume()
         })
     }
 
@@ -34,7 +33,6 @@ export default class SpotifyRadio extends Radio {
                 recommendedTracks: tracks,
                 message: message
             }
-            this.resume()
         })
     }
 
@@ -54,7 +52,7 @@ export default class SpotifyRadio extends Radio {
                 recommendedTracks: tracks,
                 message: message
             }
-            this.resume()
+            return
         })
     }
 }

@@ -69,7 +69,11 @@ export namespace TrackMessageFactory {
         if (currentTrackProgress) {
             response += `${currentTrackProgress}\n`
         }
-        response += `# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}`
+        response += `# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}\n`
+        if (context.getProvider().getDJ().getRadio().isQueued()) {
+            const msg = `A radio has been queued to start after all songs have been completed, use ${context.getPrefix()}radio for details`
+            response += msg
+        }
         return response
     }
 
@@ -84,26 +88,30 @@ export namespace TrackMessageFactory {
 
     export function createRadioMessage(context: GuildContext, radioConfiguration: RadioConfiguration): string {
         let response = ''
-        const tableHeaders = ['Artist', 'Genre', 'Track', 'Tracks Remaining']
+        const tableHeaders = ['Artist', 'Genre', 'Track', 'Tracks Remaining', 'Tracks Played']
         const source = radioConfiguration.context
         const artists = source.artists ? source.artists.toString() : ' - '
         const genres = source.genres ? source.genres.toString() : ' - '
         const tracks = source.tracks ? source.tracks.toString() : ' - '
-        const tableData = [[artists, genres, tracks, radioConfiguration.recommendedTracks.length.toString()]]
+        const tracksRemaining = radioConfiguration.recommendedTracks.length.toString()
+        const tracksPlayed = radioConfiguration.playedTracks.length.toString()
+        const tableData = [[artists, genres, tracks, tracksRemaining, tracksPlayed]]
         response += TableGenerator.createTable(tableHeaders, tableData)
         const tableHeaders2 = ['Previous Track', 'Current Track', 'Next Track']
 
         const previousTrackName = radioConfiguration.playedTracks[0]?.name || ''
         const nextTrackName = radioConfiguration.recommendedTracks[0]?.name || ''
-        const trackNames = [previousTrackName, radioConfiguration.currentTrack!.name, nextTrackName]
+        const trackNames = [previousTrackName, radioConfiguration.currentTrack?.name || '', nextTrackName]
         const previousTrackArtist = radioConfiguration.playedTracks[0]?.artist || ''
         const nextTrackArtist = radioConfiguration.recommendedTracks[0]?.artist || ''
-        const trackArtists = [previousTrackArtist, radioConfiguration.currentTrack!.artist, nextTrackArtist]
+        const trackArtists = [previousTrackArtist, radioConfiguration.currentTrack?.artist || '', nextTrackArtist]
         const tableData2 = [trackNames, trackArtists]
         response += TableGenerator.createTable(tableHeaders2, tableData2)
-        const currentSong = context.getProvider().getDJ().getCurrentSong()
-        if (currentSong) {
-            response += `${createTrackProgressBar(currentSong)}`
+        if (context.getProvider().getDJ().getRadio().isPlaying()) {
+            const currentSong = context.getProvider().getDJ().getCurrentSong()
+            if (currentSong) {
+                response += `${createTrackProgressBar(currentSong)}`
+            }
         }
         return response
     }

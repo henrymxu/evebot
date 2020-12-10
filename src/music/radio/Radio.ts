@@ -2,19 +2,25 @@ import {Message} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {GlobalContext} from '../../GlobalContext'
 import {ExternalTrackInfo} from '../tracks/ExternalTrack'
+import {Logger} from '../../Logger'
 
 export abstract class Radio {
     protected readonly play: RadioPlay
     protected context: GuildContext
     protected radioConfiguration: RadioConfiguration | undefined
+    protected isLive: boolean = false
 
     protected constructor(context: GuildContext, play: RadioPlay) {
         this.context = context
         this.play = play
     }
 
-    start(context: RadioContext, message?: Message): Promise<void> {
-        this.stop()
+    protected abstract startTop10Radio(context: RadioContext, message?: Message): Promise<void>
+    protected abstract startArtistRadio(context: RadioContext, message?: Message): Promise<void>
+    protected abstract startRelatedRadio(context: RadioContext, message?: Message): Promise<void>
+
+    request(context: RadioContext, message?: Message): Promise<void> {
+        this.radioConfiguration = undefined
         switch(context.mode) {
             case RadioMode.ARTIST_ONLY:
                 return this.startArtistRadio(context, message)
@@ -25,11 +31,11 @@ export abstract class Radio {
         }
     }
 
-    protected abstract startTop10Radio(context: RadioContext, message?: Message): Promise<void>
-    protected abstract startArtistRadio(context: RadioContext, message?: Message): Promise<void>
-    protected abstract startRelatedRadio(context: RadioContext, message?: Message): Promise<void>
-
     isPlaying(): boolean {
+        return this.isLive
+    }
+
+    isQueued(): boolean {
         return this.radioConfiguration !== undefined
     }
 
@@ -47,6 +53,10 @@ export abstract class Radio {
         if (!this.radioConfiguration) {
             return
         }
+        if (!this.isLive) {
+            this.isLive = true
+            Logger.d(Radio.name, `Starting queued radio`)
+        }
         while(this.radioConfiguration.playedTracks.length > 0 &&
         this.radioConfiguration.playedTracks.indexOf(this.radioConfiguration.recommendedTracks[0]) !== -1) {
             this.radioConfiguration.recommendedTracks.shift()
@@ -63,9 +73,11 @@ export abstract class Radio {
 
     stop(): boolean {
         if (this.radioConfiguration) {
-            this.context.getProvider().getAudioPlayer().stop()
+            Logger.d(Radio.name, `Stopping radio`)
             this.radioConfiguration = undefined
+            this.context.getProvider().getAudioPlayer().stop()
         }
+        this.isLive = false
         return this.radioConfiguration !== undefined
     }
 }
