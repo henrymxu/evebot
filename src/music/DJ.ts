@@ -4,7 +4,7 @@ import {Message} from 'discord.js'
 import {Track} from './tracks/Track'
 import {TrackMessageFactory} from '../communication/TrackMessageGenerator'
 import SpotifyRadio from './radio/SpotifyRadio'
-import {Radio} from './radio/Radio'
+import {Radio, RadioContext} from './radio/Radio'
 import {Spotify} from './sources/Spotify/Spotify'
 import {Album} from './tracks/Album'
 import {Logger} from '../Logger'
@@ -41,6 +41,14 @@ export default class DJ {
             }
         }
         return this.executePlay(playFunc, query, message)
+    }
+
+    requestRadio(radioContext: RadioContext, message?: Message): Promise<void> {
+        return this.radio.request(radioContext, message).then(() => {
+            if (!this.isPlaying()) {
+                this.radio.resume()
+            }
+        })
     }
 
     private executePlay(playFunc: () => Promise<void>, query: string, message?: Message): Promise<void> {
@@ -102,7 +110,7 @@ export default class DJ {
     }
 
     stop() {
-        return !this.radio.stop || this.context.getProvider().getAudioPlayer().stop()
+        return !this.radio.stop() || this.context.getProvider().getAudioPlayer().stop()
     }
 
     private playTracks(tracks: Track[], requesterId: string, message?: Message) {
@@ -149,6 +157,9 @@ export default class DJ {
 
         if (!forceStop && this.radio.isPlaying()) {
             this.radio.next()
+            this.radio.resume()
+        } else if (this.getQueue().length == 0) {
+            // If there is no more songs in the queue, and radio was requested, start it
             this.radio.resume()
         }
     }

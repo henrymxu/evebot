@@ -69,7 +69,11 @@ export namespace TrackMessageFactory {
         if (currentTrackProgress) {
             response += `${currentTrackProgress}\n`
         }
-        response += `# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}`
+        response += `# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}\n`
+        if (context.getProvider().getDJ().getRadio().isQueued()) {
+            const msg = `A radio has been queued to start after all songs have been completed, use ${context.getPrefix()}radio for details`
+            response += msg
+        }
         return response
     }
 

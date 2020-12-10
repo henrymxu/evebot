@@ -7,29 +7,39 @@ export abstract class Radio {
     protected readonly play: RadioPlay
     protected context: GuildContext
     protected radioConfiguration: RadioConfiguration | undefined
+    protected started: boolean = false
 
     protected constructor(context: GuildContext, play: RadioPlay) {
         this.context = context
         this.play = play
     }
 
-    start(context: RadioContext, message?: Message): Promise<void> {
-        this.stop()
-        switch(context.mode) {
-            case RadioMode.ARTIST_ONLY:
-                return this.startArtistRadio(context, message)
-            case RadioMode.TOP_10:
-                return this.startTop10Radio(context, message)
-            case RadioMode.RELATED:
-                return this.startRelatedRadio(context, message)
-        }
-    }
-
     protected abstract startTop10Radio(context: RadioContext, message?: Message): Promise<void>
     protected abstract startArtistRadio(context: RadioContext, message?: Message): Promise<void>
     protected abstract startRelatedRadio(context: RadioContext, message?: Message): Promise<void>
 
+    request(context: RadioContext, message?: Message): Promise<void> {
+        this.radioConfiguration = undefined
+        let setupPromise: Promise<void>
+        switch(context.mode) {
+            case RadioMode.ARTIST_ONLY:
+                setupPromise = this.startArtistRadio(context, message)
+                break
+            case RadioMode.TOP_10:
+                setupPromise = this.startTop10Radio(context, message)
+                break
+            case RadioMode.RELATED:
+                setupPromise = this.startRelatedRadio(context, message)
+                break
+        }
+        return setupPromise
+    }
+
     isPlaying(): boolean {
+        return this.started
+    }
+
+    isQueued(): boolean {
         return this.radioConfiguration !== undefined
     }
 
@@ -47,6 +57,7 @@ export abstract class Radio {
         if (!this.radioConfiguration) {
             return
         }
+        this.started = true
         while(this.radioConfiguration.playedTracks.length > 0 &&
         this.radioConfiguration.playedTracks.indexOf(this.radioConfiguration.recommendedTracks[0]) !== -1) {
             this.radioConfiguration.recommendedTracks.shift()

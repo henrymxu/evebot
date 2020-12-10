@@ -4,6 +4,7 @@ import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandAck, CommandOptions} from '../Command'
 import {QueryMode} from '../../music/DJ'
 import {Acknowledgement} from '../../communication/Responder'
+import {RadioMode} from '../../music/radio/Radio'
 
 export default class PlayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
@@ -17,6 +18,13 @@ export default class PlayCommand extends VoiceCommand {
                 description: 'Song: Name or url of song | Album: Spotify url',
                 required: true,
                 type: ArgumentType.STRING
+            },
+            {
+                key: 'radio',
+                flag: 'r',
+                description: 'Request a radio to start after current queue is completed is using the track as a seed!',
+                required: false,
+                type: ArgumentType.FLAG
             }
         ],
         examples: ['play Blank Space']
@@ -29,6 +37,15 @@ export default class PlayCommand extends VoiceCommand {
         }
         context.getProvider().getResponder().startTyping(message)
         return context.getProvider().getDJ().request(mode, args.get('query'), source.id, message).then(() => {
+            if (args.get('radio') && args.get('keyword') === 'play') {
+                context.getProvider().getDJ().requestRadio({
+                    artists: [],
+                    genres: [],
+                    tracks: [args.get('query')],
+                    length: 10,
+                    mode: RadioMode.RELATED
+                }, message)
+            }
             return Acknowledgement.MUSIC
         }).finally(() => {
             context.getProvider().getResponder().stopTyping(message)

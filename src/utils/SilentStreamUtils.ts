@@ -1,4 +1,4 @@
-import {VoiceConnection} from 'discord.js';
+import {Speaking, VoiceConnection} from 'discord.js';
 import {Readable} from 'stream';
 
 export namespace SilentStreamUtils {
@@ -11,6 +11,7 @@ export namespace SilentStreamUtils {
         connection.play(SilentStreamUtils.createSilenceStream(), { type: 'opus' });
         setTimeout(() => {
             connection.dispatcher?.destroy()
+            connection.setSpeaking(Speaking.FLAGS.SOUNDSHARE)
         }, 250)
     }
 
