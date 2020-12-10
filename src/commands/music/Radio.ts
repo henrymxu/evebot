@@ -72,7 +72,7 @@ export default class RadioCommand extends VoiceCommand {
             }
         }
         if (context.getProvider().getDJ().getRadio().isPlaying()) {
-            const errMsg = `Cannot start a radio while there is a radio playing! Use ${context.getPrefix()}stop to stop the current radio and try again!`
+            const errMsg = `Cannot start a radio while there is a radio playing!\nUse ${context.getPrefix()}stop to stop the current radio and try again!`
             throw new CommandExecutionError(errMsg)
         }
         const shouldGenerateSeed = args.get('artist') && args.get('genre') ||
