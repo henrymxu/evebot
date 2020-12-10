@@ -21,13 +21,13 @@ export default class PlayCommand extends VoiceCommand {
             },
             {
                 key: 'radio',
-                flag: 'r',
+                flag: 'radio',
                 description: 'Request a radio to start after current queue is completed is using the track as a seed!',
                 required: false,
                 type: ArgumentType.FLAG
             }
         ],
-        examples: ['play Blank Space']
+        examples: ['play Blank Space', 'play Wildest Dreams -radio']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {

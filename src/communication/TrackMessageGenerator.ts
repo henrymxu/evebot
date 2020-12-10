@@ -101,10 +101,10 @@ export namespace TrackMessageFactory {
 
         const previousTrackName = radioConfiguration.playedTracks[0]?.name || ''
         const nextTrackName = radioConfiguration.recommendedTracks[0]?.name || ''
-        const trackNames = [previousTrackName, radioConfiguration.currentTrack!.name, nextTrackName]
+        const trackNames = [previousTrackName, radioConfiguration.currentTrack?.name || '', nextTrackName]
         const previousTrackArtist = radioConfiguration.playedTracks[0]?.artist || ''
         const nextTrackArtist = radioConfiguration.recommendedTracks[0]?.artist || ''
-        const trackArtists = [previousTrackArtist, radioConfiguration.currentTrack!.artist, nextTrackArtist]
+        const trackArtists = [previousTrackArtist, radioConfiguration.currentTrack?.artist || '', nextTrackArtist]
         const tableData2 = [trackNames, trackArtists]
         response += TableGenerator.createTable(tableHeaders2, tableData2)
         const currentSong = context.getProvider().getDJ().getCurrentSong()
