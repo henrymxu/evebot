@@ -2,6 +2,7 @@ import {Transform, TransformCallback} from 'stream'
 
 const MAX_VOICE_COMMAND_LENGTH = 7500
 const TIME_AFTER_SILENCE = 1000
+const NUMBER_SILENCE_PACKETS = 5
 export default class SilenceDetectionStream extends Transform {
     private talkedOnce = false
     private continuousSilenceCounter = 0
@@ -24,7 +25,7 @@ export default class SilenceDetectionStream extends Transform {
             this.talkedOnce = true
             this.clearSilenceTimeout()
         } else {
-            if (this.continuousSilenceCounter > 5 && this.talkedOnce) {
+            if (this.continuousSilenceCounter > NUMBER_SILENCE_PACKETS && this.talkedOnce) {
                 this.clearSilenceTimeout()
                 this.silenceTimeout = setTimeout(() => {
                     clearTimeout(this.maxLengthTimeout)
