@@ -63,8 +63,8 @@ export default abstract class VoiceCommand extends Command {
     protected async joinVoiceChannel(context: GuildContext, message?: Message): Promise<void> {
         try {
             await context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(message?.member?.voice?.channel)
-        } catch {
-            throw new CommandExecutionError('Error joining voice channel')
+        } catch (e) {
+            throw new CommandExecutionError(`Error joining voice channel: ${e}`)
         }
     }
 }
