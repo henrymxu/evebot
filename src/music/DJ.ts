@@ -54,6 +54,7 @@ export default class DJ {
     private executePlay(playFunc: () => Promise<void>, query: string, message?: Message): Promise<void> {
         return playFunc().catch((err: Error) => {
             Logger.e(DJ.name, `Error queuing ${query}, reason: ${err}`, this.context)
+            throw err
         })
     }
 

@@ -11,7 +11,7 @@ export namespace Communicator {
         if (message instanceof MessageEmbed) {
             opts = undefined
         }
-        return textChannel.send(message, opts)
+        return opts ? textChannel.send(message, opts) : textChannel.send(message)
     }
 
     export function startTyping(textChannel?: TextChannel) {

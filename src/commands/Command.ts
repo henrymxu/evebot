@@ -56,7 +56,7 @@ export class CommandExecutionError extends Error {
     readonly emoji?: Acknowledgement
     readonly msg?: string
     constructor(msg?: string, emoji?: Acknowledgement) {
-        super();
+        super(msg);
         this.msg = msg
         this.emoji = emoji
     }

@@ -1,7 +1,7 @@
 import VoiceCommand from '../../voice/VoiceCommand'
 import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
-import {ArgumentType, CommandAck, CommandOptions} from '../Command'
+import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {QueryMode} from '../../music/DJ'
 import {Acknowledgement} from '../../communication/Responder'
 import {RadioMode} from '../../music/radio/Radio'
@@ -47,6 +47,8 @@ export default class PlayCommand extends VoiceCommand {
                 }, message)
             }
             return Acknowledgement.MUSIC
+        }).catch((err: Error) => {
+            throw new CommandExecutionError(err.message, Acknowledgement.NEGATIVE)
         }).finally(() => {
             context.getProvider().getResponder().stopTyping(message)
         })
