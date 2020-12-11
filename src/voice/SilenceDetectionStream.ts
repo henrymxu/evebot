@@ -1,6 +1,5 @@
 import {Transform, TransformCallback} from 'stream'
 
-const MAX_VOICE_COMMAND_LENGTH = 7500
 const TIME_AFTER_SILENCE = 1000
 const NUMBER_SILENCE_PACKETS = 5
 export default class SilenceDetectionStream extends Transform {
@@ -10,7 +9,7 @@ export default class SilenceDetectionStream extends Transform {
     private silenceTimeout: NodeJS.Timeout | undefined
     private readonly maxLengthTimeout: NodeJS.Timeout
 
-    constructor(callback: ()=>void, maxVoiceCommandLength: number = MAX_VOICE_COMMAND_LENGTH) {
+    constructor(callback: ()=>void, maxVoiceCommandLength: number) {
         super();
         this.isSilentNowCallback = callback
         this.maxLengthTimeout = setTimeout(() => {

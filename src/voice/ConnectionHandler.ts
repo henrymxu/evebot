@@ -12,6 +12,7 @@ import SilenceDetectionStream from './SilenceDetectionStream'
 
 const USER_REJOIN_THRESHOLD = 5000
 const NO_USER_TIMEOUT = 60 * 1000
+const MAX_VOICE_COMMAND_LENGTH = 7500
 
 const TAG = 'ConnectionHandler'
 
@@ -211,7 +212,7 @@ export default class VoiceConnectionHandler {
                 recognitionStream.destroy()
                 this.context.getProvider().getInterruptService().playHotwordAck(1)
                 this.isListeningToCommand.delete(user.id)
-            })
+            }, MAX_VOICE_COMMAND_LENGTH)
             recorderStream.pipe(recognitionStream)
             speechRecognizer.recognizeTextFromSpeech(recognitionStream).then((text) => {
                 Logger.i('HotwordDetector', `${user.tag} said ${text}`, this.context)
