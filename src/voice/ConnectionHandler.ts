@@ -2,7 +2,6 @@ import RecorderStream from './RecorderStream'
 import {User, VoiceChannel, VoiceConnection, VoiceState} from 'discord.js'
 import {GuildContext} from '../guild/Context'
 import {SilentStreamUtils} from '../utils/SilentStreamUtils'
-import {PassThrough} from 'stream'
 import {CommandDispatcher} from '../commands/Dispatcher'
 import {GlobalContext} from '../GlobalContext'
 import {Logger} from '../Logger'
@@ -120,7 +119,7 @@ export default class VoiceConnectionHandler {
         if (!connection) {
             return
         }
-        if (!this.context.getProvider().getDJ().isPlaying()) { // Happens if bot is moved around
+        if (!this.context.getProvider().getDJ().isPlaying()) { // Don't play silent stream if bot is moved around
             SilentStreamUtils.playSilentAudioStream(connection)
         }
         connection.on('speaking', (user, speaking) => {
@@ -173,7 +172,7 @@ export default class VoiceConnectionHandler {
             return
         }
         const timeout = setTimeout(() => {
-            Logger.i(VoiceConnectionHandler.name, `Removing ${user.tag} [${user.id}`, this.context)
+            Logger.i(VoiceConnectionHandler.name, `Removing ${user.tag} [${user.id}]`, this.context)
             this.voiceStreams.delete(user.id)
             this.removedTimeouts.delete(user.id)
         }, USER_REJOIN_THRESHOLD)
@@ -189,13 +188,10 @@ export default class VoiceConnectionHandler {
         if (!connection) {
             return
         }
-        let audio = connection.receiver.createStream(user, {
-            mode: 'pcm',
-            end: 'manual'
-        })
+        let audio = connection.receiver.createStream(user, { mode: 'pcm', end: 'manual' })
         const previousStream = this.voiceStreams.get(user.id)
         const recorderStream = previousStream || new RecorderStream(true)
-        audio.pipe(recorderStream, {end: false})
+        audio.pipe(recorderStream, { end: false })
         this.voiceStreams.set(user.id, recorderStream)
         const speechRecognizer = this.context.getVoiceDependencyProvider().getSpeechRecognizer()
         const hotwordEngine = this.context.getVoiceDependencyProvider().getHotwordEngine()
