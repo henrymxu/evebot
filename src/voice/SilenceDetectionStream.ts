@@ -9,7 +9,7 @@ export default class SilenceDetectionStream extends Transform {
     private silenceTimeout: NodeJS.Timeout | undefined
     private readonly maxLengthTimeout: NodeJS.Timeout
 
-    constructor(callback: ()=>void, maxVoiceCommandLength: number) {
+    constructor(callback: () => void, maxVoiceCommandLength: number) {
         super();
         this.isSilentNowCallback = callback
         this.maxLengthTimeout = setTimeout(() => {
