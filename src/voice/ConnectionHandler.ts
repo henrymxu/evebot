@@ -9,9 +9,9 @@ import {Logger} from '../Logger'
 import MergedStream from './MergedStream'
 import {CachedStream} from './CachedStream'
 import SilenceInsertionHandler from './SilenceInsertionHandler'
+import SilenceDetectionStream from './SilenceDetectionStream'
 
 const USER_REJOIN_THRESHOLD = 5000
-const VOICE_COMMAND_LENGTH = 3000
 const NO_USER_TIMEOUT = 60 * 1000
 
 const TAG = 'ConnectionHandler'
@@ -210,18 +210,17 @@ export default class VoiceConnectionHandler {
             }
             this.isListeningToCommand.set(user.id, true)
             this.context.getProvider().getInterruptService().playHotwordAck(0)
-            const recognitionStream = new PassThrough()
+            const recognitionStream = new SilenceDetectionStream(() => {
+                recognitionStream.end()
+                recognitionStream.destroy()
+                this.context.getProvider().getInterruptService().playHotwordAck(1)
+                this.isListeningToCommand.delete(user.id)
+            })
             recorderStream.pipe(recognitionStream)
             speechRecognizer.recognizeTextFromSpeech(recognitionStream).then((text) => {
                 Logger.i('HotwordDetector', `${user.tag} said ${text}`, this.context)
                 CommandDispatcher.handleExplicitCommand(this.context, user, text)
             })
-            setTimeout(() => {
-                recognitionStream.end()
-                recognitionStream.destroy()
-                this.context.getProvider().getInterruptService().playHotwordAck(1)
-                this.isListeningToCommand.delete(user.id)
-            }, VOICE_COMMAND_LENGTH)
         }))
     }
 }

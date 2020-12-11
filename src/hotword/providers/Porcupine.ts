@@ -10,7 +10,7 @@ import {AudioUtils} from '../../utils/AudioUtils'
 
 export default class Porcupine extends HotwordEngine {
     protected createDetector(userID: string, input: Transform, callback: (trigger: string) => void): any {
-        let engineInstance = new InternalPorcupine([ALEXA, OK_GOOGLE, HEY_SIRI], [0.4, 0.4, 0.4])
+        let engineInstance = new InternalPorcupine([ALEXA, OK_GOOGLE, HEY_SIRI], [0.5, 0.5, 0.5])
         input.pipe(AudioUtils.createStereoToMonoTransformStream()).on('data', (chunk) => {
             let result = engineInstance.processAudio(chunk,48000)
             if (result > -1) { callback(this.getHotwords()[result]) }
