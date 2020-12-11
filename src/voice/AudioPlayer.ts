@@ -5,6 +5,8 @@ import {GuildContext} from '../guild/Context'
 import {Track} from '../music/tracks/Track'
 import {Logger} from '../Logger'
 
+const HIGH_WATER_MARK = 6
+
 export default class AudioPlayer {
     private readonly context: GuildContext
     private interruptQueue: PriorityQueue<InterruptItem>
@@ -115,9 +117,11 @@ export default class AudioPlayer {
         const interrupt: InterruptItem = this.interruptQueue.peek()
         this.currentInterrupt = interrupt
         this.getConnection()?.dispatcher?.destroy()
-        this.getConnection()?.play(
-            interrupt.stream, {type: interrupt.audioType as StreamType}
-        ).on('start', () => {
+        this.getConnection()?.play(interrupt.stream, {
+            type: interrupt.audioType as StreamType,
+            highWaterMark: HIGH_WATER_MARK ,
+            volume: this.getScaledVolume()
+        }).on('start', () => {
             this.state = AudioPlayerState.INTERRUPTING
         }).on('finish', () => {
             this.interruptQueue.deq()
@@ -164,8 +168,9 @@ export default class AudioPlayer {
         // Stream should not be undefined
         this.getConnection()?.play(track.getStream()!, {
             type: 'opus',
-            highWaterMark: 48,
-            volume: this.getScaledVolume()
+            highWaterMark: HIGH_WATER_MARK,
+            volume: this.getScaledVolume(),
+            plp: 5,
         }).on('start', () => {
             this.state = AudioPlayerState.PLAYING
             track.setPlaying()
