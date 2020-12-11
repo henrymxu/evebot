@@ -76,6 +76,7 @@ export abstract class Radio {
             Logger.d(Radio.name, `Stopping radio`)
             this.radioConfiguration = undefined
             this.context.getProvider().getAudioPlayer().stop()
+            return true
         } else if (this.radioConfiguration) {
             Logger.d(Radio.name, `Clearing queued radio`)
             this.radioConfiguration = undefined
