@@ -12,6 +12,7 @@ export default class AudioPlayer {
     private interruptQueue: PriorityQueue<InterruptItem>
     private currentInterrupt: InterruptItem | undefined
     private completedInterruptCallbacks: (()=>any)[]
+    private completedTracks: Track[]
     private trackQueue: Track[]
     private state: AudioPlayerState
     private volume: number
@@ -29,6 +30,7 @@ export default class AudioPlayer {
         this.currentInterrupt = undefined
         this.completedInterruptCallbacks = []
 
+        this.completedTracks = []
         this.trackQueue = []
 
         this.state = AudioPlayerState.IDLE
@@ -49,6 +51,10 @@ export default class AudioPlayer {
 
     getQueue(): Track[] {
         return this.trackQueue
+    }
+
+    getCompletedTracks(): Track[] {
+        return this.completedTracks
     }
 
     pause(): boolean {
@@ -195,6 +201,7 @@ export default class AudioPlayer {
             this.getConnection()?.dispatcher?.destroy()
             track.setFinished()
             this.context.getProvider().getDJ().onTrackCompleted(track, forceStop)
+            this.completedTracks.push(track)
         }
     }
 

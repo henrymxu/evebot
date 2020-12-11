@@ -15,7 +15,6 @@ export default class RadioCommand extends VoiceCommand {
         arguments: [
             {
                 key: 'artist',
-                flag: 'a',
                 description: 'Artist name (Radio will use this to determine what artists to choose from)',
                 required: false,
                 type: ArgumentType.STRING
@@ -58,15 +57,17 @@ export default class RadioCommand extends VoiceCommand {
                 validate: (context: GuildContext, arg: any) => parseInt(arg) > 0 && parseInt(arg) <= 100
             }
         ],
-        examples: ['radio -a Taylor Swift -t Closer', 'radio -g pop', 'radio -a Taylor Swift -m']
+        examples: ['radio Taylor Swift -t Closer', 'radio -g pop', 'radio Taylor Swift -m']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         if (!args.get('artist') && !args.get('genre') && !args.get('track')) {
             const radioConfiguration = context.getProvider().getDJ().getRadio().getRadioConfiguration()
             if (radioConfiguration) {
-                return Promise.resolve({content: TrackMessageFactory.createRadioMessage(context, radioConfiguration),
-                        message: message, options: {code: 'Markdown'}, removeAfter: 30})
+                return Promise.resolve({
+                    content: TrackMessageFactory.createRadioMessage(context, radioConfiguration),
+                    message: message, options: {code: 'Markdown'}, removeAfter: 30
+                })
             } else {
                 throw new CommandExecutionError(`There is no radio playing! Use ${context.getPrefix()}radio command to start one!`)
             }
@@ -75,15 +76,16 @@ export default class RadioCommand extends VoiceCommand {
             const errMsg = `Cannot start a radio while there is a radio playing!\nUse ${context.getPrefix()}stop to stop the current radio and try again!`
             throw new CommandExecutionError(errMsg)
         }
-        const shouldGenerateSeed = args.get('artist') && args.get('genre') ||
-            args.get('artist') && args.get('track') ||
-            args.get('genre') && args.get('track')
-        let mode: RadioMode = RadioMode.RELATED
+        const onlyArtist = args.get('artist') && !args.get('genre') && !args.get('genre')
+        let mode: RadioMode = onlyArtist ? RadioMode.TOP_10 : RadioMode.RELATED
         if (args.get('masters')) {
             mode = RadioMode.ARTIST_ONLY
         } else if (args.get('popular')) {
             mode = RadioMode.TOP_10
         }
+        const shouldGenerateSeed = args.get('artist') && args.get('genre') ||
+            args.get('artist') && args.get('track') ||
+            args.get('genre') && args.get('track')
         mode = shouldGenerateSeed ? RadioMode.RELATED : mode
         if ((mode == RadioMode.TOP_10 || mode == RadioMode.ARTIST_ONLY) && !args.get('artist')) {
             throw new CommandExecutionError(`Must provide an artist for this mode! Provide one using the -a flag!`)
