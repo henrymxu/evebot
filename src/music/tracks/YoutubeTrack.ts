@@ -46,7 +46,11 @@ export default class YoutubeTrack extends Track {
         const sGen = context.getVoiceDependencyProvider().getSpeechGenerator()
         const announceResult = sGen ? sGen.asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
             : Promise.resolve(undefined)
-        const songStream = ytdl(this.youtubeInfo.url, {filter: 'audioonly', opusEncoded: true})
+        const songStream = ytdl(this.youtubeInfo.url, {
+            filter: 'audioonly',
+            opusEncoded: true,
+            highWaterMark: (1 << 25)
+        })
         return Promise.all([announceResult, songStream]).then((streams: (Readable | SpeechGeneratorResult | undefined)[]) => {
             const announceStream = streams[0] ? (streams[0] as SpeechGeneratorResult).stream : undefined
             this.stream = announceStream ?

@@ -72,13 +72,15 @@ export abstract class Radio {
     }
 
     stop(): boolean {
-        if (this.radioConfiguration) {
+        if (this.radioConfiguration && this.isLive) {
             Logger.d(Radio.name, `Stopping radio`)
             this.radioConfiguration = undefined
             this.context.getProvider().getAudioPlayer().stop()
+        } else if (this.radioConfiguration) {
+            Logger.d(Radio.name, `Clearing queued radio`)
+            this.radioConfiguration = undefined
         }
-        this.isLive = false
-        return this.radioConfiguration !== undefined
+        return false
     }
 }
 

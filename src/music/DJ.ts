@@ -110,7 +110,7 @@ export default class DJ {
     }
 
     stop() {
-        return !this.radio.stop() || this.context.getProvider().getAudioPlayer().stop()
+        return this.radio.stop() || this.context.getProvider().getAudioPlayer().stop()
     }
 
     private playTracks(tracks: Track[], requesterId: string, message?: Message) {
