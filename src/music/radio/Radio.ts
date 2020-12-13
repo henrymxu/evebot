@@ -64,6 +64,8 @@ export abstract class Radio {
         const nextSongToPlay = this.radioConfiguration.recommendedTracks.shift()
         if (!nextSongToPlay) {
             // TODO retrieve more songs?
+            Logger.d(Radio.name, 'No more songs found')
+            this.stop()
             return
         }
         this.radioConfiguration.recommendedTracks.push()
