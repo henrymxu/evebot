@@ -77,6 +77,7 @@ export abstract class Radio {
         if (this.radioConfiguration && this.isLive) {
             Logger.d(Radio.name, `Stopping radio`)
             this.radioConfiguration = undefined
+            this.isLive = false
             this.context.getProvider().getAudioPlayer().stop()
             return true
         } else if (this.radioConfiguration) {
