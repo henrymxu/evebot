@@ -54,7 +54,8 @@ export namespace CommandParser {
             if (value) { // If a value was provided, validate it
                 parsedValue = parseType(context, value, argument.type)
                 if (!parsedValue) {
-                    invalidArgs.set(key, new Error(`Invalid type provided for ${key}: ${value}`))
+                    const msg = new Error(`Invalid value provided for ${key}: ${value}`)
+                    invalidArgs.set(key, msg)
                     continue
                 }
                 if (argument.validate && !argument.validate(context, parsedValue)) {
@@ -95,7 +96,13 @@ function parseType(context: GuildContext, input: string, type: ArgumentType): an
     switch(type) {
         case ArgumentType.INTEGER: return parseInteger(input)
         case ArgumentType.NUMBER: return parseNumber(input)
-        case ArgumentType.USER: return GuildUtils.parseUserFromString(context, input)
+        case ArgumentType.USER: {
+            const user = GuildUtils.parseUserFromString(context, input)
+            if (!user) {
+                Logger.w(TAG, `Could not find valid user from input: ${input}`, context)
+            }
+            return
+        }
         default: return input
     }
 }

@@ -66,7 +66,7 @@ function handleGuildCommand(context: GuildContext, commandString: string, source
     }
     const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
     if (result.error) {
-        Logger.w(TAG, `Could not parse arguments for ${commandString}, reason ${result.error}`, context)
+        Logger.w(TAG, `Could not parse arguments for \"${commandString}\" from ${source.tag}, reason: ${result.error}`, context)
         context.getProvider().getResponder().acknowledge(Acknowledgement.NEGATIVE, message)
         return
     }
