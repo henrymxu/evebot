@@ -230,7 +230,7 @@ export class ConfigImplementation implements Config {
     }
 
     private static getValuesOfUniqueKeyAsSet(config: ConfigImplementation, entry: string, value: string): Set<string> {
-        let values: string[] = Object.values(config.json[entry]).filter(val => val === value) as string[]
+        let values: string[] = Object.entries(config.json[entry]).filter(val => val[1] === value.toLowerCase()).map(val => val[0]) as string[]
         return new Set(values || [])
     }
 

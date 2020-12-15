@@ -77,13 +77,15 @@ function createGroupCommandTable(commands: Map<string, Command>): string {
 }
 
 function createSingleCommandHelpMessage(context: GuildContext, keyword: string, command: Command): string {
+    keyword = context.getConfig().getCommandNameFromAlias(keyword) || keyword
     let description = `${command.options.name}\n=========\n`
     const descriptionIndex = command.options.keywords.indexOf(keyword)
     description += `Description: ${command.options.descriptions[descriptionIndex]}\n`
     description += `Group: ${command.options.group}\n`
     const aliases = [...context.getConfig().getAliases(command.options.name)]
     const aliasesString = aliases.length > 0 ? aliases.reduce((result, alias) => `${result}, ${alias}`) : ''
-    description += `Keyword: <${keyword}${aliasesString}>\n`
+    description += `Keyword: <${keyword}>\n`
+    description = aliasesString ? description + `Aliases: <${aliases}>\n` : description
     if (command.options.arguments.length > 0) {
         const tableData: string[][] = []
         const tableHeaders = ['Argument', 'Description', 'Flag', 'Required', 'Type', 'Default']
