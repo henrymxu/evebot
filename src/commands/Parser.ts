@@ -101,7 +101,7 @@ function parseType(context: GuildContext, input: string, type: ArgumentType): an
             if (!user) {
                 Logger.w(TAG, `Could not find valid user from input: ${input}`, context)
             }
-            return
+            return user
         }
         default: return input
     }
