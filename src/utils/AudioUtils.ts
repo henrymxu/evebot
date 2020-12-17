@@ -68,6 +68,14 @@ export namespace AudioUtils {
         return opusEncoder
     }
 
+    export function createSilenceStream(): Readable {
+        const silenceReadable = new Readable()
+        silenceReadable._read = function(size) {
+            this.push(Buffer.from([0xf8, 0xff, 0xfe]))
+        }
+        return silenceReadable
+    }
+
     export function writeStreamToWavFile(audioStream: Readable, outputPath: string) {
         const wavWriter = new FileWriter(`${outputPath}`, {
             'channels': 2,

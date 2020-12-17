@@ -4,14 +4,14 @@ import VoiceCommand from '../../voice/VoiceCommand'
 import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {MessageGenerator} from '../../communication/MessageGenerator'
-import {CachedStream} from '../../voice/CachedStream'
+import {CachingStream} from '../../voice/CachingStream'
 import {Acknowledgement} from '../../communication/Responder'
 
 export default class ClipCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Clip',
         keywords: ['clip'],
-        group: 'voice',
+        group: 'surveillance',
         descriptions: ['Create a clip of what was just said!  If no user is provided, the whole channel is clipped.'],
         arguments: [
             {
@@ -35,14 +35,13 @@ export default class ClipCommand extends VoiceCommand {
                 description: 'Title of clip',
                 required: false,
                 type: ArgumentType.STRING,
-                default: 'Clip'
             }
         ],
         examples: ['clip', 'clip @Eve -l 5 -c Eve Funny Clip']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
-        let stream: CachedStream | undefined
+        let stream: CachingStream | undefined
         let author: string
         let embedMessageContents: string
         const user: User = args.get('user')
@@ -58,13 +57,13 @@ export default class ClipCommand extends VoiceCommand {
             embedMessageContents = `Recording from ${context.getVoiceConnection()?.channel?.name}`
             stream = context.getProvider().getVoiceConnectionHandler().getMergedVoiceStream()
         }
-
+        let caption = args.get('caption') || `Clip From ${author}`
         context.getProvider().getResponder().startTyping(message)
-        return AudioUtils.convertBufferToMp3Buffer(stream.getCachedBuffer(args.get('length')), args.get('caption'), author)
+        return AudioUtils.convertBufferToMp3Buffer(stream.getCachedBuffer(args.get('length')), caption, author)
             .then((buffer) => {
                 const embedMessage = MessageGenerator
                     .createBasicEmbed(embedMessageContents)
-                const embed = MessageGenerator.attachFileToEmbed(embedMessage, buffer, `${args.get('caption')}.mp3`)
+                const embed = MessageGenerator.attachFileToEmbed(embedMessage, buffer, `${caption}.mp3`)
                 context.getProvider().getResponder().stopTyping(message)
                 return [{content: embed, message: message}, Acknowledgement.SURVEILLANCE]
             }).catch((err) => {

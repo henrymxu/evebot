@@ -1,6 +1,6 @@
 import { Duplex } from 'stream';
 
-export interface CachedStream {
+export interface CachingStream {
     getCachedStream(lengthInSeconds?: number, withSilence?: boolean): Duplex
     getCachedBuffer(lengthInSeconds?: number, withSilence?: boolean): Buffer
 }

@@ -10,7 +10,7 @@ export default class ReplayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Replay',
         keywords: ['replay'],
-        group: 'voice',
+        group: 'surveillance',
         descriptions: ['Replay from an uploaded file or url'],
         arguments: [
             {

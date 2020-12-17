@@ -1,12 +1,12 @@
 import {Duplex} from 'stream'
-import {CachedStream, CreateStreamFromBuffer} from './CachedStream'
+import {CachingStream, CreateStreamFromBuffer} from './CachingStream'
 
 const SIGNED_16_BIT_MIN = -32768
 const SIGNED_16_BIT_MAX = 32767
-export default class MergedStream implements CachedStream {
-    private streams: Map<string, CachedStream>
+export default class MergingStream implements CachingStream {
+    private streams: Map<string, CachingStream>
 
-    constructor(streamsMap: Map<string, CachedStream>) {
+    constructor(streamsMap: Map<string, CachingStream>) {
         this.streams = streamsMap
     }
 
@@ -16,7 +16,7 @@ export default class MergedStream implements CachedStream {
 
     getCachedBuffer(): Buffer {
         const buffers: Buffer[] = []
-        this.streams.forEach((stream: CachedStream) => {
+        this.streams.forEach((stream: CachingStream) => {
             buffers.push(stream.getCachedBuffer(undefined, true))
         })
         let maxLengthOfBuffer = 0

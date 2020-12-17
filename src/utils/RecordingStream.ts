@@ -1,9 +1,9 @@
 import {Duplex, Transform, TransformCallback} from 'stream'
-import {CachedStream, CreateStreamFromBuffer} from './CachedStream'
+import {CachingStream, CreateStreamFromBuffer} from './CachingStream'
 
 const MAX_BUFFER_SIZE = 500 // Buffer in seconds is approximately MAX_BUFFER_SIZE / 50
 const DEBOUNCE_TIME = 30 // Debounce time for inserting silence (Don't want to accidentally insert silence)
-export default class RecorderStream extends Transform implements CachedStream {
+export default class RecordingStream extends Transform implements CachingStream {
     private rollingBuffer: Buffer[] = []
     private rollingBufferWithSilence: Buffer[] = []
 
