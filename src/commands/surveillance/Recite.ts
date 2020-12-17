@@ -2,7 +2,7 @@ import {Message, MessageEmbed, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import VoiceCommand from '../../voice/VoiceCommand'
 import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
-import {CachingStream} from '../../voice/CachingStream'
+import {CachingStream} from '../../utils/CachingStream'
 import {Acknowledgement} from '../../communication/Responder'
 import {MessageGenerator} from '../../communication/MessageGenerator'
 

@@ -4,7 +4,7 @@ import VoiceCommand from '../../voice/VoiceCommand'
 import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {MessageGenerator} from '../../communication/MessageGenerator'
-import {CachingStream} from '../../voice/CachingStream'
+import {CachingStream} from '../../utils/CachingStream'
 import {Acknowledgement} from '../../communication/Responder'
 
 export default class ClipCommand extends VoiceCommand {
