@@ -2,7 +2,7 @@ import {Transform, TransformCallback} from 'stream'
 
 const TIME_AFTER_SILENCE = 1000
 const NUMBER_SILENCE_PACKETS = 5
-export default class SilenceDetectionStream extends Transform {
+export default class SilenceDetectingStream extends Transform {
     private talkedOnce = false
     private continuousSilenceCounter = 0
     private readonly isSilentNowCallback: () => void

@@ -1,11 +1,11 @@
-import RecorderStream from './RecorderStream'
+import RecordingStream from '../utils/RecordingStream'
 
 export default class SilenceInsertionHandler {
-    private streams: Map<string, RecorderStream>
+    private streams: Map<string, RecordingStream>
     private silenceInsertionInterval: NodeJS.Timeout | undefined = undefined
     private readonly SAMPLING_RATE = 20 // Discord sends a chunk (if not silent) every 20 ms
 
-    constructor(streamsMap: Map<string, RecorderStream>) {
+    constructor(streamsMap: Map<string, RecordingStream>) {
         this.streams = streamsMap
     }
 

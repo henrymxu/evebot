@@ -1,14 +1,14 @@
-import RecorderStream from './RecorderStream'
-import {User, VoiceChannel, VoiceConnection, VoiceState} from 'discord.js'
+import RecordingStream from '../utils/RecordingStream'
+import {Speaking, User, VoiceChannel, VoiceConnection, VoiceState} from 'discord.js'
 import {GuildContext} from '../guild/Context'
-import {SilentStreamUtils} from '../utils/SilentStreamUtils'
 import {CommandDispatcher} from '../commands/Dispatcher'
 import {GlobalContext} from '../GlobalContext'
 import {Logger} from '../Logger'
-import MergedStream from './MergedStream'
-import {CachedStream} from './CachedStream'
+import MergingStream from '../utils/MergingStream'
+import {CachingStream} from '../utils/CachingStream'
 import SilenceInsertionHandler from './SilenceInsertionHandler'
-import SilenceDetectionStream from './SilenceDetectionStream'
+import SilenceDetectingStream from '../utils/SilenceDetectingStream'
+import {AudioUtils} from '../utils/AudioUtils'
 
 const USER_REJOIN_THRESHOLD = 5000
 const NO_USER_TIMEOUT = 60 * 1000
@@ -19,13 +19,13 @@ const TAG = 'ConnectionHandler'
 export default class VoiceConnectionHandler {
     private readonly context: GuildContext
     private readonly lowMemoryMode: boolean
-    private readonly voiceStreams: Map<string, RecorderStream> = new Map()
+    private readonly voiceStreams: Map<string, RecordingStream> = new Map()
     private readonly removedTimeouts: Map<string, NodeJS.Timeout> = new Map()
     private readonly isListeningToCommand: Map<string, boolean> = new Map()
     private noUsersInVoiceChannelTimeout: NodeJS.Timeout | undefined
 
     private readonly silenceInsertionHandler = new SilenceInsertionHandler(this.voiceStreams)
-    private readonly mergeStream: MergedStream = new MergedStream(this.voiceStreams)
+    private readonly mergeStream: MergingStream = new MergingStream(this.voiceStreams)
 
     constructor(guildContext: GuildContext) {
         this.context = guildContext
@@ -33,15 +33,15 @@ export default class VoiceConnectionHandler {
         this.silenceInsertionHandler.start()
     }
 
-    getMergedVoiceStream(): MergedStream {
+    getMergedVoiceStream(): MergingStream {
         return this.mergeStream
     }
 
-    getVoiceStreams(): Map<string, CachedStream> {
+    getVoiceStreams(): Map<string, CachingStream> {
         return this.voiceStreams
     }
 
-    getVoiceStreamForUser(user: User): CachedStream | undefined {
+    getVoiceStreamForUser(user: User): CachingStream | undefined {
         return this.voiceStreams.get(user.id)
     }
 
@@ -121,7 +121,7 @@ export default class VoiceConnectionHandler {
             return
         }
         if (!this.context.getProvider().getDJ().isPlaying()) { // Don't play silent stream if bot is moved around
-            SilentStreamUtils.playSilentAudioStream(connection)
+            playSilentAudioStream(connection)
         }
         connection.on('speaking', (user, speaking) => {
             if (user === undefined || GlobalContext.getBotID() === user.id) {
@@ -191,7 +191,7 @@ export default class VoiceConnectionHandler {
         }
         let audio = connection.receiver.createStream(user, { mode: 'pcm', end: 'manual' })
         const previousStream = this.voiceStreams.get(user.id)
-        const recorderStream = previousStream || new RecorderStream(true)
+        const recorderStream = previousStream || new RecordingStream(true)
         audio.pipe(recorderStream, { end: false })
         this.voiceStreams.set(user.id, recorderStream)
         const speechRecognizer = this.context.getVoiceDependencyProvider().getSpeechRecognizer()
@@ -207,7 +207,7 @@ export default class VoiceConnectionHandler {
             }
             this.isListeningToCommand.set(user.id, true)
             this.context.getProvider().getInterruptService().playHotwordAck(0)
-            const recognitionStream = new SilenceDetectionStream(() => {
+            const recognitionStream = new SilenceDetectingStream(() => {
                 recognitionStream.end()
                 recognitionStream.destroy()
                 this.context.getProvider().getInterruptService().playHotwordAck(1)
@@ -220,4 +220,16 @@ export default class VoiceConnectionHandler {
             })
         }))
     }
+}
+
+/**
+ * This is required for the bot to be able to listen.
+ * discord.js has this, but sometimes it does not work.
+ */
+function playSilentAudioStream(connection: VoiceConnection) {
+    connection.play(AudioUtils.createSilenceStream(), { type: 'opus' });
+    setTimeout(() => {
+        connection.dispatcher?.destroy()
+        connection.setSpeaking(Speaking.FLAGS.SOUNDSHARE)
+    }, 250)
 }

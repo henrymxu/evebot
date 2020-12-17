@@ -2,7 +2,7 @@ import {Message, MessageEmbed, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import VoiceCommand from '../../voice/VoiceCommand'
 import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
-import {CachedStream} from '../../voice/CachedStream'
+import {CachingStream} from '../../voice/CachingStream'
 import {Acknowledgement} from '../../communication/Responder'
 import {MessageGenerator} from '../../communication/MessageGenerator'
 
@@ -10,7 +10,7 @@ export default class ReciteCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Recite',
         keywords: ['recite'],
-        group: 'voice',
+        group: 'surveillance',
         descriptions: ['Recite what was just said!  If no user is provided, the whole channel is recited.'],
         arguments: [
             {
@@ -40,7 +40,7 @@ export default class ReciteCommand extends VoiceCommand {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
-        let stream: CachedStream | undefined
+        let stream: CachingStream | undefined
         const user: User = args.get('user')
         if (user) {
             stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)

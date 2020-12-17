@@ -8,7 +8,7 @@ export default class SayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Say',
         keywords: ['say'],
-        group: 'voice',
+        group: 'speech',
         descriptions: ['Say something with the bot'],
         arguments: [
             {
