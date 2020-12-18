@@ -26,16 +26,23 @@ export default class PlayCommand extends VoiceCommand {
                 description: 'Request a radio to start after current queue is completed is using the track as a seed!',
                 required: false,
                 type: ArgumentType.FLAG
+            },
+            {
+                key: 'shuffle',
+                flag: 's',
+                description: 'Shuffle the playlist / album being queued.  Use the shuffle command to shuffle the current queue',
+                required: false,
+                type: ArgumentType.FLAG
             }
         ],
-        examples: ['play Blank Space', 'play Wildest Dreams -radio', 'album 1989', 'playlist christmas songs']
+        examples: ['play Blank Space', 'play Wildest Dreams -radio', 'album 1989 -s', 'playlist christmas songs']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let mode: QueryMode = QueryMode.Play
         mode = args.get('keyword') ? args.get('keyword') as string as QueryMode : mode
         context.getProvider().getResponder().startTyping(message)
-        return context.getProvider().getDJ().request(mode, args.get('query'), source.id, message).then(() => {
+        return context.getProvider().getDJ().request(mode, args.get('query'), args.get('shuffle'), source.id, message).then(() => {
             if (args.get('radio') && args.get('keyword') === 'play') {
                 context.getProvider().getDJ().requestRadio({
                     artists: [],
