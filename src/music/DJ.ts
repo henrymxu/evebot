@@ -122,8 +122,8 @@ export default class DJ {
         return this.getCurrentSong() !== undefined
     }
 
-    skip(): boolean {
-        return this.context.getProvider().getAudioPlayer().skip()
+    skip(count: number): boolean {
+        return this.context.getProvider().getAudioPlayer().skip(count)
     }
 
     pause(): boolean {

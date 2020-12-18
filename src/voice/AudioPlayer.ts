@@ -88,8 +88,8 @@ export default class AudioPlayer {
         return true
     }
 
-    skip(): boolean {
-        return this.playNext()
+    skip(count: number): boolean {
+        return this.playNext(count)
     }
 
     shuffle(): boolean {
@@ -199,10 +199,16 @@ export default class AudioPlayer {
         })
     }
 
-    private playNext(): boolean {
+    private playNext(count: number = 1): boolean {
         this.state = AudioPlayerState.IDLE
         const current = this.trackQueue.shift()
         this.endTrack(current)
+        while(--count > 0) {
+            let track = this.trackQueue.shift()
+            if (track) {
+                this.completedTracks.push(track)
+            }
+        }
         this.prepareToPlay(false)
         return current !== undefined
     }
