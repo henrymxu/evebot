@@ -28,7 +28,7 @@ export default class PlayCommand extends VoiceCommand {
                 type: ArgumentType.FLAG
             }
         ],
-        examples: ['play Blank Space', 'play Wildest Dreams -radio', 'album 1989']
+        examples: ['play Blank Space', 'play Wildest Dreams -radio', 'album 1989', 'playlist christmas songs']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {

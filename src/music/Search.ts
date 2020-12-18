@@ -55,10 +55,7 @@ function parseQueryForResult(query: string): Promise<SearchResult> {
                     Logger.d(TAG, `Found a Youtube video >> ${query}`)
                     return Promise.resolve({
                         results: [{urls: [query]}],
-                        metadata: {
-                            mode: 'single',
-                            query: query
-                        }
+                        metadata: { mode: 'single' }
                     })
                 case '/playlist':
                     Logger.d(TAG, `Found a Youtube playlist >> ${query}`)
@@ -82,7 +79,7 @@ function convertExternalTrackInfosToSearchResult(trackInfos: ExternalTrackInfo[]
     })
     return Promise.allSettled(promises).then(searchResults => {
         const resultInfos: ResultInfo[] = searchResults
-                .filter((searchResult: any) => searchResult.status === 'fulfilled')
+                .filter(searchResult => searchResult.status === 'fulfilled')
                 .map((searchResult: any) => { return { urls: searchResult.value.results[0].urls } })
         return {
             results: resultInfos,
@@ -123,7 +120,10 @@ async function resolveMultipleTracks(searchResult: SearchResult): Promise<Track[
     for (let result of searchResult.results) {
         promises.push(resolveSingleTrack(result.urls))
     }
-    return Promise.all(promises)
+    return Promise.allSettled(promises).then(results => {
+        const fulfilled = results.filter(result => result.status === 'fulfilled').map((result: any) => result.value)
+        return Promise.resolve(fulfilled)
+    })
 }
 
 function convertTrackInfoToSearchableName(info: ExternalTrackInfo): string {
