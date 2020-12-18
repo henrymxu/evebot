@@ -2,31 +2,35 @@ import {URL} from 'url'
 import ytdl from 'discord-ytdl-core'
 import Youtube from './sources/Youtube/Youtube3'
 import {Utils} from '../utils/Utils'
-import {Readable} from 'stream'
 import {Track} from './tracks/Track'
 import YoutubeTrack, {YoutubeTrackInfo} from './tracks/YoutubeTrack'
 import {Album} from './tracks/Album'
 import ExternalTrack, {ExternalTrackInfo} from './tracks/ExternalTrack'
 import {Logger} from '../Logger'
+import {Spotify} from './sources/Spotify/Spotify'
 
 const TAG = 'YoutubeSearch'
 const YoutubeSource = new Youtube()
 export namespace Search {
     export async function search(query: string, info?: ExternalTrackInfo): Promise<Track[]> {
         try {
-            const result = await parseQueryForType(query)
+            const result = await parseQueryForResult(query)
             switch(result.metadata.mode) {
                 case 'single':
+                    const track = await resolveSingleTrack(result.results[0].urls, info)
+                    Logger.d(TAG, `Found ${track.getTitle()} >> ${query}`)
+                    return [track]
                 case 'playlist':
-                    // TODO: handle playlist result
+                    const tracks = await resolveMultipleTracks(result)
+                    Logger.d(TAG, `Found ${tracks.length} tracks for >> ${query}`)
+                    return tracks
                 case 'stream':
                     // TODO: handle stream result
                 default:
-                    const track = await resolveSingleTrack(result, info)
-                    return [track]
+                    return Promise.reject(new Error('Error'))
             }
         } catch (e) {
-            Logger.e(TAG, `Error searching for track ${query}, reason: ${e}`)
+            Logger.e(TAG, `Error searching for track(s) >> ${query}, reason: ${e}`)
             throw(e)
         }
     }
@@ -34,30 +38,66 @@ export namespace Search {
     export function searchAlbum(album: Album): Promise<Track[]> {
         const promises: Promise<Track>[] = []
         album.tracks.forEach((info: ExternalTrackInfo) => {
-            promises.push(parseQueryForType(`${info.artist} - ${info.name}`).then((searchResult) => {
-                return resolveSingleTrack(searchResult, info)
+            promises.push(parseQueryForResult(convertTrackInfoToSearchableName(info)).then((searchResult) => {
+                return resolveSingleTrack(searchResult.results[0].urls, info)
             }))
         })
         return Promise.all(promises)
     }
 }
 
-async function resolveSingleTrack(result: SearchResult, extraInfo?: ExternalTrackInfo): Promise<Track> {
-    let resolved = false
-    for (let info of result.infos) {
-        if (!info.url) {
-            continue
+function parseQueryForResult(query: string): Promise<SearchResult> {
+    try {
+        const result = new URL(query)
+        if (result.hostname === 'www.youtube.com') {
+            switch (result.pathname) {
+                case '/watch':
+                    Logger.d(TAG, `Found a Youtube video >> ${query}`)
+                    return Promise.resolve({
+                        results: [{urls: [query]}],
+                        metadata: { mode: 'single' }
+                    })
+                case '/playlist':
+                    Logger.d(TAG, `Found a Youtube playlist >> ${query}`)
+                    return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
+            }
+        } else if (result.hostname === 'open.spotify.com') {
+            return Spotify.resolveSpotifyLink(result.pathname).then((trackInfos: ExternalTrackInfo[]) => {
+                return convertExternalTrackInfosToSearchResult(trackInfos)
+            })
         }
-        const basicInfo = await ytdl.getBasicInfo(info.url)
+    } catch (e) {
+        // ignore error
+    }
+    return YoutubeSource.getTrackURLFromSearch(query)
+}
+
+function convertExternalTrackInfosToSearchResult(trackInfos: ExternalTrackInfo[]): Promise<SearchResult> {
+    const promises = trackInfos.map((info: ExternalTrackInfo) =>
+        YoutubeSource.getTrackURLFromSearch(convertTrackInfoToSearchableName(info)))
+    return Promise.allSettled(promises).then(searchResults => {
+        const resultInfos: ResultInfo[] = searchResults
+                .filter(searchResult => searchResult.status === 'fulfilled')
+                .map((searchResult: any) => { return { urls: searchResult.value.results[0].urls } })
+        return {
+            results: resultInfos,
+            metadata: { mode: 'playlist' }
+        }
+    })
+}
+
+async function resolveSingleTrack(urls: string[], extraInfo?: ExternalTrackInfo): Promise<Track> {
+    let resolved = false
+    for (let url of urls) {
+        const basicInfo = await ytdl.getBasicInfo(url)
         if (basicInfo.formats.length > 0) {
             resolved = true
-            Logger.d(TAG, `Found ${basicInfo.videoDetails.title} >> ${result.metadata.query}`)
             const id = Utils.generateUUID()
             const youtubeInfo: YoutubeTrackInfo = {
                 description: basicInfo.videoDetails.shortDescription,
                 length: +basicInfo.videoDetails.lengthSeconds,
                 title: basicInfo.videoDetails.title,
-                url: info.url,
+                url: url,
                 channel: basicInfo.videoDetails.ownerChannelName,
                 thumbnailURL: basicInfo.thumbnail_url
             }
@@ -70,38 +110,19 @@ async function resolveSingleTrack(result: SearchResult, extraInfo?: ExternalTrac
             Logger.w(TAG, `${basicInfo.videoDetails.title} does not have supported formats, trying next track`)
         }
     }
-    throw new Error('Could not find a playable video (region locked)')
+    throw new Error('Could not find a playable video (Possibly region locked)')
 }
 
-function parseQueryForType(query: string): Promise<SearchResult> {
-    try {
-        const result = new URL(query)
-        if (result.hostname === 'www.youtube.com') {
-            switch (result.pathname) {
-                case '/watch':
-                    Logger.d(TAG, `Found a Youtube video >> ${query}`)
-                    return Promise.resolve({
-                        infos: [{url: query}],
-                        metadata: {
-                            mode: 'single',
-                            query: query
-                        }
-                    })
-                case '/playlist':
-                    Logger.d(TAG, `Found a Youtube playlist >> ${query}`)
-                    return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
-            }
-        } else if (result.hostname === 'open.spotify.com') {
-            // TODO: implement spotify song parsing
-            if (result.pathname?.includes('playlist')) {
-                //.replace('/playlist/', '')
-                // return retrieveSongsFromSpotifyPlaylist(result.pathname)
-            }
-        }
-    } catch (e) {
-        // ignore error
-    }
-    return YoutubeSource.getTrackURLFromSearch(query)
+async function resolveMultipleTracks(searchResult: SearchResult): Promise<Track[]> {
+    const promises = searchResult.results.map((result: ResultInfo) => resolveSingleTrack(result.urls))
+    return Promise.allSettled(promises).then(results => {
+        const fulfilled = results.filter(result => result.status === 'fulfilled').map((result: any) => result.value)
+        return Promise.resolve(fulfilled)
+    })
+}
+
+function convertTrackInfoToSearchableName(info: ExternalTrackInfo): string {
+    return `${info.artist} - ${info.name}`
 }
 
 export interface TrackSource {
@@ -110,16 +131,14 @@ export interface TrackSource {
 }
 
 export interface SearchResult {
-    infos: ResultInfo[]
+    results: ResultInfo[]
     metadata: SearchMetaData
 }
 
 export interface ResultInfo {
-    url?: string
-    stream?: Readable
+    urls: string[]
 }
 
 export interface SearchMetaData {
     mode: string // single, playlist
-    query: string
 }

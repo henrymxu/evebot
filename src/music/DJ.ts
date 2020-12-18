@@ -35,6 +35,10 @@ export default class DJ {
                 playFunc = () => { return this.playAlbum(query, requesterId, message) }
                 break
             }
+            case QueryMode.Playlist: {
+                playFunc = () => { return this.playPlaylist(query, requesterId, message) }
+                break
+            }
             default: {
                 playFunc = () => { return this.play(query, requesterId, message) }
                 break
@@ -72,7 +76,17 @@ export default class DJ {
     }
 
     private playAlbum(query: string, requesterId: string, message?: Message): Promise<void> {
-        return Spotify.getTrackNamesFromAlbumSearch(query).then((album) => {
+        return Spotify.getTrackInfosFromAlbumSearch(query).then((album) => {
+            this.onAlbumQueued(album, message)
+            Search.searchAlbum(album).then((tracks) => {
+                this.playTracks(tracks, requesterId, message)
+                this.onTracksQueued(tracks)
+            })
+        })
+    }
+
+    private playPlaylist(query: string, requesterId: string, message?: Message): Promise<void> {
+        return Spotify.getTrackInfosFromPlaylistSearch(query).then((album) => {
             this.onAlbumQueued(album, message)
             Search.searchAlbum(album).then((tracks) => {
                 this.playTracks(tracks, requesterId, message)
@@ -172,6 +186,7 @@ export default class DJ {
 }
 
 export enum QueryMode {
-    Play,
-    Album,
+    Play = 'play',
+    Album = 'album',
+    Playlist = 'playlist'
 }

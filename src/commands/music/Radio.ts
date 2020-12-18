@@ -100,6 +100,8 @@ export default class RadioCommand extends VoiceCommand {
         context.getProvider().getResponder().startTyping()
         return context.getProvider().getDJ().requestRadio(radioContext, message).then(() => {
             return Acknowledgement.MUSIC
+        }).catch((err: Error) => {
+            throw new CommandExecutionError(err.message, Acknowledgement.NEGATIVE)
         }).finally(() => {
             context.getProvider().getResponder().stopTyping()
         })
