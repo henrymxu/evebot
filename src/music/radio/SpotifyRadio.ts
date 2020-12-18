@@ -13,7 +13,7 @@ export default class SpotifyRadio extends Radio {
     }
 
     protected startTop10Radio(context: RadioContext, message?: Message): Promise<void> {
-        return Spotify.getTop10TracksNamesFromArtistName(context.artists[0]).then((tracks) => {
+        return Spotify.getTop10TracksInfosFromArtistName(context.artists[0]).then((tracks) => {
             this.radioConfiguration = {
                 context: context,
                 currentTrack: undefined,
@@ -25,7 +25,7 @@ export default class SpotifyRadio extends Radio {
     }
 
     protected startArtistRadio(context: RadioContext, message?: Message): Promise<void> {
-        return Spotify.getRandomizedTrackNamesFromArtistName(context.artists[0]).then((tracks) => {
+        return Spotify.getRandomizedTrackInfosFromArtistName(context.artists[0]).then((tracks) => {
             this.radioConfiguration = {
                 context: context,
                 currentTrack: undefined,
@@ -43,7 +43,7 @@ export default class SpotifyRadio extends Radio {
         promises.push(context.tracks.length !== 0 ? Spotify.getTrackIDFromTrackName(context.tracks[0]) : Promise.resolve(''))
         return Promise.all(promises).then(results => {
             const seeds: SpotifySeeds = { artists: [results[0]], genres: [results[1]], tracks: [results[2]] }
-            return Spotify.getTrackNamesFromSeeds(seeds.artists, seeds.genres, seeds.tracks, context.length)
+            return Spotify.getTrackInfosFromSeeds(seeds.artists, seeds.genres, seeds.tracks, context.length)
         }).then((tracks) => {
             this.radioConfiguration = {
                 context: context,

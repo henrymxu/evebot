@@ -16,11 +16,8 @@ export default class Youtube2 implements TrackSource {
                 throw new Error(`No search results found for ${query}`)
             }
             const searchResult: SearchResult = {
-                infos: results.map((result) => { return { url: result.url } }),
-                metadata: {
-                    mode: 'single',
-                    query: query
-                }
+                results: results.map((result) => { return { urls: [result.url] } }),
+                metadata: { mode: 'single' }
             }
             return searchResult
         }).catch((err: Error) => {
@@ -35,11 +32,8 @@ export default class Youtube2 implements TrackSource {
         }).then((videos: any[]) => {
             Logger.i(TAG, `This playlist has ${videos.length === 50 ? '50+' : videos.length} videos.`)
             const searchResult: SearchResult = {
-                infos: videos.map((result) => { return { url: result.url } }),
-                metadata: {
-                    mode: 'playlist',
-                    query: playlistURL
-                }
+                results: videos.map((result) => { return { urls: [result.url] } }),
+                metadata: { mode: 'playlist' }
             }
             return searchResult
         })

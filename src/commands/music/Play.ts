@@ -9,13 +9,14 @@ import {RadioMode} from '../../music/radio/Radio'
 export default class PlayCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'Play',
-        keywords: ['play', 'album'],
+        keywords: ['play', 'album', 'playlist'],
         group: 'music',
-        descriptions: ['Play a song or playlist', 'Play an album'],
+        descriptions: ['Search and play a song or use a link from Youtube / Spotify',
+            'Search and play an album', 'Search and play a playlist'],
         arguments: [
             {
                 key: 'query',
-                description: 'Song: Name or url of song | Album: Spotify url',
+                description: 'Name of song / album / playlist or link from Youtube / Spotify',
                 required: true,
                 type: ArgumentType.STRING
             },
@@ -27,14 +28,12 @@ export default class PlayCommand extends VoiceCommand {
                 type: ArgumentType.FLAG
             }
         ],
-        examples: ['play Blank Space', 'play Wildest Dreams -radio']
+        examples: ['play Blank Space', 'play Wildest Dreams -radio', 'album 1989']
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let mode: QueryMode = QueryMode.Play
-        if (args.get('keyword') === 'album') {
-            mode = QueryMode.Album
-        }
+        mode = args.get('keyword') ? args.get('keyword') as string as QueryMode : mode
         context.getProvider().getResponder().startTyping(message)
         return context.getProvider().getDJ().request(mode, args.get('query'), source.id, message).then(() => {
             if (args.get('radio') && args.get('keyword') === 'play') {
@@ -44,7 +43,9 @@ export default class PlayCommand extends VoiceCommand {
                     tracks: [args.get('query')],
                     length: 10,
                     mode: RadioMode.RELATED
-                }, message)
+                }, message).catch((err) => {
+                    this.onExecutedFailed(context, new CommandExecutionError(err.message))
+                })
             }
             return Acknowledgement.MUSIC
         }).catch((err: Error) => {

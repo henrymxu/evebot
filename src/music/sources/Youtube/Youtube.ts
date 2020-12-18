@@ -22,11 +22,8 @@ export default class Youtube implements TrackSource {
                     return
                 }
                 const searchResult: SearchResult = {
-                    infos: results.map(result => { return { url: result.link } }),
-                    metadata: {
-                        mode: 'single',
-                        query: query
-                    }
+                    results: results.map(result => { return { urls: [result.link] } }),
+                    metadata: { mode: 'single' }
                 }
                 res(searchResult)
             })
@@ -35,11 +32,8 @@ export default class Youtube implements TrackSource {
 
     getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
         return Promise.resolve({
-            infos: [],
-            metadata: {
-                mode: 'playlist',
-                query: playlistURL
-            }
+            results: [],
+            metadata: { mode: 'playlist' }
         });
     }
 

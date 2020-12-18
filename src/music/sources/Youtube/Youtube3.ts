@@ -12,15 +12,12 @@ export default class Youtube3 implements TrackSource {
                 throw new Error(`No search results found for ${query}`)
             }
             const searchResult: SearchResult = {
-                infos: videos.map((item: Item) => { return { url: (item as Video).link } }),
-                metadata: {
-                    mode: 'single',
-                    query: query
-                }
+                results: [{ urls: videos.map((item: Item) => (item as Video).link) }],
+                metadata: { mode: 'single' }
             }
             return searchResult
         }).catch((err: Error) => {
-            Logger.e(TAG, `Search Error, reason: ${err}`)
+            Logger.e(TAG, `Search Error for ${query}, reason: ${err}`)
             throw err
         })
     }
@@ -29,13 +26,13 @@ export default class Youtube3 implements TrackSource {
         return ytpl(playlistURL).then((result) => {
             Logger.i(TAG, `Found playlist ${result.title} with ${result.total_items} items`)
             const searchResult: SearchResult = {
-                infos: result.items.map((item) => { return { url: item.url_simple }}),
-                metadata: {
-                    mode: 'single',
-                    query: playlistURL
-                }
+                results: result.items.map((item) => { return { urls: [item.url_simple] }}),
+                metadata: { mode: 'single' }
             }
             return searchResult
+        }).catch((err: Error) => {
+            Logger.e(TAG, `Search Error for ${playlistURL}, reason: ${err}`)
+            throw err
         })
     }
 }
