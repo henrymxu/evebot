@@ -27,4 +27,5 @@ export interface ExternalTrackInfo {
     metadata: {
         externalURL: string
     }
+    isYoutube?: boolean
 }

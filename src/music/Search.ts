@@ -17,11 +17,11 @@ export namespace Search {
             const result = await parseQueryForResult(query)
             switch(result.metadata.mode) {
                 case 'single':
-                    const track = await resolveSingleTrack(result.results[0].urls, info)
+                    const track = await resolveSingleTrack(result.result!.urls, info)
                     Logger.d(TAG, `Found ${track.getTitle()} >> ${query}`)
                     return [track]
                 case 'playlist':
-                    const tracks = await resolveMultipleTracks(result)
+                    const tracks = await resolveExternalTrackInfos(result.trackInfos!)
                     Logger.d(TAG, `Found ${tracks.length} tracks for >> ${query}`)
                     return tracks
                 case 'stream':
@@ -36,13 +36,7 @@ export namespace Search {
     }
 
     export function searchAlbum(album: Album): Promise<Track[]> {
-        const promises: Promise<Track>[] = []
-        album.tracks.forEach((info: ExternalTrackInfo) => {
-            promises.push(parseQueryForResult(convertTrackInfoToSearchableName(info)).then((searchResult) => {
-                return resolveSingleTrack(searchResult.results[0].urls, info)
-            }))
-        })
-        return Promise.all(promises)
+        return resolveExternalTrackInfos(album.tracks)
     }
 }
 
@@ -54,7 +48,7 @@ function parseQueryForResult(query: string): Promise<SearchResult> {
                 case '/watch':
                     Logger.d(TAG, `Found a Youtube video >> ${query}`)
                     return Promise.resolve({
-                        results: [{urls: [query]}],
+                        result: { urls: [query] },
                         metadata: { mode: 'single' }
                     })
                 case '/playlist':
@@ -63,27 +57,16 @@ function parseQueryForResult(query: string): Promise<SearchResult> {
             }
         } else if (result.hostname === 'open.spotify.com') {
             return Spotify.resolveSpotifyLink(result.pathname).then((trackInfos: ExternalTrackInfo[]) => {
-                return convertExternalTrackInfosToSearchResult(trackInfos)
+                return {
+                    trackInfos: trackInfos,
+                    metadata: { mode: 'playlist' }
+                }
             })
         }
     } catch (e) {
         // ignore error
     }
     return YoutubeSource.getTrackURLFromSearch(query)
-}
-
-function convertExternalTrackInfosToSearchResult(trackInfos: ExternalTrackInfo[]): Promise<SearchResult> {
-    const promises = trackInfos.map((info: ExternalTrackInfo) =>
-        YoutubeSource.getTrackURLFromSearch(convertTrackInfoToSearchableName(info)))
-    return Promise.allSettled(promises).then(searchResults => {
-        const resultInfos: ResultInfo[] = searchResults
-                .filter(searchResult => searchResult.status === 'fulfilled')
-                .map((searchResult: any) => { return { urls: searchResult.value.results[0].urls } })
-        return {
-            results: resultInfos,
-            metadata: { mode: 'playlist' }
-        }
-    })
 }
 
 async function resolveSingleTrack(urls: string[], extraInfo?: ExternalTrackInfo): Promise<Track> {
@@ -113,8 +96,21 @@ async function resolveSingleTrack(urls: string[], extraInfo?: ExternalTrackInfo)
     throw new Error('Could not find a playable video (Possibly region locked)')
 }
 
-async function resolveMultipleTracks(searchResult: SearchResult): Promise<Track[]> {
-    const promises = searchResult.results.map((result: ResultInfo) => resolveSingleTrack(result.urls))
+async function resolveExternalTrackInfos(infos: ExternalTrackInfo[]): Promise<Track[]> {
+    const promises = infos.map((info: ExternalTrackInfo) => {
+        let urlPromise: Promise<SearchResult>
+        if (info.isYoutube) {
+            urlPromise = Promise.resolve({
+                result: { urls: [info.metadata.externalURL] },
+                metadata: { mode: 'single' }
+            })
+        } else {
+            urlPromise = YoutubeSource.getTrackURLFromSearch(convertTrackInfoToSearchableName(info))
+        }
+        return urlPromise.then((searchResult: SearchResult) => {
+            return resolveSingleTrack(searchResult.result!.urls, info)
+        })
+    })
     return Promise.allSettled(promises).then(results => {
         const fulfilled = results.filter(result => result.status === 'fulfilled').map((result: any) => result.value)
         return Promise.resolve(fulfilled)
@@ -131,7 +127,8 @@ export interface TrackSource {
 }
 
 export interface SearchResult {
-    results: ResultInfo[]
+    result?: ResultInfo
+    trackInfos?: ExternalTrackInfo[]
     metadata: SearchMetaData
 }
 

@@ -22,7 +22,7 @@ export default class Youtube implements TrackSource {
                     return
                 }
                 const searchResult: SearchResult = {
-                    results: results.map(result => { return { urls: [result.link] } }),
+                    result: { urls: results.map(result => result.link) },
                     metadata: { mode: 'single' }
                 }
                 res(searchResult)
@@ -31,10 +31,7 @@ export default class Youtube implements TrackSource {
     }
 
     getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
-        return Promise.resolve({
-            results: [],
-            metadata: { mode: 'playlist' }
-        });
+        return Promise.reject('Not supported on Youtube')
     }
 
 }
