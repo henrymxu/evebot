@@ -73,10 +73,8 @@ function parseQueryForResult(query: string): Promise<SearchResult> {
 }
 
 function convertExternalTrackInfosToSearchResult(trackInfos: ExternalTrackInfo[]): Promise<SearchResult> {
-    const promises: Promise<SearchResult>[] = []
-    trackInfos.forEach((info: ExternalTrackInfo) => {
-        promises.push(YoutubeSource.getTrackURLFromSearch(convertTrackInfoToSearchableName(info)))
-    })
+    const promises = trackInfos.map((info: ExternalTrackInfo) =>
+        YoutubeSource.getTrackURLFromSearch(convertTrackInfoToSearchableName(info)))
     return Promise.allSettled(promises).then(searchResults => {
         const resultInfos: ResultInfo[] = searchResults
                 .filter(searchResult => searchResult.status === 'fulfilled')
@@ -116,10 +114,7 @@ async function resolveSingleTrack(urls: string[], extraInfo?: ExternalTrackInfo)
 }
 
 async function resolveMultipleTracks(searchResult: SearchResult): Promise<Track[]> {
-    const promises: Promise<Track>[] = []
-    for (let result of searchResult.results) {
-        promises.push(resolveSingleTrack(result.urls))
-    }
+    const promises = searchResult.results.map((result: ResultInfo) => resolveSingleTrack(result.urls))
     return Promise.allSettled(promises).then(results => {
         const fulfilled = results.filter(result => result.status === 'fulfilled').map((result: any) => result.value)
         return Promise.resolve(fulfilled)
