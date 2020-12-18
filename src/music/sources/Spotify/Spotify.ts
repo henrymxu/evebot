@@ -2,6 +2,7 @@ import {Utils} from '../../../utils/Utils'
 import {Keys} from '../../../Keys'
 import {ExternalTrackInfo} from '../../tracks/ExternalTrack'
 import {Album} from '../../tracks/Album'
+import {Logger} from '../../../Logger'
 const SpotifyWebAPI = require('spotify-web-api-node')
 
 const spotifyApi = new SpotifyWebAPI({
@@ -11,6 +12,27 @@ const spotifyApi = new SpotifyWebAPI({
 })
 
 export namespace Spotify {
+    export function resolveSpotifyLink(pathname: string): Promise<ExternalTrackInfo[]> {
+        if (pathname.includes('playlist')) {
+            const regex = new RegExp(/^\/playlist\/(\S*)$/)
+            const id = pathname.match(regex)?.[1]
+            if (!id) {
+                return Promise.reject(new Error('Error parsing Spotify Playlist ID'))
+            }
+            Logger.d('Spotify', `Finding Spotify Playlist with ID >> ${id}`)
+            return Spotify.getTrackInfosFromPlaylistID(id)
+        } else if (pathname.includes('album')) {
+            const regex = new RegExp(/^\/album\/(\S*)$/)
+            const id = pathname.match(regex)?.[1]
+            if (!id) {
+                return Promise.reject(new Error('Error parsing Spotify Album ID'))
+            }
+            Logger.d('Spotify', `Finding Spotify Album with ID >> ${id}`)
+            return Spotify.getTrackInfosFromAlbumID(id)
+        }
+        return Promise.reject(new Error('Not a valid Spotify link'))
+    }
+
     export async function getArtistIDFromArtistName(artist: string): Promise<string> {
         if (!artist) {
             return ''

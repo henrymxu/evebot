@@ -14,7 +14,7 @@ const YoutubeSource = new Youtube()
 export namespace Search {
     export async function search(query: string, info?: ExternalTrackInfo): Promise<Track[]> {
         try {
-            const result = await parseQueryForType(query)
+            const result = await parseQueryForResult(query)
             switch(result.metadata.mode) {
                 case 'single':
                     const track = await resolveSingleTrack(result.results[0].urls, info)
@@ -38,7 +38,7 @@ export namespace Search {
     export function searchAlbum(album: Album): Promise<Track[]> {
         const promises: Promise<Track>[] = []
         album.tracks.forEach((info: ExternalTrackInfo) => {
-            promises.push(parseQueryForType(convertTrackInfoToSearchableName(info)).then((searchResult) => {
+            promises.push(parseQueryForResult(convertTrackInfoToSearchableName(info)).then((searchResult) => {
                 return resolveSingleTrack(searchResult.results[0].urls, info)
             }))
         })
@@ -46,7 +46,7 @@ export namespace Search {
     }
 }
 
-function parseQueryForType(query: string): Promise<SearchResult> {
+function parseQueryForResult(query: string): Promise<SearchResult> {
     try {
         const result = new URL(query)
         if (result.hostname === 'www.youtube.com') {
@@ -65,28 +65,9 @@ function parseQueryForType(query: string): Promise<SearchResult> {
                     return YoutubeSource.getTrackURLsFromPlaylistSearch(query)
             }
         } else if (result.hostname === 'open.spotify.com') {
-            // TODO: implement spotify song parsing
-            if (result.pathname?.includes('playlist')) {
-                const regex = new RegExp(/^\/playlist\/(\S*)$/)
-                const id = result.pathname?.match(regex)?.[1]
-                if (!id) {
-                    return Promise.reject(new Error('Error parsing Spotify Playlist ID'))
-                }
-                Logger.d(TAG, `Finding Spotify Playlist with ID >> ${id}`)
-                return Spotify.getTrackInfosFromPlaylistID(id).then(trackInfos => {
-                    return convertExternalTrackInfosToSearchResult(trackInfos)
-                })
-            } else if (result.pathname?.includes('album')) {
-                const regex = new RegExp(/^\/album\/(\S*)$/)
-                const id = result.pathname?.match(regex)?.[1]
-                if (!id) {
-                    return Promise.reject(new Error('Error parsing Spotify Album ID'))
-                }
-                Logger.d(TAG, `Finding Spotify Album with ID >> ${id}`)
-                return Spotify.getTrackInfosFromAlbumID(id).then(trackInfos => {
-                    return convertExternalTrackInfosToSearchResult(trackInfos)
-                })
-            }
+            return Spotify.resolveSpotifyLink(result.pathname).then((trackInfos: ExternalTrackInfo[]) => {
+                return convertExternalTrackInfosToSearchResult(trackInfos)
+            })
         }
     } catch (e) {
         // ignore error
