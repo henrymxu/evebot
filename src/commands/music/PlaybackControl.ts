@@ -7,9 +7,9 @@ import {Acknowledgement} from '../../communication/Responder'
 export default class PlaybackControlCommand extends VoiceCommand {
     readonly options: CommandOptions = {
         name: 'PlaybackControl',
-        keywords: ['resume', 'pause', 'stop'],
+        keywords: ['resume', 'pause', 'stop', 'shuffle'],
         group: 'music',
-        descriptions: ['Resume playback', 'Pause playback', 'Stop playback'],
+        descriptions: ['Resume playback', 'Pause playback', 'Stop playback', 'Shuffle queue'],
         arguments: []
     }
 
@@ -25,6 +25,8 @@ export default class PlaybackControlCommand extends VoiceCommand {
             case 'stop':
                 result = context.getProvider().getDJ().stop()
                 break
+            case 'shuffle':
+                result = context.getProvider().getDJ().shuffle()
         }
         return Promise.resolve(result ? Acknowledgement.OK : Acknowledgement.UNNECESSARY)
     }

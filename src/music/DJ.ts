@@ -9,6 +9,7 @@ import {Spotify} from './sources/Spotify/Spotify'
 import {Album} from './tracks/Album'
 import {Logger} from '../Logger'
 import {ExternalTrackInfo} from './tracks/ExternalTrack'
+import {Utils} from '../utils/Utils'
 
 export default class DJ {
     private readonly context: GuildContext
@@ -25,22 +26,22 @@ export default class DJ {
         this.context.getProvider().getAudioPlayer().setVolume(volume, relative)
     }
 
-    request(mode: QueryMode, query: string, requesterId: string, message?: Message): Promise<void> {
+    request(mode: QueryMode, query: string, shuffle: boolean, requesterId: string, message?: Message): Promise<void> {
         if (this.radio.isPlaying()) {
             this.radio.stop()
         }
         let playFunc: () => Promise<void>
         switch(mode) {
             case QueryMode.Album: {
-                playFunc = () => { return this.playAlbum(query, requesterId, message) }
+                playFunc = () => { return this.playAlbum(query, shuffle, requesterId, message) }
                 break
             }
             case QueryMode.Playlist: {
-                playFunc = () => { return this.playPlaylist(query, requesterId, message) }
+                playFunc = () => { return this.playPlaylist(query, shuffle, requesterId, message) }
                 break
             }
             default: {
-                playFunc = () => { return this.play(query, requesterId, message) }
+                playFunc = () => { return this.play(query, shuffle, requesterId, message) }
                 break
             }
         }
@@ -62,8 +63,11 @@ export default class DJ {
         })
     }
 
-    private play(query: string, requesterId: string, message?: Message): Promise<void> {
+    private play(query: string, shuffle: boolean, requesterId: string, message?: Message): Promise<void> {
         return Search.search(query).then((tracks) => {
+            if (shuffle) {
+                Utils.shuffleArray(tracks)
+            }
             this.playTracks(tracks, requesterId, message)
         })
     }
@@ -75,9 +79,12 @@ export default class DJ {
         })
     }
 
-    private playAlbum(query: string, requesterId: string, message?: Message): Promise<void> {
+    private playAlbum(query: string, shuffle: boolean, requesterId: string, message?: Message): Promise<void> {
         return Spotify.getTrackInfosFromAlbumSearch(query).then((album) => {
             this.onAlbumQueued(album, message)
+            if (shuffle) {
+                Utils.shuffleArray(album.tracks)
+            }
             Search.searchAlbum(album).then((tracks) => {
                 this.playTracks(tracks, requesterId, message)
                 this.onTracksQueued(tracks)
@@ -85,9 +92,12 @@ export default class DJ {
         })
     }
 
-    private playPlaylist(query: string, requesterId: string, message?: Message): Promise<void> {
+    private playPlaylist(query: string, shuffle: boolean, requesterId: string, message?: Message): Promise<void> {
         return Spotify.getTrackInfosFromPlaylistSearch(query).then((album) => {
             this.onAlbumQueued(album, message)
+            if (shuffle) {
+                Utils.shuffleArray(album.tracks)
+            }
             Search.searchAlbum(album).then((tracks) => {
                 this.playTracks(tracks, requesterId, message)
                 this.onTracksQueued(tracks)
@@ -126,6 +136,10 @@ export default class DJ {
 
     stop() {
         return this.radio.stop() || this.context.getProvider().getAudioPlayer().stop()
+    }
+
+    shuffle() {
+        return this.context.getProvider().getAudioPlayer().shuffle()
     }
 
     private playTracks(tracks: Track[], requesterId: string, message?: Message) {

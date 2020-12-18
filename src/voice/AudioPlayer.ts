@@ -4,6 +4,7 @@ import {Readable} from 'stream'
 import {GuildContext} from '../guild/Context'
 import {Track} from '../music/tracks/Track'
 import {Logger} from '../Logger'
+import {Utils} from '../utils/Utils'
 
 const HIGH_WATER_MARK = 6
 
@@ -36,7 +37,7 @@ export default class AudioPlayer {
         this.state = AudioPlayerState.IDLE
         this.volume = 25
     }
-    
+
     private getConnection(): VoiceConnection | undefined {
         return this.context.getVoiceConnection()
     }
@@ -89,6 +90,16 @@ export default class AudioPlayer {
 
     skip(): boolean {
         return this.playNext()
+    }
+
+    shuffle(): boolean {
+        if (this.trackQueue.length < 2) {
+            return false
+        }
+        const topElement = this.trackQueue.shift()!
+        Utils.shuffleArray(this.trackQueue)
+        this.trackQueue.unshift(topElement)
+        return true
     }
 
     queueInterrupt(stream: Readable, audioType: string, priority: number, callback: ()=>any = ()=>{}) {

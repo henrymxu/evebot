@@ -33,6 +33,15 @@ export namespace Utils {
         return result;
     }
 
+    export function shuffleArray(arr: any[]) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+
     export function getAllNestedKeysOfObject(obj: object) {
         const isObject = (val: any) => typeof val === 'object' && !Array.isArray(val)
         const addDelimiter = (a: any, b: any) => a ? `${a}.${b}` : b
