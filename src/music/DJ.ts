@@ -1,15 +1,15 @@
-import {Search} from './Search'
 import {GuildContext} from '../guild/Context'
 import {Message} from 'discord.js'
-import {Track} from './tracks/Track'
+import {Track, TrackInfo} from './tracks/Track'
 import {TrackMessageFactory} from '../communication/TrackMessageGenerator'
 import SpotifyRadio from './radio/SpotifyRadio'
 import {Radio, RadioContext} from './radio/Radio'
 import {Spotify} from './sources/Spotify/Spotify'
 import {Album} from './tracks/Album'
 import {Logger} from '../Logger'
-import {ExternalTrackInfo} from './tracks/ExternalTrack'
 import {Utils} from '../utils/Utils'
+import {TrackRetriever} from './TrackRetriever'
+import ExternalTrack from './tracks/ExternalTrack'
 
 export default class DJ {
     private readonly context: GuildContext
@@ -17,7 +17,7 @@ export default class DJ {
 
     constructor(context: GuildContext) {
         this.context = context
-        this.radio = new SpotifyRadio(context, (info: ExternalTrackInfo, requesterId: string, message?: Message) => {
+        this.radio = new SpotifyRadio(context, (info: TrackInfo, requesterId: string, message?: Message) => {
             this.playFromExternalTrackInfo(info, requesterId, message)
         })
     }
@@ -64,7 +64,7 @@ export default class DJ {
     }
 
     private play(query: string, shuffle: boolean, requesterId: string, message?: Message): Promise<void> {
-        return Search.search(query).then((tracks) => {
+        return TrackRetriever.retrieveTracks(query).then((tracks) => {
             if (shuffle) {
                 Utils.shuffleArray(tracks)
             }
@@ -72,11 +72,10 @@ export default class DJ {
         })
     }
 
-    private playFromExternalTrackInfo(info: ExternalTrackInfo, requesterId: string, message?: Message): Promise<void> {
-        const query = DJ.convertTrackToSearchableTrack(info)
-        return Search.search(query, info).then((tracks) => {
-            this.playTracks(tracks, requesterId, message)
-        })
+    private playFromExternalTrackInfo(externalInfo: TrackInfo, requesterId: string, message?: Message): Promise<void> {
+        const track = new ExternalTrack(externalInfo)
+        this.playTracks([track], requesterId, message)
+        return Promise.resolve()
     }
 
     private playAlbum(query: string, shuffle: boolean, requesterId: string, message?: Message): Promise<void> {
@@ -85,10 +84,9 @@ export default class DJ {
             if (shuffle) {
                 Utils.shuffleArray(album.tracks)
             }
-            Search.searchAlbum(album).then((tracks) => {
-                this.playTracks(tracks, requesterId, message)
-                this.onTracksQueued(tracks)
-            })
+            const tracks = album.tracks.map((info) => new ExternalTrack(info))
+            this.playTracks(tracks, requesterId, message)
+            this.onTracksQueued(tracks)
         })
     }
 
@@ -98,10 +96,9 @@ export default class DJ {
             if (shuffle) {
                 Utils.shuffleArray(album.tracks)
             }
-            Search.searchAlbum(album).then((tracks) => {
-                this.playTracks(tracks, requesterId, message)
-                this.onTracksQueued(tracks)
-            })
+            const tracks = album.tracks.map((info) => new ExternalTrack(info))
+            this.playTracks(tracks, requesterId, message)
+            this.onTracksQueued(tracks)
         })
     }
 
@@ -153,6 +150,7 @@ export default class DJ {
                 track.metaData = {requesterId: requesterId, source: message}
                 this.context.getProvider().getAudioPlayer().queueTrack(track)
             })
+            Logger.i(DJ.name, `Queued ${tracks.length} Tracks`)
         }
     }
 
@@ -178,12 +176,14 @@ export default class DJ {
         this.context.getProvider().getResponder().send({content: embed, id: track.id, message: track.metaData.source})
     }
 
-    onTrackCompleted(track: Track, forceStop: boolean = false) {
+    onTrackCompleted(track: Track) {
         Logger.i(DJ.name, `Finished playing: ${track.getTitle()}`, this.context)
         this.context.getProvider().getResponder().delete(track.id)
         this.context.getProvider().getResponder().delete('queue')
         this.context.getProvider().getResponder().delete('song')
+    }
 
+    onAudioPlayerFinished(forceStop: boolean = false) {
         if (!forceStop && this.radio.isPlaying()) {
             this.radio.next()
             this.radio.resume()
@@ -191,11 +191,6 @@ export default class DJ {
             // If there is no more songs in the queue, and radio was requested, start it
             this.radio.resume()
         }
-    }
-
-    private static convertTrackToSearchableTrack(info: ExternalTrackInfo): string {
-        const filteredName = info.name
-        return `${info.artist} - ${filteredName} - (Official Audio)`
     }
 }
 

@@ -1,8 +1,8 @@
 import {Utils} from '../../../utils/Utils'
 import {Keys} from '../../../Keys'
-import {ExternalTrackInfo} from '../../tracks/ExternalTrack'
 import {Album} from '../../tracks/Album'
 import {Logger} from '../../../Logger'
+import {TrackInfo} from '../../tracks/Track'
 const SpotifyWebAPI = require('spotify-web-api-node')
 
 const spotifyApi = new SpotifyWebAPI({
@@ -12,7 +12,7 @@ const spotifyApi = new SpotifyWebAPI({
 })
 
 export namespace Spotify {
-    export function resolveSpotifyLink(pathname: string): Promise<ExternalTrackInfo[]> {
+    export function resolveSpotifyLink(pathname: string): Promise<TrackInfo[]> {
         if (pathname.includes('playlist')) {
             const regex = new RegExp(/^\/playlist\/(\S*)$/)
             const id = pathname.match(regex)?.[1]
@@ -70,7 +70,7 @@ export namespace Spotify {
     }
 
     export async function getTrackInfosFromSeeds(artists: string[], genres: string[], tracks: string[],
-                                                 length: number): Promise<ExternalTrackInfo[]> {
+                                                 length: number): Promise<TrackInfo[]> {
         const token = await spotifyTokenPromise()
         const data = await spotifyApi.getRecommendations({
             seed_artists: artists,
@@ -92,7 +92,7 @@ export namespace Spotify {
         return convertResponseToSpotifyAlbum(album, tracks)
     }
 
-    export async function getTrackInfosFromAlbumID(albumID: string, accessToken?: string): Promise<ExternalTrackInfo[]> {
+    export async function getTrackInfosFromAlbumID(albumID: string, accessToken?: string): Promise<TrackInfo[]> {
         const token = await spotifyTokenPromise(accessToken)
         const albumResponse = await spotifyApi.getAlbumTracks(albumID)
         return convertResponseToSpotifyTracks(albumResponse.body.items)
@@ -109,13 +109,13 @@ export namespace Spotify {
         return convertResponseToSpotifyAlbum(playlist, tracks)
     }
 
-    export async function getTrackInfosFromPlaylistID(playlistID: string, accessToken?: string): Promise<ExternalTrackInfo[]> {
+    export async function getTrackInfosFromPlaylistID(playlistID: string, accessToken?: string): Promise<TrackInfo[]> {
         const token = await spotifyTokenPromise(accessToken)
         const playlistResponse = await spotifyApi.getPlaylist(playlistID, { fields: ['tracks'] })
         return convertResponseToSpotifyTracks(playlistResponse.body.tracks.items.map((playlistTrack: any) => playlistTrack.track))
     }
 
-    export async function getRandomizedTrackInfosFromArtistName(artist: string, count: number = 25): Promise<ExternalTrackInfo[]> {
+    export async function getRandomizedTrackInfosFromArtistName(artist: string, count: number = 25): Promise<TrackInfo[]> {
         const token = await spotifyTokenPromise()
         const artistID = await getArtistIDFromArtistName(artist)
         const artistResponse = await spotifyApi.getArtistAlbums(artistID)
@@ -128,7 +128,7 @@ export namespace Spotify {
         return convertResponseToSpotifyTracks(Utils.randomlySelectNElementsInArray(filteredTracks, count))
     }
 
-    export async function getTop10TracksInfosFromArtistName(artist: string): Promise<ExternalTrackInfo[]> {
+    export async function getTop10TracksInfosFromArtistName(artist: string): Promise<TrackInfo[]> {
         const token = await spotifyTokenPromise()
         const artistID = await getArtistIDFromArtistName(artist)
         const topTracksResponse = await spotifyApi.getArtistTopTracks(artistID, 'US')
@@ -146,7 +146,7 @@ async function spotifyTokenPromise(token?: string): Promise<string> {
     return credentials.body['access_token']
 }
 
-function convertResponseToSpotifyAlbum(album: any, tracks: ExternalTrackInfo[]): Album {
+function convertResponseToSpotifyAlbum(album: any, tracks: TrackInfo[]): Album {
     // If there is an owner, that means it is a playlist
     const artist = album.artists ? album.artists[0].name : album.owner.display_name
     return {
@@ -161,17 +161,16 @@ function convertResponseToSpotifyAlbum(album: any, tracks: ExternalTrackInfo[]):
     }
 }
 
-function convertResponseToSpotifyTracks(tracks: any[]): ExternalTrackInfo[] {
+function convertResponseToSpotifyTracks(tracks: any[]): TrackInfo[] {
     return tracks.filter((track: any) => track !== null).map((track) => convertResponseToSpotifyTrack(track))
 }
 
-function convertResponseToSpotifyTrack(result: any): ExternalTrackInfo {
+function convertResponseToSpotifyTrack(result: any): TrackInfo {
     return {
         id: result.id,
-        name: result.name,
+        url: result.external_urls.spotify,
+        title: result.name,
         artist: result.artists[0].name,
-        metadata: {
-            externalURL: result.external_urls.spotify
-        }
+        length: result.duration_ms / 1000,
     }
 }

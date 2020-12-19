@@ -12,9 +12,9 @@ import {RadioConfiguration} from '../music/radio/Radio'
 namespace TrackMessageGenerator {
     export function createSongTrackNowPlayingEmbed(track: YoutubeTrack): MessageEmbed {
         const userMentionString = GuildUtils.createUserMentionString(track.metaData.requesterId)
-        const message = `[${track.getYoutubeTrackInfo().title}](${track.getYoutubeTrackInfo().url}) [${userMentionString}]`
+        const message = `[${track.getTitle()}](${track.getURL()}) [${userMentionString}]`
         return MessageGenerator.getBaseEmbed().setTitle('Now Playing').setDescription(message)
-            .setThumbnail(track.getYoutubeTrackInfo().thumbnailURL)
+            .setThumbnail(track.getThumbnailURL() || '')
     }
 
     export function createLinkTrackCurrentlyPlayingEmbed(track: Track, url: string): MessageEmbed {
@@ -38,14 +38,14 @@ export namespace TrackMessageFactory {
 
     export function createCurrentlyPlayingEmbed(track: Track): MessageEmbed {
         if (track instanceof YoutubeTrack) {
-            return TrackMessageGenerator.createLinkTrackCurrentlyPlayingEmbed(track, track.getYoutubeTrackInfo().url)
+            return TrackMessageGenerator.createLinkTrackCurrentlyPlayingEmbed(track, track.getURL())
         }
         throw new Error('Missing implementation for Track Embed')
     }
 
     export function createTrackNewlyQueuedEmbed(track: Track): MessageEmbed {
         if (track instanceof YoutubeTrack) {
-            return TrackMessageGenerator.createLinkTrackNewlyQueuedEmbed(track, track.getYoutubeTrackInfo().url)
+            return TrackMessageGenerator.createLinkTrackNewlyQueuedEmbed(track, track.getURL())
         }
         throw new Error('Missing implementation for Track Embed')
     }
@@ -99,9 +99,9 @@ export namespace TrackMessageFactory {
         response += TableGenerator.createTable(tableHeaders, tableData)
         const tableHeaders2 = ['Previous Track', 'Current Track', 'Next Track']
 
-        const previousTrackName = radioConfiguration.playedTracks[0]?.name || ''
-        const nextTrackName = radioConfiguration.recommendedTracks[0]?.name || ''
-        const trackNames = [previousTrackName, radioConfiguration.currentTrack?.name || '', nextTrackName]
+        const previousTrackName = radioConfiguration.playedTracks[0]?.title || ''
+        const nextTrackName = radioConfiguration.recommendedTracks[0]?.title || ''
+        const trackNames = [previousTrackName, radioConfiguration.currentTrack?.title || '', nextTrackName]
         const previousTrackArtist = radioConfiguration.playedTracks[0]?.artist || ''
         const nextTrackArtist = radioConfiguration.recommendedTracks[0]?.artist || ''
         const trackArtists = [previousTrackArtist, radioConfiguration.currentTrack?.artist || '', nextTrackArtist]

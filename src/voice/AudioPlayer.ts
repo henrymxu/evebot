@@ -81,7 +81,7 @@ export default class AudioPlayer {
     }
 
     stop(): boolean {
-        this.endTrack(this.trackQueue.shift(), true)
+        this.endTrack(this.trackQueue.shift())
         this.trackQueue.forEach(track => { track.setFinished() })
         this.getConnection()?.dispatcher?.destroy()
         this.initialize()
@@ -210,14 +210,15 @@ export default class AudioPlayer {
             }
         }
         this.prepareToPlay(false)
+        this.context.getProvider().getDJ().onAudioPlayerFinished()
         return current !== undefined
     }
 
-    private endTrack(track?: Track, forceStop: boolean = false) {
+    private endTrack(track?: Track) {
         if (track) {
             this.getConnection()?.dispatcher?.destroy()
             track.setFinished()
-            this.context.getProvider().getDJ().onTrackCompleted(track, forceStop)
+            this.context.getProvider().getDJ().onTrackCompleted(track)
             this.completedTracks.push(track)
         }
     }

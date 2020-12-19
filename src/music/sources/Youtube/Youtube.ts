@@ -1,6 +1,7 @@
 import {SearchResult, TrackSource} from '../../Search'
 import {Keys} from '../../../Keys'
 import YoutubeAPI, {YouTubeSearchResults} from 'youtube-search'
+import {TrackInfo} from '../../tracks/Track'
 
 export default class Youtube implements TrackSource {
     private readonly options: YoutubeAPI.YouTubeSearchOptions
@@ -30,7 +31,7 @@ export default class Youtube implements TrackSource {
         })
     }
 
-    getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<SearchResult> {
+    getTrackURLsFromPlaylistSearch(playlistURL: string): Promise<TrackInfo[]> {
         return Promise.reject('Not supported on Youtube')
     }
 
