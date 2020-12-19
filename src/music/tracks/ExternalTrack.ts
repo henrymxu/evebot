@@ -6,10 +6,12 @@ import {Search} from '../Search'
 
 export default class ExternalTrack extends YoutubeTrack {
     private readonly externalInfo: TrackInfo
+    private readonly idealAudio: boolean
 
-    constructor(externalTrackInfo: TrackInfo) {
+    constructor(externalTrackInfo: TrackInfo, idealAudio: boolean = false) {
         super(externalTrackInfo)
         this.externalInfo = externalTrackInfo
+        this.idealAudio = idealAudio
     }
 
     protected getInfo(): TrackInfo {
@@ -27,6 +29,7 @@ export default class ExternalTrack extends YoutubeTrack {
     convertTrackInfoToSearchableName(): string {
         // const filteredName = info.title
         // return `${info.artist} - ${filteredName} - (Official Audio)`
-        return `${this.externalInfo.artist} - ${this.externalInfo.title}`
+        const baseName = `${this.externalInfo.artist} - ${this.externalInfo.title}`
+        return `${baseName}${this.idealAudio ? ' - (Official Audio)' : ''}`
     }
 }

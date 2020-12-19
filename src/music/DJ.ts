@@ -18,7 +18,8 @@ export default class DJ {
     constructor(context: GuildContext) {
         this.context = context
         this.radio = new SpotifyRadio(context, (info: TrackInfo, requesterId: string, message?: Message) => {
-            this.playFromExternalTrackInfo(info, requesterId, message)
+            const track = new ExternalTrack(info, true)
+            this.playTracks([track], requesterId, message)
         })
     }
 
@@ -107,12 +108,6 @@ export default class DJ {
             }
             this.playTracks(tracks, requesterId, message)
         })
-    }
-
-    private playFromExternalTrackInfo(externalInfo: TrackInfo, requesterId: string, message?: Message): Promise<void> {
-        const track = new ExternalTrack(externalInfo)
-        this.playTracks([track], requesterId, message)
-        return Promise.resolve()
     }
 
     private playAlbum(query: string, shuffle: boolean, requesterId: string, message?: Message): Promise<void> {

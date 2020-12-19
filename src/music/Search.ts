@@ -8,7 +8,10 @@ const YoutubeSource = new Youtube()
 export namespace Search {
     export function search(query: string): Promise<TrackInfo> {
         return YoutubeSource.getTrackURLFromSearch(query).then((result: SearchResult) => {
-            return retrieveYoutubeInfo(result.result!.urls)
+            return retrieveYoutubeInfo(result.result!.urls).then((info) => {
+                Logger.d(TAG, `Found ${info.title} >> ${query}`)
+                return info
+            })
         })
     }
 
