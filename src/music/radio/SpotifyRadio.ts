@@ -2,11 +2,6 @@ import {Message} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {Spotify} from '../sources/Spotify/Spotify'
 import {Radio, RadioContext, RadioPlay} from './Radio'
-import {Logger} from '../../Logger'
-import {ExternalTrackInfo} from '../tracks/ExternalTrack'
-
-const TAG = 'SpotifyRadio'
-
 export default class SpotifyRadio extends Radio {
     constructor(context: GuildContext, play: RadioPlay) {
         super(context, play)

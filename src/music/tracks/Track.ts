@@ -73,6 +73,10 @@ export abstract class Track {
 
     abstract getLength(): number
 
+    abstract getURL(): string
+
+    abstract getThumbnailURL(): string | undefined
+
     abstract loadStream(context: GuildContext): Promise<Readable>
 
     abstract getStream(): Readable | undefined
@@ -87,9 +91,14 @@ export enum TrackState {
     PAUSED
 }
 
-export interface TrackItem {
-    track: Track
-    metaData: TrackMetaData
+export interface TrackInfo {
+    id: string
+    url: string
+    title: string
+    artist: string
+    length: number
+    description?: string
+    thumbnailURL?: string
 }
 
 export interface TrackMetaData {

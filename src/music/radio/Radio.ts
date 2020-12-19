@@ -1,8 +1,8 @@
 import {Message} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {GlobalContext} from '../../GlobalContext'
-import {ExternalTrackInfo} from '../tracks/ExternalTrack'
 import {Logger} from '../../Logger'
+import {TrackInfo} from '../tracks/Track'
 
 export abstract class Radio {
     protected readonly play: RadioPlay
@@ -88,7 +88,7 @@ export abstract class Radio {
     }
 }
 
-export type RadioPlay = (info: ExternalTrackInfo, requesterId: string, message?: Message) => void
+export type RadioPlay = (info: TrackInfo, requesterId: string, message?: Message) => void
 
 export enum RadioMode {
     TOP_10,
@@ -106,8 +106,8 @@ export interface RadioContext {
 
 export interface RadioConfiguration {
     context: RadioContext
-    currentTrack: ExternalTrackInfo | undefined,
-    playedTracks: ExternalTrackInfo[]
-    recommendedTracks: ExternalTrackInfo[]
+    currentTrack: TrackInfo | undefined,
+    playedTracks: TrackInfo[]
+    recommendedTracks: TrackInfo[]
     message?: Message
 }

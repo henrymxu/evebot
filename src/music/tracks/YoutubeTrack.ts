@@ -1,4 +1,4 @@
-import {Track, TrackState} from './Track'
+import {Track, TrackInfo, TrackState} from './Track'
 import {Readable} from 'stream'
 import ytdl from 'discord-ytdl-core'
 import {GuildContext} from '../../guild/Context'
@@ -7,17 +7,17 @@ import {Logger} from '../../Logger'
 import {SpeechGeneratorResult} from '../../speech/Interfaces'
 
 export default class YoutubeTrack extends Track {
+    protected youtubeInfo: TrackInfo | undefined
     private stream: Readable | undefined
-    private readonly youtubeInfo: YoutubeTrackInfo
     private announcementLength: number = 0
 
-    constructor(id: string, info: YoutubeTrackInfo) {
-        super(id)
+    constructor(info: TrackInfo) {
+        super(info.id)
         this.youtubeInfo = info
     }
 
-    getYoutubeTrackInfo(): YoutubeTrackInfo {
-        return this.youtubeInfo
+    protected getInfo(): TrackInfo {
+        return this.youtubeInfo!
     }
 
     getElapsedTimeInSeconds(): number {
@@ -26,15 +26,23 @@ export default class YoutubeTrack extends Track {
 
     getTitle(): string {
         // TODO: Truncate string
-        return this.youtubeInfo.title
+        return this.getInfo().title
     }
 
     getArtist(): string {
-        return this.youtubeInfo.channel
+        return this.getInfo().artist
     }
 
     getLength(): number {
-        return this.getYoutubeTrackInfo().length
+        return this.getInfo().length
+    }
+
+    getURL(): string {
+        return this.getInfo().url || this.youtubeInfo?.url || ''
+    }
+
+    getThumbnailURL(): string | undefined {
+        return this.getInfo().thumbnailURL
     }
 
     getStream(): Readable | undefined{
@@ -42,11 +50,14 @@ export default class YoutubeTrack extends Track {
     }
 
     loadStream(context: GuildContext): Promise<Readable> {
+        if (!this.youtubeInfo) {
+            return Promise.reject('Unable to load Track!')
+        }
         this.state = TrackState.LOADING
         const sGen = context.getVoiceDependencyProvider().getSpeechGenerator()
-        const announceResult = sGen ? sGen.asyncGenerateSpeechFromText(`Now Playing ${this.youtubeInfo.title}`)
+        const announceResult = sGen ? sGen.asyncGenerateSpeechFromText(`Now Playing ${this.getInfo().title}`)
             : Promise.resolve(undefined)
-        const songStream = ytdl(this.youtubeInfo.url, {
+        const songStream = ytdl(this.youtubeInfo!.url, {
             filter: 'audioonly',
             opusEncoded: true,
             highWaterMark: (1 << 25)
@@ -63,13 +74,4 @@ export default class YoutubeTrack extends Track {
             throw err
         })
     }
-}
-
-export interface YoutubeTrackInfo {
-    url: string
-    title: string
-    channel: string
-    length: number
-    description: string
-    thumbnailURL: string
 }
