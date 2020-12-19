@@ -22,6 +22,43 @@ export default class DJ {
         })
     }
 
+    getRadio(): Radio {
+        return this.radio
+    }
+
+    getQueue(): Track[]  {
+        return this.context.getProvider().getAudioPlayer().getQueue()
+    }
+
+    getCurrentSong(): Track | undefined {
+        const trackInfos = this.context.getProvider().getAudioPlayer().getQueue()
+        return trackInfos[0]
+    }
+
+    isPlaying(): boolean {
+        return this.getCurrentSong() !== undefined
+    }
+
+    skip(count: number): boolean {
+        return this.context.getProvider().getAudioPlayer().skip(count)
+    }
+
+    pause(): boolean {
+        return this.context.getProvider().getAudioPlayer().pause()
+    }
+
+    resume() {
+        return this.context.getProvider().getAudioPlayer().resume()
+    }
+
+    stop() {
+        return this.radio.stop() || this.context.getProvider().getAudioPlayer().stop()
+    }
+
+    shuffle() {
+        return this.context.getProvider().getAudioPlayer().shuffle()
+    }
+
     volume(volume: number, relative: boolean = false) {
         this.context.getProvider().getAudioPlayer().setVolume(volume, relative)
     }
@@ -100,43 +137,6 @@ export default class DJ {
             this.playTracks(tracks, requesterId, message)
             this.onTracksQueued(tracks)
         })
-    }
-
-    getRadio(): Radio {
-        return this.radio
-    }
-
-    getQueue(): Track[]  {
-        return this.context.getProvider().getAudioPlayer().getQueue()
-    }
-
-    getCurrentSong(): Track | undefined {
-        const trackInfos = this.context.getProvider().getAudioPlayer().getQueue()
-        return trackInfos[0]
-    }
-
-    isPlaying(): boolean {
-        return this.getCurrentSong() !== undefined
-    }
-
-    skip(count: number): boolean {
-        return this.context.getProvider().getAudioPlayer().skip(count)
-    }
-
-    pause(): boolean {
-        return this.context.getProvider().getAudioPlayer().pause()
-    }
-
-    resume() {
-        return this.context.getProvider().getAudioPlayer().resume()
-    }
-
-    stop() {
-        return this.radio.stop() || this.context.getProvider().getAudioPlayer().stop()
-    }
-
-    shuffle() {
-        return this.context.getProvider().getAudioPlayer().shuffle()
     }
 
     private playTracks(tracks: Track[], requesterId: string, message?: Message) {
