@@ -69,7 +69,7 @@ export default class RadioCommand extends VoiceCommand {
                     message: message, options: {code: 'Markdown'}, removeAfter: 30
                 })
             } else {
-                throw new CommandExecutionError(`There is no radio playing! Use ${context.getPrefix()}radio command to start one!`)
+                throw new CommandExecutionError(`There is no radio playing! Use ${context.getPrefix()}radio command to start / queue one!`)
             }
         }
         if (context.getProvider().getDJ().getRadio().isPlaying()) {

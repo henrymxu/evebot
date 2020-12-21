@@ -1,58 +1,42 @@
 import {Command, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {GuildContext} from '../../guild/Context'
-import {Message, MessageEmbed, User} from 'discord.js'
-import {Track} from '../../music/tracks/Track'
-import {MessageGenerator} from '../../communication/MessageGenerator'
+import {Message, User} from 'discord.js'
 import {TrackMessageGenerator} from '../../communication/TrackMessageGenerator'
 
 export default class QueueCommand extends Command {
     readonly options: CommandOptions = {
         name: 'Queue',
-        keywords: ['queue', 'song'],
+        keywords: ['queue', 'track'],
         group: 'music',
-        descriptions: ['Display entire queue', 'Display current song'],
+        descriptions: ['Display current queue', 'Display current track'],
         arguments: []
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         switch(args.get('keyword')) {
             case 'queue': {
-                const response = createQueueMessage(context, context.getProvider().getDJ().getQueue())
-                let options = undefined
-                if (!(response instanceof MessageEmbed)) {
-                    options = {code: 'Markdown'}
+                if (context.getProvider().getDJ().getQueue().length === 0) {
+                    throw new CommandExecutionError(`Queue is empty! Use ${context.getPrefix()}play command to queue some tracks!`)
                 }
-                return Promise.resolve({content: response, id: 'queue',
-                    message: message, options: options, removeAfter: 30})
+                if (context.getProvider().getDJ().getRadio().isPlaying()) {
+                    const embed = TrackMessageGenerator.createRadioMessage(context,
+                        context.getProvider().getDJ().getRadio().getRadioConfiguration()!)
+                    return Promise.resolve({ content: embed, id: 'queue', message: message, removeAfter: 30 })
+                }
+                return Promise.resolve(TrackMessageGenerator.createDynamicQueuedTracksMessage(context,
+                    context.getProvider().getDJ().getQueue(), message))
             }
-            case 'song': {
-                const embed = createSongMessage(context, context.getProvider().getDJ().getCurrentSong())
-                return Promise.resolve({content: embed, id: 'song', message: message, removeAfter: 30})
+            case 'track': {
+                const track = context.getProvider().getDJ().getCurrentTrack()
+                if (!track) {
+                    throw new CommandExecutionError(`No track playing! Use ${context.getPrefix()}play command to play one!`)
+                }
+                const embed = TrackMessageGenerator.createCurrentlyPlayingEmbed(track)
+                return Promise.resolve({ content: embed, id: 'track', message: message, removeAfter: 30 })
             }
             default: {
                 throw new CommandExecutionError('Command was executed with incorrect keywords')
             }
         }
     }
-}
-
-function createQueueMessage(context: GuildContext, tracks: Track[]): MessageEmbed | string {
-    if (tracks.length === 0) {
-        return createErrorMessage(context)
-    } else if (context.getProvider().getDJ().getRadio().isPlaying()) {
-        return TrackMessageGenerator
-            .createRadioMessage(context, context.getProvider().getDJ().getRadio().getRadioConfiguration()!)
-    }
-    return TrackMessageGenerator.createQueuedTracksMessage(context, tracks)
-}
-
-function createSongMessage(context: GuildContext, track: Track | undefined): MessageEmbed {
-    if (!track) {
-        return createErrorMessage(context)
-    }
-    return TrackMessageGenerator.createCurrentlyPlayingEmbed(track)
-}
-
-function createErrorMessage(context: GuildContext): MessageEmbed {
-    return MessageGenerator.createErrorEmbed(`Queue is empty! Use ${context.getPrefix()}play command to queue some tracks!`)
 }
