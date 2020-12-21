@@ -104,7 +104,12 @@ export default class Responder {
             const response = action.handler(reaction.emoji.name)
             if (response.newMessage) {
                 if (response.isEdit) {
-                    message.edit(response.newMessage)
+                    message.edit(response.newMessage, {
+                        content: botMessage.options?.content,
+                        embed: botMessage.options?.embed,
+                        code: botMessage.options?.code,
+                        allowedMentions: botMessage.options?.allowedMentions
+                    })
                 } else {
                     this.send(response.newMessage as BotMessage)
                 }
