@@ -3,7 +3,7 @@ import {GuildContext} from '../../guild/Context'
 import {Message, MessageEmbed, User} from 'discord.js'
 import {Track} from '../../music/tracks/Track'
 import {MessageGenerator} from '../../communication/MessageGenerator'
-import {TrackMessageFactory} from '../../communication/TrackMessageGenerator'
+import {TrackMessageGenerator} from '../../communication/TrackMessageGenerator'
 
 export default class QueueCommand extends Command {
     readonly options: CommandOptions = {
@@ -40,17 +40,17 @@ function createQueueMessage(context: GuildContext, tracks: Track[]): MessageEmbe
     if (tracks.length === 0) {
         return createErrorMessage(context)
     } else if (context.getProvider().getDJ().getRadio().isPlaying()) {
-        return TrackMessageFactory
+        return TrackMessageGenerator
             .createRadioMessage(context, context.getProvider().getDJ().getRadio().getRadioConfiguration()!)
     }
-    return TrackMessageFactory.createQueuedTracksMessage(context, tracks)
+    return TrackMessageGenerator.createQueuedTracksMessage(context, tracks)
 }
 
 function createSongMessage(context: GuildContext, track: Track | undefined): MessageEmbed {
     if (!track) {
         return createErrorMessage(context)
     }
-    return TrackMessageFactory.createCurrentlyPlayingEmbed(track)
+    return TrackMessageGenerator.createCurrentlyPlayingEmbed(track)
 }
 
 function createErrorMessage(context: GuildContext): MessageEmbed {

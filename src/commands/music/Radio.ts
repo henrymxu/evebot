@@ -3,7 +3,7 @@ import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {ArgumentType, CommandAck, CommandExecutionError, CommandOptions} from '../Command'
 import {Radio, RadioContext, RadioMode} from '../../music/radio/Radio'
-import {TrackMessageFactory} from '../../communication/TrackMessageGenerator'
+import {TrackMessageGenerator} from '../../communication/TrackMessageGenerator'
 import {Acknowledgement} from '../../communication/Responder'
 
 export default class RadioCommand extends VoiceCommand {
@@ -65,7 +65,7 @@ export default class RadioCommand extends VoiceCommand {
             const radioConfiguration = context.getProvider().getDJ().getRadio().getRadioConfiguration()
             if (radioConfiguration) {
                 return Promise.resolve({
-                    content: TrackMessageFactory.createRadioMessage(context, radioConfiguration),
+                    content: TrackMessageGenerator.createRadioMessage(context, radioConfiguration),
                     message: message, options: {code: 'Markdown'}, removeAfter: 30
                 })
             } else {
