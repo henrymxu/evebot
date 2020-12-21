@@ -31,13 +31,13 @@ export default class DJ {
         return this.context.getProvider().getAudioPlayer().getQueue()
     }
 
-    getCurrentSong(): Track | undefined {
+    getCurrentTrack(): Track | undefined {
         const trackInfos = this.context.getProvider().getAudioPlayer().getQueue()
         return trackInfos[0]
     }
 
     isPlaying(): boolean {
-        return this.getCurrentSong() !== undefined
+        return this.getCurrentTrack() !== undefined
     }
 
     skip(count: number): boolean {

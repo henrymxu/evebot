@@ -6,9 +6,9 @@ import {TrackMessageGenerator} from '../../communication/TrackMessageGenerator'
 export default class QueueCommand extends Command {
     readonly options: CommandOptions = {
         name: 'Queue',
-        keywords: ['queue', 'song'],
+        keywords: ['queue', 'track'],
         group: 'music',
-        descriptions: ['Display entire queue', 'Display current song'],
+        descriptions: ['Display current queue', 'Display current track'],
         arguments: []
     }
 
@@ -26,13 +26,13 @@ export default class QueueCommand extends Command {
                 return Promise.resolve(TrackMessageGenerator.createDynamicQueuedTracksMessage(context,
                     context.getProvider().getDJ().getQueue(), message))
             }
-            case 'song': {
-                const track = context.getProvider().getDJ().getCurrentSong()
+            case 'track': {
+                const track = context.getProvider().getDJ().getCurrentTrack()
                 if (!track) {
-                    throw new CommandExecutionError(`No song playing! Use ${context.getPrefix()}play command to play one!`)
+                    throw new CommandExecutionError(`No track playing! Use ${context.getPrefix()}play command to play one!`)
                 }
                 const embed = TrackMessageGenerator.createCurrentlyPlayingEmbed(track)
-                return Promise.resolve({ content: embed, id: 'song', message: message, removeAfter: 30 })
+                return Promise.resolve({ content: embed, id: 'track', message: message, removeAfter: 30 })
             }
             default: {
                 throw new CommandExecutionError('Command was executed with incorrect keywords')

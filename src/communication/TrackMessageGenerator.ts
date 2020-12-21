@@ -34,7 +34,7 @@ export namespace TrackMessageGenerator {
             content: actionHandler.initialize(),
             id: 'queue',
             message: message,
-            options: {code: 'Markdown'},
+            options: { code: 'Markdown' },
             removeAfter: 30,
             action: {
                 handler: DynamicTableGenerator.getHandler(actionHandler),
@@ -74,9 +74,9 @@ export namespace TrackMessageGenerator {
         const tableData2 = [trackNames, trackArtists]
         response += TableGenerator.createTable(tableHeaders2, tableData2)
         if (context.getProvider().getDJ().getRadio().isPlaying()) {
-            const currentSong = context.getProvider().getDJ().getCurrentSong()
-            if (currentSong) {
-                response += `${createTrackProgressBar(currentSong)}`
+            const currentTrack = context.getProvider().getDJ().getCurrentTrack()
+            if (currentTrack) {
+                response += `${createTrackProgressBar(currentTrack)}`
             }
         }
         return response
@@ -103,7 +103,7 @@ function createQueuedTracksTable(context: GuildContext, tracks: Track[]): string
 
 function createQueuedTracksAdditionalMessage(context: GuildContext, tracks: Track[]): string {
     let response = ''
-    const currentTrack = context.getProvider().getDJ().getCurrentSong()
+    const currentTrack = context.getProvider().getDJ().getCurrentTrack()
     if (currentTrack) {
         response += `${createTrackProgressBar(currentTrack)}\n`
     }
