@@ -105,7 +105,6 @@ export default class Responder {
             if (response.newMessage) {
                 if (response.isEdit) {
                     message.edit(response.newMessage, {
-                        content: botMessage.options?.content,
                         embed: botMessage.options?.embed,
                         code: botMessage.options?.code,
                         allowedMentions: botMessage.options?.allowedMentions

@@ -1,12 +1,13 @@
-import {MessageEmbed} from 'discord.js'
+import {Message, MessageEmbed} from 'discord.js'
 import {Track} from '../music/tracks/Track'
 import {MessageGenerator} from './MessageGenerator'
-import {TableGenerator} from './TableGenerator'
+import {DynamicTableGenerator, TableGenerator} from './TableGenerator'
 import {GuildContext} from '../guild/Context'
 import {Album} from '../music/tracks/Album'
 import {Utils} from '../utils/Utils'
 import {GuildUtils} from '../utils/GuildUtils'
 import {RadioConfiguration} from '../music/radio/Radio'
+import {BotMessage} from './Responder'
 
 export namespace TrackMessageGenerator {
     export function createNowPlayingEmbed(track: Track): MessageEmbed {
@@ -26,31 +27,20 @@ export namespace TrackMessageGenerator {
         return MessageGenerator.getBaseEmbed().setDescription(message)
     }
 
-    export function createQueuedTracksMessage(context: GuildContext, tracks: Track[]): string {
-        const tableHeaders = ['Track Name', 'Artist', 'Requester', 'Length']
-        const tableData: string[][] = []
-        let totalLength = 0
-        let currentTrackProgress: string = ''
-        tracks.forEach((track) => {
-            let title = Utils.truncate(track.getTitle(), 25)
-            title = track.isPlaying() || track.isPaused() ? `< ${title} > `: title
-            let length = Utils.convertSecondsToTimeString(track.getLength())
-            tableData.push([title, track.getArtist(), track.getRequester(context) || '', length])
-            totalLength += track.getLength()
-            if (track.isPlaying() || track.isPaused()) {
-                currentTrackProgress = createTrackProgressBar(track)
+    export function createDynamicQueuedTracksMessage(context: GuildContext, tracks: Track[], message?: Message): BotMessage {
+        const actionHandler = new DynamicTableGenerator(context,
+            context.getProvider().getDJ().getQueue(), createQueuedTracksTable, 10, createQueuedTracksAdditionalMessage)
+        return {
+            content: actionHandler.initialize(),
+            id: 'queue',
+            message: message,
+            options: {code: 'Markdown'},
+            removeAfter: 30,
+            action: {
+                handler: DynamicTableGenerator.getHandler(actionHandler),
+                options: actionHandler.emojiOptions()
             }
-        })
-        let response = `${TableGenerator.createTable(tableHeaders, tableData)}\n`
-        if (currentTrackProgress) {
-            response += `${currentTrackProgress}\n`
         }
-        response += `# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}\n`
-        if (context.getProvider().getDJ().getRadio().isQueued()) {
-            const msg = `A radio has been queued to start after all songs have been completed, use ${context.getPrefix()}radio for details`
-            response += msg
-        }
-        return response
     }
 
     export function createAlbumQueuedEmbed(album: Album): MessageEmbed {
@@ -91,6 +81,39 @@ export namespace TrackMessageGenerator {
         }
         return response
     }
+}
+
+function createQueuedTracksTable(context: GuildContext, tracks: Track[]): string {
+    const tableHeaders = ['Track Name', 'Artist', 'Requester', 'Length']
+    const tableData: string[][] = []
+    let totalLength = 0
+    let currentTrackProgress: string = ''
+    tracks.forEach((track) => {
+        let title = Utils.truncate(track.getTitle(), 25)
+        title = track.isPlaying() || track.isPaused() ? `< ${title} > `: title
+        let length = Utils.convertSecondsToTimeString(track.getLength())
+        tableData.push([title, track.getArtist(), track.getRequester(context) || '', length])
+        totalLength += track.getLength()
+        if (track.isPlaying() || track.isPaused()) {
+            currentTrackProgress = createTrackProgressBar(track)
+        }
+    })
+    return `${TableGenerator.createTable(tableHeaders, tableData)}`
+}
+
+function createQueuedTracksAdditionalMessage(context: GuildContext, tracks: Track[]): string {
+    let response = ''
+    const currentTrack = context.getProvider().getDJ().getCurrentSong()
+    if (currentTrack) {
+        response += `${createTrackProgressBar(currentTrack)}\n`
+    }
+    const totalLength = tracks.map(track => track.getLength()).reduce((totalLength, track) => totalLength + track)
+    response += `# Total Queue Time: ${Utils.convertSecondsToTimeString(totalLength)}\n`
+    if (context.getProvider().getDJ().getRadio().isQueued()) {
+        const msg = `A radio has been queued to start after all songs have finished\nUse ${context.getPrefix()}radio for details`
+        response += msg
+    }
+    return response
 }
 
 function createTrackProgressBar(track: Track): string {

@@ -155,20 +155,20 @@ export default class DJ {
     }
 
     private onTracksQueued(tracks: Track[]) {
-        const message = TrackMessageGenerator.createQueuedTracksMessage(this.context, tracks)
-        this.context.getProvider().getResponder()
-            .send({content: message, id: 'queue', message: tracks[0].metaData.source, options: {code: 'Markdown'}})
+        const message = TrackMessageGenerator.createDynamicQueuedTracksMessage(this.context,
+            tracks, tracks[0].metaData.source)
+        this.context.getProvider().getResponder().send(message)
     }
 
     private onTrackQueued(track: Track) {
         const embed = TrackMessageGenerator.createTrackNewlyQueuedEmbed(track)
-        this.context.getProvider().getResponder().send({content: embed, id: track.id, message: track.metaData.source})
+        this.context.getProvider().getResponder().send({ content: embed, id: track.id, message: track.metaData.source })
     }
 
     onTrackStarted(track: Track) {
         Logger.i(DJ.name, `Started playing: ${track.getTitle()}`, this.context)
         const embed = TrackMessageGenerator.createNowPlayingEmbed(track)
-        this.context.getProvider().getResponder().send({content: embed, id: track.id, message: track.metaData.source})
+        this.context.getProvider().getResponder().send({ content: embed, id: track.id, message: track.metaData.source })
     }
 
     onTrackCompleted(track: Track) {
