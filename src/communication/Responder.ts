@@ -1,15 +1,14 @@
 import {GuildContext} from '../guild/Context'
-import {Message, MessageEmbed, MessageOptions, TextChannel} from 'discord.js'
+import {Message, MessageEmbed, MessageOptions, MessageReaction, TextChannel, User} from 'discord.js'
 import {Communicator} from './Communicator'
 import {MessageGenerator} from './MessageGenerator'
 import {GlobalContext} from '../GlobalContext'
 import {GuildUtils} from '../utils/GuildUtils'
 
-const TAG = 'Responder'
-
 export default class Responder {
     private readonly context: GuildContext
     private messageCache: Map<string, Message[]> = new Map()
+    private messageDeleteTimeouts: Map<string, NodeJS.Timeout> = new Map()
     private typingStatus: Set<string> = new Set()
     constructor(context: GuildContext) {
         this.context = context
@@ -49,6 +48,9 @@ export default class Responder {
                 if (message.removeAfter) {
                     this.delete(messageResult, message.removeAfter)
                 }
+                if (message.action) {
+                    this.registerMessageAction(messageResult, message)
+                }
             })
             return results
         }).catch(err => {
@@ -60,9 +62,11 @@ export default class Responder {
         const messages = !(source instanceof Message) ? this.messageCache.get(source) : [source]
         if (messages) {
             messages.forEach((message) => {
-                message.delete({ timeout: delay * 1000 }).catch(err => {
-                    // Ignore error
-                })
+                this.setNewDeleteTimeout(message.id, () => {
+                    if (!message.deleted) {
+                        message.delete()
+                    }
+                }, delay * 1000)
             })
         }
     }
@@ -83,6 +87,43 @@ export default class Responder {
         const textChannel = source ? source.channel as TextChannel : this.context.getTextChannel()
         Communicator.stopTyping(textChannel)
     }
+
+    private registerMessageAction(message: Message, botMessage: BotMessage) {
+        const action = botMessage.action!
+        action.options.forEach((emoji) => {
+            message.react(emoji)
+        })
+        const reactionFilter = (reaction: MessageReaction, user: User) => {
+            if (user.bot || (action.senderOnly && message.author.id !== user.id)) {
+                return false
+            }
+            return action.options.has(reaction.emoji.toString())
+        }
+        const collector = message.createReactionCollector(reactionFilter)
+        collector.on('collect', reaction => {
+            const response = action.handler(reaction.emoji.name)
+            if (response.newMessage) {
+                if (response.isEdit) {
+                    message.edit(response.newMessage)
+                } else {
+                    this.send(response.newMessage as BotMessage)
+                }
+            }
+            if (botMessage.removeAfter) {
+                this.delete(message, botMessage.removeAfter)
+            }
+        })
+    }
+
+    private setNewDeleteTimeout(id: string, handler: () => void, delay: number) {
+        const oldTimeout = this.messageDeleteTimeouts.get(id)
+        if (oldTimeout) {
+            clearTimeout(oldTimeout)
+            this.messageDeleteTimeouts.delete(id)
+        }
+        const timeout = setTimeout(handler, delay)
+        this.messageDeleteTimeouts.set(id, timeout)
+    }
 }
 
 export interface BotMessage {
@@ -91,6 +132,18 @@ export interface BotMessage {
     message?: Message
     options?: MessageOptions
     removeAfter?: number
+    action?: MessageAction
+}
+
+export interface MessageAction {
+    handler: (emoji: string) => MessageActionResponse,
+    options: Set<string>,
+    senderOnly?: boolean,
+}
+
+export interface MessageActionResponse {
+    newMessage?: BotMessage | string
+    isEdit?: boolean
 }
 
 export enum Acknowledgement {

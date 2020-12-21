@@ -1,7 +1,7 @@
 import {GuildContext} from '../guild/Context'
 import {Message} from 'discord.js'
 import {Track, TrackInfo} from './tracks/Track'
-import {TrackMessageFactory} from '../communication/TrackMessageGenerator'
+import {TrackMessageGenerator} from '../communication/TrackMessageGenerator'
 import SpotifyRadio from './radio/SpotifyRadio'
 import {Radio, RadioContext} from './radio/Radio'
 import {Spotify} from './sources/Spotify/Spotify'
@@ -150,24 +150,24 @@ export default class DJ {
     }
 
     private onAlbumQueued(album: Album, message?: Message) {
-        const embed = TrackMessageFactory.createAlbumQueuedEmbed(album)
+        const embed = TrackMessageGenerator.createAlbumQueuedEmbed(album)
         this.context.getProvider().getResponder().send({content: embed, message: message})
     }
 
     private onTracksQueued(tracks: Track[]) {
-        const message = TrackMessageFactory.createQueuedTracksMessage(this.context, tracks)
+        const message = TrackMessageGenerator.createQueuedTracksMessage(this.context, tracks)
         this.context.getProvider().getResponder()
             .send({content: message, id: 'queue', message: tracks[0].metaData.source, options: {code: 'Markdown'}})
     }
 
     private onTrackQueued(track: Track) {
-        const embed = TrackMessageFactory.createTrackNewlyQueuedEmbed(track)
+        const embed = TrackMessageGenerator.createTrackNewlyQueuedEmbed(track)
         this.context.getProvider().getResponder().send({content: embed, id: track.id, message: track.metaData.source})
     }
 
     onTrackStarted(track: Track) {
         Logger.i(DJ.name, `Started playing: ${track.getTitle()}`, this.context)
-        const embed = TrackMessageFactory.createNowPlayingEmbed(track)
+        const embed = TrackMessageGenerator.createNowPlayingEmbed(track)
         this.context.getProvider().getResponder().send({content: embed, id: track.id, message: track.metaData.source})
     }
 

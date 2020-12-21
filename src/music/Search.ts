@@ -21,7 +21,7 @@ export namespace Search {
             if (basicInfo.formats.length > 0) {
                 return {
                     id: basicInfo.videoDetails.videoId,
-                    description: basicInfo.videoDetails.shortDescription,
+                    description: basicInfo.videoDetails.category,
                     length: +basicInfo.videoDetails.lengthSeconds,
                     title: basicInfo.videoDetails.title,
                     url: url,
