@@ -2,9 +2,8 @@ import {Message, User} from 'discord.js'
 import {GuildContext} from '../../guild/Context'
 import {ArgumentType, Command, CommandAck, CommandOptions, FileType} from '../Command'
 import {CommandRegistry} from '../Registry'
-import {TableGenerator} from '../../communication/TableGenerator'
+import {DynamicTableGenerator, TableGenerator} from '../../communication/TableGenerator'
 import {GuildUtils} from '../../utils/GuildUtils'
-import {BotMessage} from '../../communication/Responder'
 
 export default class HelpCommand extends Command {
     readonly options: CommandOptions = {
@@ -25,53 +24,49 @@ export default class HelpCommand extends Command {
     }
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
-        let botMessage: BotMessage | BotMessage[]
+        let actionHandler: DynamicTableGenerator
         if (args.get('query')) {
-            let response = ''
             const command = CommandRegistry.getCommand(context, args.get('query'))
             if (command) {
-                response = createSingleCommandHelpMessage(context, args.get('query'), command)
+                const response = createSingleCommandHelpMessage(context, args.get('query'), command)
+                return Promise.resolve({ content: response, message: message,
+                    options: {code: 'Markdown'}, removeAfter: 30 })
             } else {
                 const group = CommandRegistry.getCommandGroup(args.get('query'))
                 if (group.size > 0) {
-                    const map: Map<string, Map<string, Command>> = new Map()
-                    map.set(args.get('query'), group)
-                    response = createMultipleCommandHelpMessage(context, map)[0]
+                    actionHandler = new DynamicTableGenerator(context,
+                        Array.from(group.keys()), generateCommandsHelpTable)
                 }
             }
-            botMessage = {content: response, message: message, options: {code: 'Markdown'}, removeAfter: 30}
         } else {
-            const responses = createMultipleCommandHelpMessage(context, CommandRegistry.getCommandsByGroup())
-            botMessage = responses.map((response: string) => {
-                return {content: response, message: message, options: {code: 'Markdown'}, removeAfter: 30}
-            })
+            actionHandler = new DynamicTableGenerator(context,
+                Array.from(CommandRegistry.getGroups()), generateGroupsCommandHelpTable)
         }
-        return Promise.resolve(botMessage)
+        return Promise.resolve({
+            content: actionHandler!.initialize(),
+            message: message,
+            options: { code: 'Markdown' },
+            removeAfter: 30,
+            action: {
+                handler: DynamicTableGenerator.getHandler(actionHandler!),
+                options: actionHandler!.emojiOptions()
+            }
+        })
     }
 }
 
-function createMultipleCommandHelpMessage(context: GuildContext, commandsByGroup: Map<string, Map<string, Command>>): string[] {
-    const descriptions: string[] = []
-    let description = `Commands\n=========\n`
-    description += `For more information on a single command or group, use <${context.getPrefix()}help keyword/group>\n`
-    let commandHelpMessage = false
-    commandsByGroup.forEach((commands) => {
-        let table = createGroupCommandTable(commands)
-        if (!commandHelpMessage) {
-            table = description + table
-            commandHelpMessage = true
-        }
-        descriptions.push(table)
-    })
-    return descriptions
+function generateGroupsCommandHelpTable(context: GuildContext, groups: string[]): string {
+    const tableHeaders = ['Group', '# of commands']
+    const tableData = groups.map((group: string) => [group, CommandRegistry.getCommandGroup(group).size.toString()])
+    return `Command Groups\n${TableGenerator.createTable(tableHeaders, tableData)}`
 }
 
-function createGroupCommandTable(commands: Map<string, Command>): string {
+function generateCommandsHelpTable(context: GuildContext, commands: string[]): string {
     const tableHeaders = ['Group', 'Keyword', 'Description']
-    const tableData: string[][] = []
-    commands.forEach((command, keyword) => {
-        tableData.push([command.options.group, keyword,
-            command.options.descriptions[command.options.keywords.indexOf(keyword)]])
+    const tableData = commands.map((commandName: string) => {
+        const command = CommandRegistry.getCommand(context, commandName)!
+        return [command.options.group, commandName,
+            command.options.descriptions[command.options.keywords.indexOf(commandName)]]
     })
     return TableGenerator.createTable(tableHeaders, tableData)
 }
