@@ -62,11 +62,10 @@ function generateGroupsCommandHelpTable(context: GuildContext, groups: string[])
 }
 
 function generateCommandsHelpTable(context: GuildContext, commands: string[]): string {
-    const tableHeaders = ['Group', 'Keyword', 'Description']
+    const tableHeaders = ['Keyword', 'Description']
     const tableData = commands.map((commandName: string) => {
         const command = CommandRegistry.getCommand(context, commandName)!
-        return [command.options.group, commandName,
-            command.options.descriptions[command.options.keywords.indexOf(commandName)]]
+        return [commandName, command.options.descriptions[command.options.keywords.indexOf(commandName)]]
     })
     return TableGenerator.createTable(tableHeaders, tableData)
 }
