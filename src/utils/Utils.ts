@@ -1,32 +1,31 @@
-import {randomBytes} from 'crypto'
+import {randomBytes} from 'crypto';
 
 export namespace Utils {
     export function generateUUID(): string {
-        return randomBytes(16).toString('hex')
+        return randomBytes(16).toString('hex');
     }
 
     export function convertSecondsToTimeString(totalSeconds: number): string {
-        const date = new Date(0)
-        date.setSeconds(totalSeconds)
-        return date.toISOString().substr(11, 8)
+        const date = new Date(0);
+        date.setSeconds(totalSeconds);
+        return date.toISOString().substr(11, 8);
     }
 
     export function isLowercaseString(input: string): boolean {
-        return input === input.toLowerCase()
+        return input === input.toLowerCase();
     }
 
     export function truncate(input: string, maxLength: number): string {
-        return (input.length > maxLength) ? input.substr(0, maxLength - 1) + ' ...' : input;
+        return input.length > maxLength ? input.substr(0, maxLength - 1) + ' ...' : input;
     }
 
     export function randomlySelectNElementsInArray(arr: any[], n: number): any[] {
-        let result = new Array(n),
-            len = arr.length,
-            taken = new Array(len)
-        if (n > len)
-            throw new RangeError("More elements taken than available");
+        const result = new Array(n);
+        let len = arr.length;
+        const taken = new Array(len);
+        if (n > len) throw new RangeError('More elements taken than available');
         while (n--) {
-            let x = Math.floor(Math.random() * len)
+            const x = Math.floor(Math.random() * len);
             result[n] = arr[x in taken ? taken[x] : x];
             taken[x] = --len in taken ? taken[len] : len;
         }
@@ -43,54 +42,43 @@ export namespace Utils {
     }
 
     export function getAllNestedKeysOfObject(obj: object) {
-        const isObject = (val: any) => typeof val === 'object' && !Array.isArray(val)
-        const addDelimiter = (a: any, b: any) => a ? `${a}.${b}` : b
-        const paths = (obj: object = {}, head: string = ''): any => {
+        const isObject = (val: any) => typeof val === 'object' && !Array.isArray(val);
+        const addDelimiter = (a: any, b: any) => (a ? `${a}.${b}` : b);
+        const paths = (obj: object = {}, head = ''): any => {
             return Object.entries(obj).reduce((product, [key, value]) => {
-                let fullPath = addDelimiter(head, key)
-                return isObject(value) ? product.concat(paths(value, fullPath)) : product.concat(fullPath)}, [])
-        }
+                const fullPath = addDelimiter(head, key);
+                return isObject(value) ? product.concat(paths(value, fullPath)) : product.concat(fullPath);
+            }, []);
+        };
         return paths(obj);
     }
 
     export function dynamicallySetObjectKeyValue(obj: any, key: any, value: any): any {
-        if (typeof key == 'string')
-            return dynamicallySetObjectKeyValue(obj,key.split('.'), value);
-        else if (key.length == 1 && value !== undefined)
-            return obj[key[0]] = value;
-        else if (key.length==0)
-            return obj;
-        else
-            return dynamicallySetObjectKeyValue(obj[key[0]],key.slice(1), value);
+        if (typeof key === 'string') return dynamicallySetObjectKeyValue(obj, key.split('.'), value);
+        else if (key.length === 1 && value !== undefined) return (obj[key[0]] = value);
+        else if (key.length === 0) return obj;
+        else return dynamicallySetObjectKeyValue(obj[key[0]], key.slice(1), value);
     }
 
-    export function roughSizeOfObject( object: any): number {
-        const objectList = []
-        const stack = [object]
-        let bytes = 0
+    export function roughSizeOfObject(object: any): number {
+        const objectList = [];
+        const stack = [object];
+        let bytes = 0;
 
-        while ( stack.length ) {
-            const value = stack.pop()
+        while (stack.length) {
+            const value = stack.pop();
 
-            if ( typeof value === 'boolean' ) {
+            if (typeof value === 'boolean') {
                 bytes += 4;
-            }
-            else if ( typeof value === 'string' ) {
+            } else if (typeof value === 'string') {
                 bytes += value.length * 2;
-            }
-            else if ( typeof value === 'number' ) {
+            } else if (typeof value === 'number') {
                 bytes += 8;
-            }
-            else if
-            (
-                typeof value === 'object'
-                && objectList.indexOf( value ) === -1
-            )
-            {
-                objectList.push( value );
+            } else if (typeof value === 'object' && objectList.indexOf(value) === -1) {
+                objectList.push(value);
 
-                for(let i in value ) {
-                    stack.push( value[ i ] );
+                for (const i in value) {
+                    stack.push(value[i]);
                 }
             }
         }

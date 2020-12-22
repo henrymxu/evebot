@@ -1,8 +1,8 @@
-import {Client, VoiceChannel, VoiceState} from 'discord.js'
-import {GlobalContext} from './GlobalContext'
-import {Logger} from './Logger'
+import {Client, VoiceChannel, VoiceState} from 'discord.js';
+import {GlobalContext} from './GlobalContext';
+import {Logger} from './Logger';
 
-const TAG = 'Lifecycle'
+const TAG = 'Lifecycle';
 
 export namespace Lifecycle {
     export function registerVoiceLifecycleHandler(client: Client) {
@@ -15,70 +15,75 @@ export namespace Lifecycle {
                     //     })
                     // }
                     GlobalContext.get(oldState.guild.id).then(context => {
-                        context.getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member?.user)
-                    })
+                        context.getProvider().getVoiceConnectionHandler().userLeftChannel(oldState.member?.user);
+                    });
                 }
                 if (hasUserChangedChannel(oldState, newState)) {
                     if (isItself(newState)) {
-                        Logger.w(TAG, `Bot was moved from ${oldState.channel?.name} to ${newState.channel?.name} | New connection = ${newState.connection}`)
+                        Logger.w(
+                            TAG,
+                            `Bot was moved from ${oldState.channel?.name} to ${newState.channel?.name} | New connection = ${newState.connection}`
+                        );
                         GlobalContext.get(newState.guild.id).then(context => {
-                            context.getProvider().getVoiceConnectionHandler().reset()
-                            context.setVoiceConnection(undefined)
-                            context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
-                        })
-                        return
+                            context.getProvider().getVoiceConnectionHandler().reset();
+                            context.setVoiceConnection(undefined);
+                            context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel);
+                        });
+                        return;
                     }
                     GlobalContext.get(oldState.guild.id).then(context => {
-                        context.getProvider().getVoiceConnectionHandler().userChangedChannel(oldState)
-                    })
+                        context.getProvider().getVoiceConnectionHandler().userChangedChannel(oldState);
+                    });
                 }
-                return
+                return;
             }
             if (isAlreadyInChannel(newState?.channel, GlobalContext.getBotID())) {
                 if (hasUserJoinedChannel(oldState, newState)) {
                     GlobalContext.get(newState.guild.id).then(context => {
-                        context.getProvider().getVoiceConnectionHandler().userJoinedChannel(newState)
-                    })
+                        context.getProvider().getVoiceConnectionHandler().userJoinedChannel(newState);
+                    });
                 }
-                return
+                return;
             }
             GlobalContext.get(newState.guild.id).then(context => {
-                context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel)
-            })
-        })
+                context.getProvider().getVoiceConnectionHandler().joinVoiceChannel(newState.channel);
+            });
+        });
     }
 }
 
 function isItself(voiceState: VoiceState): boolean {
-    return GlobalContext.getBotID() === voiceState?.member?.user.id
+    return GlobalContext.getBotID() === voiceState?.member?.user.id;
 }
 
 function isAlreadyInChannel(channel: VoiceChannel | null, botId: string): boolean {
     try {
-        channel?.guild.channels.cache.filter(channel => channel.type === 'voice').forEach(channel => {
-            channel.members.forEach(member => {
-                if (member.user && member.user.id === botId) {
-                    throw new Error()
-                }
-            })
-        })
+        channel?.guild.channels.cache
+            .filter(channel => channel.type === 'voice')
+            .forEach(channel => {
+                channel.members.forEach(member => {
+                    if (member.user && member.user.id === botId) {
+                        throw new Error();
+                    }
+                });
+            });
     } catch {
-        return true
+        return true;
     }
-    return false
+    return false;
 }
 
 function hasUserJoinedChannel(oldState: VoiceState, newState: VoiceState): boolean {
-    return oldState.channel === null && newState.channel !== null
+    return oldState.channel === null && newState.channel !== null;
 }
 
 function hasUserLeftChannel(oldState: VoiceState, newState: VoiceState): boolean {
-    return oldState.channel !== null && newState.channel === null
+    return oldState.channel !== null && newState.channel === null;
 }
 
 function hasUserChangedChannel(oldState: VoiceState, newState: VoiceState): boolean {
     if (!oldState.channel || !newState.channel) {
-        return false
+        return false;
     }
-    return (oldState.channel && newState.channel) && (oldState.channelID !== newState.channelID)
+    return oldState.channel && newState.channel && oldState.channelID !== newState.channelID;
 }

@@ -1,13 +1,13 @@
-import {Transform, TransformCallback} from 'stream'
+import {Transform, TransformCallback} from 'stream';
 import defaults from 'defaults';
-const pcm_convert = require('pcm-convert')
+const pcm_convert = require('pcm-convert');
 
 const TARGET_SAMPLE_RATE = 16000;
 
 //http://watson-developer-cloud.github.io/speech-javascript-sdk/master/speech-to-text_webaudio-l16-stream.js.html#line195
 export default class DownSamplingStream extends Transform {
-    private bufferUnusedSamples: Float32Array | []
-    private options: any
+    private bufferUnusedSamples: Float32Array | [];
+    private options: any;
 
     constructor(options: object) {
         options = defaults(options, {
@@ -15,8 +15,8 @@ export default class DownSamplingStream extends Transform {
             downsample: true,
         });
         super(options);
-        this.options = options
-        this.bufferUnusedSamples = []
+        this.options = options;
+        this.bufferUnusedSamples = [];
     }
 
     /**
@@ -33,21 +33,21 @@ export default class DownSamplingStream extends Transform {
      * @return {Float32Array} 'audio/l16' chunk
      */
     downsample(bufferNewSamples: any): Float32Array {
-        let buffer: Float32Array
-        const newSamples = bufferNewSamples.length
-        const unusedSamples = this.bufferUnusedSamples.length
-        let i
-        let offset
+        let buffer: Float32Array;
+        const newSamples = bufferNewSamples.length;
+        const unusedSamples = this.bufferUnusedSamples.length;
+        let i;
+        let offset;
         if (unusedSamples > 0) {
-            buffer = new Float32Array(unusedSamples + newSamples)
+            buffer = new Float32Array(unusedSamples + newSamples);
             for (i = 0; i < unusedSamples; ++i) {
-                buffer[i] = this.bufferUnusedSamples[i]
+                buffer[i] = this.bufferUnusedSamples[i];
             }
             for (i = 0; i < newSamples; ++i) {
-                buffer[unusedSamples + i] = bufferNewSamples[i]
+                buffer[unusedSamples + i] = bufferNewSamples[i];
             }
         } else {
-            buffer = bufferNewSamples
+            buffer = bufferNewSamples;
         }
         // Downsampling and low-pass filter:
         // Input audio is typically 44.1kHz or 48kHz, this downsamples it to 16kHz.
@@ -56,7 +56,7 @@ export default class DownSamplingStream extends Transform {
         // frequiencies greater than half of the sample rate.
         // (Human voice tops out at < 4kHz, so nothing important is lost for transcription.)
         // See http://dsp.stackexchange.com/a/37475/26392 for a good explination of this code.
-        var filter = [
+        const filter = [
             -0.037935,
             -0.00089024,
             0.040173,
@@ -77,42 +77,42 @@ export default class DownSamplingStream extends Transform {
             0.019989,
             0.040173,
             -0.00089024,
-            -0.037935
-        ]
-        const samplingRateRatio = this.options.sourceSampleRate / TARGET_SAMPLE_RATE
-        const nOutputSamples = Math.floor((buffer.length - filter.length) / samplingRateRatio) + 1
-        const outputBuffer = new Float32Array(nOutputSamples)
+            -0.037935,
+        ];
+        const samplingRateRatio = this.options.sourceSampleRate / TARGET_SAMPLE_RATE;
+        const nOutputSamples = Math.floor((buffer.length - filter.length) / samplingRateRatio) + 1;
+        const outputBuffer = new Float32Array(nOutputSamples);
         for (i = 0; i + filter.length - 1 < buffer.length; i++) {
-            offset = Math.round(samplingRateRatio * i)
-            let sample = 0
+            offset = Math.round(samplingRateRatio * i);
+            let sample = 0;
             for (let j = 0; j < filter.length; ++j) {
-                sample += buffer[offset + j] * filter[j]
+                sample += buffer[offset + j] * filter[j];
             }
-            outputBuffer[i] = sample
+            outputBuffer[i] = sample;
         }
-        const indexSampleAfterLastUsed = Math.round(samplingRateRatio * i)
-        const remaining = buffer.length - indexSampleAfterLastUsed
+        const indexSampleAfterLastUsed = Math.round(samplingRateRatio * i);
+        const remaining = buffer.length - indexSampleAfterLastUsed;
         if (remaining > 0) {
-            this.bufferUnusedSamples = new Float32Array(remaining)
+            this.bufferUnusedSamples = new Float32Array(remaining);
             for (i = 0; i < remaining; ++i) {
-                this.bufferUnusedSamples[i] = buffer[indexSampleAfterLastUsed + i]
+                this.bufferUnusedSamples[i] = buffer[indexSampleAfterLastUsed + i];
             }
         } else {
-            this.bufferUnusedSamples = new Float32Array(0)
+            this.bufferUnusedSamples = new Float32Array(0);
         }
-        return outputBuffer
+        return outputBuffer;
     }
 
     /**
      * Accepts a Buffer (for binary mode), then downsamples to 16000 and converts to a 16-bit pcm
      */
     _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
-        let source = pcm_convert(chunk, 'int16 mono interleaved le', 'float32 interleaved le')
+        let source = pcm_convert(chunk, 'int16 mono interleaved le', 'float32 interleaved le');
         if (this.options.downsample) {
-            source = this.downsample(source)
+            source = this.downsample(source);
         }
-        this.push(DownSamplingStream.floatTo16BitPCM(source))
-        callback()
+        this.push(DownSamplingStream.floatTo16BitPCM(source));
+        callback();
     }
 
     /**
@@ -125,11 +125,11 @@ export default class DownSamplingStream extends Transform {
      * Store in little endian.
      */
     private static floatTo16BitPCM(input: Float32Array): Buffer {
-        const output = new DataView(new ArrayBuffer(input.length * 2)) // length is in bytes (8-bit), so *2 to get 16-bit length
+        const output = new DataView(new ArrayBuffer(input.length * 2)); // length is in bytes (8-bit), so *2 to get 16-bit length
         for (let i = 0; i < input.length; i++) {
-            const multiplier = input[i] < 0 ? 0x8000 : 0x7fff // 16-bit signed range is -32768 to 32767
-            output.setInt16(i * 2, input[i] * multiplier | 0, true) // index, value, little edian
+            const multiplier = input[i] < 0 ? 0x8000 : 0x7fff; // 16-bit signed range is -32768 to 32767
+            output.setInt16(i * 2, (input[i] * multiplier) | 0, true); // index, value, little edian
         }
-        return Buffer.from(output.buffer)
-    };
+        return Buffer.from(output.buffer);
+    }
 }

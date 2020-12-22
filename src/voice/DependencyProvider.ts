@@ -1,31 +1,31 @@
-import {HotwordEngine} from '../hotword/Engine'
-import {SpeechGenerator, SpeechRecognizer} from '../speech/Interfaces'
-import Snowboy from '../hotword/providers/Snowboy'
-import {SpeechEngine} from '../speech/Engine'
-import Porcupine from '../hotword/providers/Porcupine'
+import {HotwordEngine} from '../hotword/Engine';
+import {SpeechGenerator, SpeechRecognizer} from '../speech/Interfaces';
+import Snowboy from '../hotword/providers/Snowboy';
+import {SpeechEngine} from '../speech/Engine';
+import Porcupine from '../hotword/providers/Porcupine';
 
 export class VoiceDependencyProvider {
-    private readonly hotwordEngine: HotwordEngine
+    private readonly hotwordEngine: HotwordEngine;
 
     constructor(hotwordEngine: HotwordEngine) {
-        this.hotwordEngine = hotwordEngine
+        this.hotwordEngine = hotwordEngine;
     }
 
     getHotwordEngine(): HotwordEngine | undefined {
-        return this.hotwordEngine
+        return this.hotwordEngine;
     }
 
     getSpeechGenerator(): SpeechGenerator | undefined {
-        return SpeechEngine.getGenerator()
+        return SpeechEngine.getGenerator();
     }
 
     getSpeechRecognizer(): SpeechRecognizer | undefined {
-        return SpeechEngine.getRecognizer()
+        return SpeechEngine.getRecognizer();
     }
 }
 
 export namespace VoiceDependencyProviderBuilder {
     export function build(config: object): VoiceDependencyProvider {
-        return new VoiceDependencyProvider(new Porcupine())
+        return new VoiceDependencyProvider(new Porcupine());
     }
 }

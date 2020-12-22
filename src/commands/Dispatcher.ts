@@ -1,97 +1,127 @@
-import {Client, DMChannel, Message, MessageAttachment, Permissions, PermissionString, TextChannel, User} from 'discord.js'
-import {CommandParser} from './Parser'
-import {GlobalContext} from '../GlobalContext'
-import {GuildContext} from '../guild/Context'
-import {CommandRegistry} from './Registry'
-import {Logger} from '../Logger'
-import {Command, FileType} from './Command'
-import {Acknowledgement} from '../communication/Responder'
+import {
+    Client,
+    DMChannel,
+    Message,
+    MessageAttachment,
+    Permissions,
+    PermissionString,
+    TextChannel,
+    User,
+} from 'discord.js';
+import {CommandParser} from './Parser';
+import {GlobalContext} from '../GlobalContext';
+import {GuildContext} from '../guild/Context';
+import {CommandRegistry} from './Registry';
+import {Logger} from '../Logger';
+import {Command, FileType} from './Command';
+import {Acknowledgement} from '../communication/Responder';
 
-const TAG = 'CommandDispatcher'
+const TAG = 'CommandDispatcher';
 
 export namespace CommandDispatcher {
     export function register(client: Client) {
-        client.on('message', (message) => {
+        client.on('message', message => {
             if (message.author.bot) {
-                return
+                return;
             }
             if (message.channel instanceof TextChannel) {
-                handleTextChannelMessage(message)
+                handleTextChannelMessage(message);
             } else if (message.channel instanceof DMChannel) {
-                handleDMChannelMessage(message)
+                handleDMChannelMessage(message);
             }
-        })
+        });
     }
 
     // Assumes that the command does not include the prefix
     export function handleExplicitCommand(context: GuildContext, user: User, message: string) {
-        const prefix = context.getPrefix()
+        const prefix = context.getPrefix();
         // Check Voice Command Permissions
-        handleGuildCommand(context, `${prefix}${message}`, user)
+        handleGuildCommand(context, `${prefix}${message}`, user);
     }
 }
 
 function handleGuildCommand(context: GuildContext, commandString: string, source: User, message?: Message) {
-    let keywordResult = CommandParser.parseKeyword(context, commandString)
+    let keywordResult = CommandParser.parseKeyword(context, commandString);
     if (!keywordResult.keyword) {
-        return
+        return;
     }
     if (context.getConfig().getMacro(keywordResult.keyword)) {
-        commandString = `${context.getPrefix()}${context.getConfig().getMacro(keywordResult.keyword).command}`
-        keywordResult = CommandParser.parseKeyword(context, commandString)
+        commandString = `${context.getPrefix()}${context.getConfig().getMacro(keywordResult.keyword).command}`;
+        keywordResult = CommandParser.parseKeyword(context, commandString);
         if (!keywordResult.keyword) {
-            Logger.w(TAG, `${keywordResult.keyword} macro has an invalid keyword`, context)
-            return
+            Logger.w(TAG, `${keywordResult.keyword} macro has an invalid keyword`, context);
+            return;
         }
     }
-    const command = CommandRegistry.getCommand(context, keywordResult.keyword)
+    const command = CommandRegistry.getCommand(context, keywordResult.keyword);
     if (!command) {
-        Logger.w(TAG, `No command found for ${keywordResult.keyword}`, context)
-        return
+        Logger.w(TAG, `No command found for ${keywordResult.keyword}`, context);
+        return;
     }
     if (!checkPermissions(context, source, command)) {
-        Logger.w(command.options.name, `${source.username} does not have permissions to execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(Acknowledgement.MISSING_PRIVILEGES, message)
-        return
+        Logger.w(
+            command.options.name,
+            `${source.username} does not have permissions to execute ${keywordResult.keyword}`,
+            context
+        );
+        context.getProvider().getResponder().acknowledge(Acknowledgement.MISSING_PRIVILEGES, message);
+        return;
     }
     if (!checkPrivileges(context, source, keywordResult.keyword)) {
-        Logger.w(command.options.name, `${source.username} does not have privileges to execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(Acknowledgement.MISSING_PRIVILEGES, message)
-        return
+        Logger.w(
+            command.options.name,
+            `${source.username} does not have privileges to execute ${keywordResult.keyword}`,
+            context
+        );
+        context.getProvider().getResponder().acknowledge(Acknowledgement.MISSING_PRIVILEGES, message);
+        return;
     }
     if (context.getProvider().getThrottler().shouldThrottleCommand(source, command)) {
-        Logger.w(command.options.name, `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`, context)
-        context.getProvider().getResponder().acknowledge(Acknowledgement.USER_THROTTLED, message)
-        return
+        Logger.w(
+            command.options.name,
+            `${source.username} is being throttled so they cannot execute ${keywordResult.keyword}`,
+            context
+        );
+        context.getProvider().getResponder().acknowledge(Acknowledgement.USER_THROTTLED, message);
+        return;
     }
-    const result = CommandParser.parseArguments(context, command, keywordResult.keyword, keywordResult.parsedCommandString)
+    const result = CommandParser.parseArguments(
+        context,
+        command,
+        keywordResult.keyword,
+        keywordResult.parsedCommandString
+    );
     if (result.error) {
-        Logger.w(TAG, `Could not parse arguments for \"${commandString}\" from ${source.tag}, reason: ${result.error}`, context)
-        context.getProvider().getResponder().acknowledge(Acknowledgement.NEGATIVE, message)
-        return
+        Logger.w(
+            TAG,
+            `Could not parse arguments for "${commandString}" from ${source.tag}, reason: ${result.error}`,
+            context
+        );
+        context.getProvider().getResponder().acknowledge(Acknowledgement.NEGATIVE, message);
+        return;
     }
     if (result.help) {
         // TODO: send help command instead of executing
     }
     if (!command.options.file) {
-        const attachment = message?.attachments?.first()
+        const attachment = message?.attachments?.first();
         if (attachment && checkFileType(attachment, command.options.file)) {
-            result.args.set('file', attachment)
+            result.args.set('file', attachment);
         }
     }
     if (message) {
-        context.setTextChannel(message.channel as TextChannel)
+        context.setTextChannel(message.channel as TextChannel);
     }
-    command.run(context, source, result.args, message)
+    command.run(context, source, result.args, message);
 }
 
 function handleTextChannelMessage(message: Message) {
     if (!message.guild?.id) {
-        return
+        return;
     }
     GlobalContext.get(message.guild.id).then(context => {
-        handleGuildCommand(context, message.content, message.author, message)
-    })
+        handleGuildCommand(context, message.content, message.author, message);
+    });
 }
 
 function handleDMChannelMessage(message: Message) {
@@ -99,61 +129,77 @@ function handleDMChannelMessage(message: Message) {
 }
 
 function checkPermissions(context: GuildContext, user: User, command: Command): boolean {
-    const permissionsArray = command.options.permissions?.map(permission => permission as PermissionString)
+    const permissionsArray = command.options.permissions?.map(permission => permission as PermissionString);
     if (!permissionsArray) {
-        return true
+        return true;
     }
-    const permissions = context.getGuild().member(user)?.permissions
-    return permissions ? permissions.has(new Permissions(permissionsArray)) : false
+    const permissions = context.getGuild().member(user)?.permissions;
+    return permissions ? permissions.has(new Permissions(permissionsArray)) : false;
 }
 
 function checkPrivileges(context: GuildContext, user: User, keyword: string): boolean {
     if (context.getGuild()?.member(user)?.permissions.has('ADMINISTRATOR')) {
-        return true
+        return true;
     }
-    const privilege = context.getConfig().getPrivilege(keyword)
-    if (!privilege ||
-        privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
-        privilege.deniedRoles.size === 0 && privilege.deniedUsers.size === 0) {
-        return context.getConfig().getDefaultPrivilege()
+    const privilege = context.getConfig().getPrivilege(keyword);
+    if (
+        !privilege ||
+        (privilege.grantedRoles.size === 0 &&
+            privilege.grantedUsers.size === 0 &&
+            privilege.deniedRoles.size === 0 &&
+            privilege.deniedUsers.size === 0)
+    ) {
+        return context.getConfig().getDefaultPrivilege();
     }
     if (privilege.grantedUsers.has(user.id)) {
-        return true
+        return true;
     }
     if (privilege.deniedUsers.has(user.id)) {
-        return false
+        return false;
     }
-    const roles = context.getGuild().member(user)?.roles.cache
+    const roles = context.getGuild().member(user)?.roles.cache;
     if (!roles) {
-        return false
+        return false;
     }
-    for (let role of Object.keys(roles)) {
+    for (const role of Object.keys(roles)) {
         if (privilege.grantedRoles.has(role)) {
-            return true
+            return true;
         }
         if (privilege.deniedRoles.has(role)) {
-            return false
+            return false;
         }
     }
-    if (privilege.grantedRoles.size === 0 && privilege.grantedUsers.size === 0 &&
-        privilege.deniedRoles.size !== 0 && privilege.deniedUsers.size !== 0) {
-        return true
+    if (
+        privilege.grantedRoles.size === 0 &&
+        privilege.grantedUsers.size === 0 &&
+        privilege.deniedRoles.size !== 0 &&
+        privilege.deniedUsers.size !== 0
+    ) {
+        return true;
     }
-    if (privilege.grantedRoles.size !== 0 && privilege.grantedUsers.size !== 0 &&
-        privilege.deniedRoles.size === 0 && privilege.deniedUsers.size === 0) {
-        return false
+    if (
+        privilege.grantedRoles.size !== 0 &&
+        privilege.grantedUsers.size !== 0 &&
+        privilege.deniedRoles.size === 0 &&
+        privilege.deniedUsers.size === 0
+    ) {
+        return false;
     }
-    return false
+    return false;
 }
 
 function checkFileType(attachment: MessageAttachment, type: FileType | undefined): boolean {
     if (attachment) {
-        switch(type) {
-            case FileType.AUDIO : {
-                return attachment.url.endsWith('mp3') || attachment.url.endsWith('opus') ||
-                    attachment.url.endsWith('ogg') || attachment.url.endsWith('wav')
+        switch (type) {
+            case FileType.AUDIO: {
+                return (
+                    attachment.url.endsWith('mp3') ||
+                    attachment.url.endsWith('opus') ||
+                    attachment.url.endsWith('ogg') ||
+                    attachment.url.endsWith('wav')
+                );
             }
         }
     }
-    return true
+    return true;
 }

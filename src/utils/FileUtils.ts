@@ -1,25 +1,25 @@
-import {Readable} from 'stream'
-import {existsSync, readFileSync, unlink, unlinkSync} from 'fs'
-import {get} from 'https'
-import {IncomingMessage} from 'http'
+import {Readable} from 'stream';
+import {existsSync, readFileSync, unlink, unlinkSync} from 'fs';
+import {get} from 'https';
+import {IncomingMessage} from 'http';
 
 export namespace FileUtils {
     export function openJsonFile(filePath: string): any {
         if (!existsSync(filePath)) {
-            return {}
+            return {};
         }
-        let rawdata = readFileSync(filePath)
-        return JSON.parse(rawdata.toString())
+        const rawdata = readFileSync(filePath);
+        return JSON.parse(rawdata.toString());
     }
 
-    export function deleteFile(filePath: string, sync:boolean = true, callback=()=>{}) {
+    export function deleteFile(filePath: string, sync = true, callback = () => {}) {
         if (sync) {
             if (existsSync(filePath)) {
-                unlinkSync(filePath)
+                unlinkSync(filePath);
             }
         } else {
             if (existsSync(filePath)) {
-                unlink(filePath, callback)
+                unlink(filePath, callback);
             }
         }
     }
@@ -27,10 +27,10 @@ export namespace FileUtils {
     export function downloadFile(url: string): Promise<Readable> {
         return new Promise((res, rej) => {
             get(url, (response: IncomingMessage) => {
-                res(response)
+                res(response);
             }).on('error', (e: Error) => {
-                rej(e)
-            })
-        })
+                rej(e);
+            });
+        });
     }
 }
