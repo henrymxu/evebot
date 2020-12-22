@@ -48,7 +48,7 @@
     "youtube-search": "^1.1.4",
     "ytdl-core": "^4.2.1",
     "ytpl": "^2.0.3",
-    "ytsr": "^2.0.2",
+    "ytsr": "^3.0.0",
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {

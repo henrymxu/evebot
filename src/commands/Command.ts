@@ -36,7 +36,7 @@ export abstract class Command {
     }
 
     public run(context: GuildContext, source: User, args: Map<string, any>, message?: Message) {
-        const argString = JSON.stringify(Array.from(args.entries()))
+        const argString = createArgsString(args)
         this.preExecute(context, message).then(() => {
             Logger.d(Command.name, `Executing command ${args.get('keyword')} with args ${argString}`, context)
             return this.execute(context, source, args, message)
@@ -48,6 +48,14 @@ export abstract class Command {
             this.onExecutedFailed(context, err, message)
         })
     }
+}
+
+function createArgsString(args: Map<string, any>): string {
+    let jsonObject: any = {}
+    args.forEach((value, key) => {
+        jsonObject[key] = value?.toString() || value
+    })
+    return JSON.stringify(jsonObject)
 }
 
 export type CommandAck = (Acknowledgement | BotMessage) | (Acknowledgement | BotMessage)[] | void

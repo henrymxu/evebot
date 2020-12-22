@@ -50,11 +50,17 @@ export default class ClipCommand extends VoiceCommand {
             embedMessageContents = `Recording from [${user}]`
             stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
             if (!stream) {
-                throw new CommandExecutionError(`No listening stream registered for user ${user}`)
+                throw new CommandExecutionError(`No listening stream registered for ${user.tag}}`,
+                    Acknowledgement.NEGATIVE)
             }
         } else {
             author = context.getGuild().name
             embedMessageContents = `Recording from ${context.getVoiceConnection()?.channel?.name}`
+            if (context.getProvider().getVoiceConnectionHandler().getVoiceStreams().size === 0) {
+                const channelName = context.getVoiceConnection()?.channel.name
+                throw new CommandExecutionError(`No listening streams registered in ${channelName}`,
+                    Acknowledgement.NEGATIVE)
+            }
             stream = context.getProvider().getVoiceConnectionHandler().getMergedVoiceStream()
         }
         let caption = args.get('caption') || `Clip From ${author}`
@@ -68,6 +74,8 @@ export default class ClipCommand extends VoiceCommand {
                 return [{content: embed, message: message}, Acknowledgement.SURVEILLANCE]
             }).catch((err) => {
                 throw new CommandExecutionError(`There was an error converting Wav Buffer to MP3 Buffer, reason: ${err.toString()}`)
+            }).finally(() => {
+                context.getProvider().getResponder().stopTyping(message)
             })
     }
 

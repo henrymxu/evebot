@@ -45,7 +45,7 @@ export default class ReciteCommand extends VoiceCommand {
         if (user) {
             stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user)
             if (!stream) {
-                throw new CommandExecutionError(`No listening stream registered for user ${user}`)
+                throw new CommandExecutionError(`No listening stream registered for ${user.tag}`)
             }
         } else {
             stream = context.getProvider().getVoiceConnectionHandler().getMergedVoiceStream()
@@ -55,7 +55,7 @@ export default class ReciteCommand extends VoiceCommand {
         if (user && args.get('transcribe')) {
             const speechRecognizer = context.getVoiceDependencyProvider().getSpeechRecognizer()
             if (!speechRecognizer) {
-                throw new CommandExecutionError('No SpeechRecognizer Registered')
+                throw new CommandExecutionError('No SpeechRecognizer Registered', Acknowledgement.NEGATIVE)
             }
             return speechRecognizer.recognizeTextFromSpeech(audioStream).then((transcribed) => {
                 const transcribedMessage = createTranscriptionEmbed(user, transcribed)

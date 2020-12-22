@@ -10,7 +10,7 @@ import SilenceInsertionHandler from './SilenceInsertionHandler'
 import SilenceDetectingStream from '../utils/SilenceDetectingStream'
 import {AudioUtils} from '../utils/AudioUtils'
 
-const USER_REJOIN_THRESHOLD = 5000
+const USER_REJOIN_THRESHOLD = 15000
 const NO_USER_TIMEOUT = 60 * 1000
 const MAX_VOICE_COMMAND_LENGTH = 7500
 
