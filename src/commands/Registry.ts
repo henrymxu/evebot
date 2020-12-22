@@ -19,6 +19,11 @@ export namespace CommandRegistry {
         return commands
     }
 
+    export function getGroups(): Set<string> {
+        return groups
+    }
+
+
     export function getCommandGroup(group: string): Map<string, Command> {
         const commandGroup = new Map<string, Command>()
         commands.forEach((command, keyword) => {
@@ -27,14 +32,6 @@ export namespace CommandRegistry {
             }
         })
         return commandGroup
-    }
-
-    export function getCommandsByGroup(): Map<string, Map<string, Command>> {
-        const result: Map<string, Map<string, Command>> = new Map()
-        groups.forEach((group) => {
-            result.set(group, getCommandGroup(group))
-        })
-        return result
     }
 
     export function registerCommandsIn(path: string) {

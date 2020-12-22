@@ -78,7 +78,13 @@ export class DynamicTableGenerator {
         return new Set<string>(this.options)
     }
 
-    handler(emoji: string): MessageActionResponse {
+    public static getHandler(tableGenerator: DynamicTableGenerator): (emoji: string) => MessageActionResponse {
+        return (emoji: string) => {
+            return tableGenerator.handler(emoji)
+        }
+    }
+
+    private handler(emoji: string): MessageActionResponse {
         if (emoji === '⬆️') {
             this.currentPage = Math.max(0, this.currentPage - 1)
         } else if (emoji === '⬇️') {
@@ -102,11 +108,5 @@ export class DynamicTableGenerator {
         const startIndex = this.currentPage * this.maxRows
         const endIndex = startIndex + this.maxRows
         return this.rows.slice(startIndex, endIndex)
-    }
-
-    public static getHandler(tableGenerator: DynamicTableGenerator): (emoji: string) => MessageActionResponse {
-        return (emoji: string) => {
-            return tableGenerator.handler(emoji)
-        }
     }
 }
