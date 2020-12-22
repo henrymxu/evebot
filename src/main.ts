@@ -7,11 +7,14 @@ import path from 'path'
 import {Logger} from './Logger'
 
 const client = GlobalContext.getClient()
+
+Logger.i('Main', 'Registering Commands ...')
 CommandDispatcher.register(client)
 CommandRegistry.registerCommandsIn(path.join(__dirname, 'commands'))
 
 Lifecycle.registerVoiceLifecycleHandler(client)
 
+Logger.i('Main', 'Logging in ...')
 client.login(Keys.get('discord_token')).then(result => {
     Logger.i('Main', `Logged in!`)
 }).catch(err => {
