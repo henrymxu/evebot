@@ -19,18 +19,19 @@ If you are a developer and wish to contribute / customize E.V.E bot, check out t
 ## Features
 
 - Play music!
-- Start a radio!
+- Start a custom radio!
 - Clip or recite voice channel activity!
 - Say anything you want with the bot!
 - And much more!
 
 ## Usage
 
-1. Add the bot to your Discord Server! 
-2. Use the `?help` command to all the various commands!
-    - Use the `?help` command with a command name to see the command details! (e.g `?help play`)
-3. Say a registered hotword to start a voice command!
-    - The bot will cut you off after a few seconds, so be ready to say your command!
+1. Add the bot to your Discord Server
+2. Use the `?help` command to see the various command groups
+    - Use the `?help` command with a command name to see the command details (e.g `?help play`)
+3. Say one of the provided hotwords to start a voice command (Alexa, Hey Siri, and OK Google)
+    - Wait for the chime to start saying your command
+    - Don't worry about other people interrupting you
 
 ## Installation
 
