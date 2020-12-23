@@ -27,8 +27,9 @@ If you are a developer and wish to contribute / customize E.V.E bot, check out t
 ## Usage
 
 1. Add the bot to your Discord Server
+    - Once the bot has been started (see [here](#installation)), add it through the [Discord Developer Portal](https://discord.com/developers/docs/intro)
 2. Use the `?help` command to see the various command groups
-    - Use the `?help` command with a command name to see the command details (e.g `?help play`)
+    - Use the `?help` command with a command name or group to see the command details (e.g `?help play`)
 3. Say one of the provided hotwords to start a voice command (Alexa, Hey Siri, and OK Google)
     - Wait for the chime to start saying your command
     - Don't worry about other people interrupting you
