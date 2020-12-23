@@ -48,15 +48,16 @@ export default class DJ {
         return this.context.getProvider().getAudioPlayer().pause();
     }
 
-    resume() {
+    resume(): boolean {
         return this.context.getProvider().getAudioPlayer().resume();
     }
 
-    stop() {
-        return this.radio.stop() || this.context.getProvider().getAudioPlayer().stop();
+    stop(): boolean {
+        this.radio.stop();
+        return this.context.getProvider().getAudioPlayer().stop();
     }
 
-    shuffle() {
+    shuffle(): boolean {
         return this.context.getProvider().getAudioPlayer().shuffle();
     }
 
@@ -66,7 +67,7 @@ export default class DJ {
 
     request(mode: QueryMode, query: string, shuffle: boolean, requesterId: string, message?: Message): Promise<void> {
         if (this.radio.isPlaying()) {
-            this.radio.stop();
+            this.stop();
         }
         let playFunc: () => Promise<void>;
         switch (mode) {

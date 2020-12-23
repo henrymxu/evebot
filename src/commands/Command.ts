@@ -36,8 +36,8 @@ export abstract class Command {
         if (error.emoji) {
             context.getProvider().getResponder().acknowledge(error.emoji, message);
         }
-        if (error.msg) {
-            context.getProvider().getResponder().error(error.msg, message);
+        if (error.message) {
+            context.getProvider().getResponder().error(error.message, message);
         }
     }
 
@@ -59,7 +59,7 @@ export abstract class Command {
             .catch((err: CommandExecutionError) => {
                 Logger.w(
                     Command.name,
-                    `Execution failed for command ${args.get('keyword')} with args ${argString}\nReason: ${err.msg}`,
+                    `Execution failed for command ${args.get('keyword')} || ${argString}\nReason: ${err.message}`,
                     context
                 );
                 this.onExecutedFailed(context, err, message);
@@ -79,10 +79,8 @@ export type CommandAck = (Acknowledgement | BotMessage) | (Acknowledgement | Bot
 
 export class CommandExecutionError extends Error {
     readonly emoji?: Acknowledgement;
-    readonly msg?: string;
     constructor(msg?: string, emoji?: Acknowledgement) {
         super(msg);
-        this.msg = msg;
         this.emoji = emoji;
     }
 }

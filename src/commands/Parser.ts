@@ -68,7 +68,6 @@ export namespace CommandParser {
             }
             let parsedValue: any;
             if (value) {
-                // If a value was provided, validate it
                 parsedValue = parseType(context, value, argument.type);
                 if (!parsedValue) {
                     const msg = new Error(`Invalid value provided for ${key}: ${value}`);
@@ -80,7 +79,6 @@ export namespace CommandParser {
                     continue;
                 }
             } else {
-                // Resort to the default value (if exists)
                 parsedValue = argument.default;
             }
             if (argument.type === ArgumentType.FLAG) {

@@ -75,18 +75,15 @@ export abstract class Radio {
         this.play(this.radioConfiguration.currentTrack, GlobalContext.getBotID(), this.radioConfiguration.message);
     }
 
-    stop(): boolean {
+    stop() {
         if (this.radioConfiguration && this.isLive) {
             Logger.d(Radio.name, 'Stopping radio');
             this.radioConfiguration = undefined;
             this.isLive = false;
-            this.context.getProvider().getAudioPlayer().stop();
-            return true;
         } else if (this.radioConfiguration) {
             Logger.d(Radio.name, 'Clearing queued radio');
             this.radioConfiguration = undefined;
         }
-        return false;
     }
 }
 
