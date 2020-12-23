@@ -1,12 +1,12 @@
-import {TrackInfo} from './Track'
+import {TrackInfo} from './Track';
 
 export interface Album {
-    id: string
-    name: string
-    artist: string
-    tracks: TrackInfo[]
+    id: string;
+    name: string;
+    artist: string;
+    tracks: TrackInfo[];
     metadata: {
-        imageURL: string
-        externalURL: string
-    }
+        imageURL: string;
+        externalURL: string;
+    };
 }

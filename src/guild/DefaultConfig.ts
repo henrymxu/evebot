@@ -1,9 +1,9 @@
-import {ConfigImplementation} from './ConfigImplementation'
+import {ConfigImplementation} from './ConfigImplementation';
 
 export class DefaultConfig extends ConfigImplementation {
     constructor(json: object) {
-        super('0')
-        this.json = json
+        super('0');
+        this.json = json;
     }
 
     async load() {

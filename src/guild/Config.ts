@@ -1,97 +1,97 @@
-import {Role, User } from "discord.js"
+import {Role, User} from 'discord.js';
 
 export interface Config {
-    load(): Promise<void>
+    load(): Promise<void>;
 
-    save(): void
+    save(): void;
 
-    getJSON(): any
+    getJSON(): any;
 
-    getPrefix(): string
+    getPrefix(): string;
 
-    setPrefix(prefix: string): void
+    setPrefix(prefix: string): void;
 
-    getDefaultPrivilege(): boolean
+    getDefaultPrivilege(): boolean;
 
-    setDefaultPrivilege(privilege: boolean): void
+    setDefaultPrivilege(privilege: boolean): void;
 
-    getDefaultTextChannel(): string
+    getDefaultTextChannel(): string;
 
-    setDefaultTextChannel(textChannelID: string): void
+    setDefaultTextChannel(textChannelID: string): void;
 
-    getLogging(): Logging
+    getLogging(): Logging;
 
-    setLogging(channelID: string, level: string): void
+    setLogging(channelID: string, level: string): void;
 
-    getUserIDForNickname(nickname: string): string
+    getUserIDForNickname(nickname: string): string;
 
-    getNicknames(userID: string): Nicknames
+    getNicknames(userID: string): Nicknames;
 
-    removeNicknames(userID: string, nicknames: string[]): void
+    removeNicknames(userID: string, nicknames: string[]): void;
 
-    addNicknames(userID: string, nicknames: string[]): Error | null
+    addNicknames(userID: string, nicknames: string[]): Error | null;
 
-    getCommandNameFromAlias(alias: string): string
+    getCommandNameFromAlias(alias: string): string;
 
-    getAliases(command: string): Aliases
+    getAliases(command: string): Aliases;
 
-    removeAliases(command: string, aliases: string[]): void
+    removeAliases(command: string, aliases: string[]): void;
 
-    addAliases(command: string, aliases: string[]): Error | null
+    addAliases(command: string, aliases: string[]): Error | null;
 
-    getMacro(macroKey: string): Macro
+    getMacro(macroKey: string): Macro;
 
-    getMacros(): Map<string, Macro>
+    getMacros(): Map<string, Macro>;
 
-    removeMacro(macroKey: string): void
+    removeMacro(macroKey: string): void;
 
-    addMacro(macroKey: string, macro: Macro): Error | null
+    addMacro(macroKey: string, macro: Macro): Error | null;
 
-    getPrivileges(): Privilege[]
+    getPrivileges(): Privilege[];
 
-    hasPrivilege(key: string): boolean
+    hasPrivilege(key: string): boolean;
 
-    getPrivilege(key: string): Privilege | undefined
+    getPrivilege(key: string): Privilege | undefined;
 
-    deletePrivilege(name: string): void
+    deletePrivilege(name: string): void;
 
-    grantEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]): void
+    grantEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]): void;
 
-    denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]): void
+    denyEntitiesPrivilege(privilegeName: string, entities: (User | Role)[]): void;
 
-    removeEntitiesFromPrivilege(privilegeName: string, entities: (User | Role)[]): void
+    removeEntitiesFromPrivilege(privilegeName: string, entities: (User | Role)[]): void;
 
-    getEmoji(type: string): string
+    getEmoji(type: string): string;
 
-    getEmojis(): Emojis
+    getEmojis(): Emojis;
 
-    setEmoji(type: string, emoji: string): void
+    setEmoji(type: string, emoji: string): void;
 
-    getUserVoiceOptOut(userID: string): boolean
+    getUserVoiceOptOut(userID: string): boolean;
 
-    setUserVoiceOptOut(userID: string, optOut: boolean): void
+    setUserVoiceOptOut(userID: string, optOut: boolean): void;
 }
 
-export type Nicknames = Set<string>
+export type Nicknames = Set<string>;
 
-export type Aliases = Set<string>
+export type Aliases = Set<string>;
 
-export type Emojis = Map<string, string>
+export type Emojis = Map<string, string>;
 
 export type Macro = {
-    command: string
-    creator: string
-}
+    command: string;
+    creator: string;
+};
 
 export interface Privilege {
-    command: string
-    grantedRoles: Set<string>
-    grantedUsers: Set<string>
-    deniedRoles: Set<string>
-    deniedUsers: Set<string>
+    command: string;
+    grantedRoles: Set<string>;
+    grantedUsers: Set<string>;
+    deniedRoles: Set<string>;
+    deniedUsers: Set<string>;
 }
 
 export interface Logging {
-    channelID: string
-    flag: string
+    channelID: string;
+    flag: string;
 }

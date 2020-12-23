@@ -1,8 +1,8 @@
-import {Message, User} from 'discord.js'
-import {GuildContext} from '../../guild/Context'
-import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command'
-import {Nicknames} from '../../guild/Config'
-import {TableGenerator} from '../../communication/TableGenerator'
+import {Message, User} from 'discord.js';
+import {GuildContext} from '../../guild/Context';
+import {ArgumentType, Command, CommandAck, CommandOptions} from '../Command';
+import {Nicknames} from '../../guild/Config';
+import {TableGenerator} from '../../communication/TableGenerator';
 
 export default class NicknamesCommand extends Command {
     readonly options: CommandOptions = {
@@ -15,7 +15,7 @@ export default class NicknamesCommand extends Command {
                 key: 'user',
                 description: 'User you would like modify nicknames for',
                 required: true,
-                type: ArgumentType.USER
+                type: ArgumentType.USER,
             },
             {
                 key: 'add',
@@ -23,7 +23,7 @@ export default class NicknamesCommand extends Command {
                 description: 'Nicknames you would like to add',
                 required: false,
                 type: ArgumentType.STRING,
-                array: true
+                array: true,
             },
             {
                 key: 'remove',
@@ -31,28 +31,35 @@ export default class NicknamesCommand extends Command {
                 description: 'Nicknames you would like to remove',
                 required: false,
                 type: ArgumentType.STRING,
-                array: true
+                array: true,
             },
             {
                 key: 'list',
                 flag: 'l',
                 description: 'List nicknames for the user',
                 required: false,
-                type: ArgumentType.FLAG
-            }
+                type: ArgumentType.FLAG,
+            },
         ],
         permissions: ['MANAGE_NICKNAMES', 'CHANGE_NICKNAME'],
-        examples: ['nicknames @Jonathan -a Johnny John', 'nicknames @Jonathan -l']
-    }
+        examples: ['nicknames @Jonathan -a Johnny John', 'nicknames @Jonathan -l'],
+    };
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
-        const user = args.get('user')
+        const user = args.get('user');
         if (!args.get('list') && (args.get('add') || args.get('remove'))) {
-            context.getConfig().addNicknames(user.id, args.get('add') || [])
-            context.getConfig().removeNicknames(user.id, args.get('remove') || [])
+            context.getConfig().addNicknames(user.id, args.get('add') || []);
+            context.getConfig().removeNicknames(user.id, args.get('remove') || []);
         }
-        const embed = TableGenerator.createBasicListEmbed(user.tag, context.getConfig().getNicknames(user.id),
-            'Nicknames')
-        return Promise.resolve({content: embed, message: message, removeAfter: 20})
+        const embed = TableGenerator.createBasicListEmbed(
+            user.tag,
+            context.getConfig().getNicknames(user.id),
+            'Nicknames'
+        );
+        return Promise.resolve({
+            content: embed,
+            message: message,
+            removeAfter: 20,
+        });
     }
 }

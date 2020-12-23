@@ -1,10 +1,10 @@
-import {Message, User} from 'discord.js'
-import {GuildContext} from '../../guild/Context'
-import {Command, CommandAck, CommandOptions} from '../Command'
-import {TableGenerator} from '../../communication/TableGenerator'
-import {SpeechProvider} from '../../speech/Interfaces'
-import {GuildUtils} from '../../utils/GuildUtils'
-import {GlobalContext} from '../../GlobalContext'
+import {Message, User} from 'discord.js';
+import {GuildContext} from '../../guild/Context';
+import {Command, CommandAck, CommandOptions} from '../Command';
+import {TableGenerator} from '../../communication/TableGenerator';
+import {SpeechProvider} from '../../speech/Interfaces';
+import {GuildUtils} from '../../utils/GuildUtils';
+import {GlobalContext} from '../../GlobalContext';
 
 export default class StatusCommand extends Command {
     readonly options: CommandOptions = {
@@ -13,75 +13,88 @@ export default class StatusCommand extends Command {
         group: 'debug',
         descriptions: ['Show status of the bot', 'Show current memory usage of the bot', 'Show raw config of the bot'],
         arguments: [],
-        permissions: ['ADMINISTRATOR']
-    }
+        permissions: ['ADMINISTRATOR'],
+    };
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
-        let response = ''
-        switch(args.get('keyword')) {
+        let response = '';
+        switch (args.get('keyword')) {
             case 'status': {
-                response = getStatusResponse(context)
-                break
+                response = getStatusResponse(context);
+                break;
             }
             case 'memory': {
-                response = getMemoryResponse()
+                response = getMemoryResponse();
                 if (global.gc) {
-                    global.gc()
-                    response = response + '\n' + getMemoryResponse()
+                    global.gc();
+                    response = response + '\n' + getMemoryResponse();
                 }
-                break
+                break;
             }
             case 'config': {
-                response = JSON.stringify(context.getConfig().getJSON(), null, 4)
-                break
+                response = JSON.stringify(context.getConfig().getJSON(), null, 4);
+                break;
             }
         }
-        return Promise.resolve({content: response, id: args.get('keyword'),
-            message: message, options: {code: 'Markdown'}, removeAfter: 15})
+        return Promise.resolve({
+            content: response,
+            id: args.get('keyword'),
+            message: message,
+            options: {code: 'Markdown'},
+            removeAfter: 15,
+        });
     }
 }
 
 function getStatusResponse(context: GuildContext): string {
-    let response = ''
-    const tableHeader = ['Context', 'Value']
-    const tableData: string[][] = []
-    tableData.push(['Guild', context.getGuild().name])
-    tableData.push(['Prefix', context.getPrefix()])
-    const textChannel = context.getTextChannel()
-    tableData.push(['TextChannel', textChannel ? textChannel.name: 'None'])
-    const voiceConnection = context.getVoiceConnection()
-    tableData.push(['VoiceChannel', voiceConnection ? voiceConnection.channel.name: 'None'])
+    let response = '';
+    const tableHeader = ['Context', 'Value'];
+    const tableData: string[][] = [];
+    tableData.push(['Guild', context.getGuild().name]);
+    tableData.push(['Prefix', context.getPrefix()]);
+    const textChannel = context.getTextChannel();
+    tableData.push(['TextChannel', textChannel ? textChannel.name : 'None']);
+    const voiceConnection = context.getVoiceConnection();
+    tableData.push(['VoiceChannel', voiceConnection ? voiceConnection.channel.name : 'None']);
 
-    response += `${TableGenerator.createTable(tableHeader, tableData)}\n`
+    response += `${TableGenerator.createTable(tableHeader, tableData)}\n`;
 
-    const tableHeader2 = ['SpeechProvider', 'Status']
-    const tableData2: string[][] = []
-    const hotwordEngine = context.getVoiceDependencyProvider().getHotwordEngine()
-    tableData2.push(['HotwordEngine', hotwordEngine ? hotwordEngine.getStatus() : 'None'])
-    tableData2.push(['Hotwords', hotwordEngine ? hotwordEngine.getHotwords().join(', ') : 'None'])
-    tableData2.push(['SpeechGeneration',
-        (context.getVoiceDependencyProvider().getSpeechGenerator() as unknown as SpeechProvider).getStatus()])
-    tableData2.push(['SpeechRecognition',
-        (context.getVoiceDependencyProvider().getSpeechRecognizer() as unknown as SpeechProvider).getStatus()])
+    const tableHeader2 = ['SpeechProvider', 'Status'];
+    const tableData2: string[][] = [];
+    const hotwordEngine = context.getVoiceDependencyProvider().getHotwordEngine();
+    tableData2.push(['HotwordEngine', hotwordEngine ? hotwordEngine.getStatus() : 'None']);
+    tableData2.push(['Hotwords', hotwordEngine ? hotwordEngine.getHotwords().join(', ') : 'None']);
+    tableData2.push([
+        'SpeechGeneration',
+        ((context.getVoiceDependencyProvider().getSpeechGenerator() as unknown) as SpeechProvider).getStatus(),
+    ]);
+    tableData2.push([
+        'SpeechRecognition',
+        ((context.getVoiceDependencyProvider().getSpeechRecognizer() as unknown) as SpeechProvider).getStatus(),
+    ]);
 
-    response += `${TableGenerator.createTable(tableHeader2, tableData2)}\n`
+    response += `${TableGenerator.createTable(tableHeader2, tableData2)}\n`;
 
-    const tableHeader3 = ['Registered Users']
-    const tableData3: string[][] = []
-    context.getProvider().getVoiceConnectionHandler().getVoiceStreams().forEach((_, userID) => {
-        tableData3.push([GuildUtils.parseUserFromUserID(context, userID)!.username])
-    })
-    response += `${TableGenerator.createTable(tableHeader3, tableData3)}\n`
-    response += `Version: ${GlobalContext.getBotVersion()}`
-    return response
+    const tableHeader3 = ['Registered Users'];
+    const tableData3: string[][] = [];
+    context
+        .getProvider()
+        .getVoiceConnectionHandler()
+        .getVoiceStreams()
+        .forEach((_, userID) => {
+            tableData3.push([GuildUtils.parseUserFromUserID(context, userID)!.username]);
+        });
+    response += `${TableGenerator.createTable(tableHeader3, tableData3)}\n`;
+    response += `Version: ${GlobalContext.getBotVersion()}`;
+    return response;
 }
 
 function getMemoryResponse(): string {
-    const tableHeaders = ['Type', 'Allocated (MBs)']
-    const tableData: string[][] = []
-    const memory = GlobalContext.getMemoryUsage()
-    tableData.push(['heapTotal', (memory[0]).toString()])
-    tableData.push(['external', (memory[1]).toString()])
-    tableData.push(['rss', (memory[2]).toString()])
-    return TableGenerator.createTable(tableHeaders, tableData)
+    const tableHeaders = ['Type', 'Allocated (MBs)'];
+    const tableData: string[][] = [];
+    const memory = GlobalContext.getMemoryUsage();
+    tableData.push(['heapTotal', memory[0].toString()]);
+    tableData.push(['external', memory[1].toString()]);
+    tableData.push(['rss', memory[2].toString()]);
+    return TableGenerator.createTable(tableHeaders, tableData);
 }
