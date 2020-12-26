@@ -4,7 +4,6 @@
   "description": "E.V.E Voice Enabled",
   "main": "src/main.ts",
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
@@ -14,12 +13,19 @@
     "posttest": "npm run lint"
   },
   "files": [
-    "*"
+    "src"
   ],
   "config": {
     "unsafe-perm": true
   },
-  "keywords": [],
+  "keywords": [
+    "discord",
+    "discord-bot"
+  ],
+  "homepage": "https://github.com/henrymxu/evebot",
+  "bugs": {
+    "url": "https://github.com/henrymxu/evebot/issues"
+  },
   "author": "Henry Xu",
   "license": "Apache-2.0",
   "repository": {
@@ -47,7 +53,6 @@
     "prism-media": "^1.2.3",
     "require-all": "^3.0.0",
     "simple-youtube-api": "^5.2.1",
-    "snowboy": "^1.3.1-alpha.1",
     "spotify-web-api-node": "^4.0.0",
     "table": "^6.0.3",
     "utf-8-validate": "^5.0.2",
@@ -74,10 +79,7 @@
     "typescript": "^4.0.3"
   },
   "engines": {
-    "node": ">=8.5.0"
+    "node": ">=12.0.0"
   },
-  "resolutions": {
-    "cryptiles": "^4.1.2",
-    "hoek": "^5.0.3"
-  }
+  "engineStrict": true
 }

@@ -2,15 +2,10 @@ FROM node:12-buster
 WORKDIR /project
 
 RUN apt-get update && apt-get install -y \
-  git \
-  cmake \
   lame \
-  ffmpeg \
-  libmagic-dev \
-  libatlas-base-dev
+  ffmpeg
 
 # lame / ffmpeg are required for audio conversion algorithms
-# libmagic-dev and libatlas-base-dev are required to build snowboy
 
 COPY ./ src/
 WORKDIR src
