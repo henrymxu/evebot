@@ -4,7 +4,7 @@
 
 E.V.E is a voice enabled all in one discord bot.  Feel free to host your own instance!
 
-If you are a developer and wish to contribute / customize E.V.E bot, check out the [wiki](https://github.com/henrymxu/evebot/wiki)!
+If you are a developer and wish to contribute / customize E.V.E, check out the [wiki](https://github.com/henrymxu/evebot/wiki)!
 
 ## Table of Contents
 
@@ -104,7 +104,7 @@ Details on how to authenticate and configure each provider can be found in each 
 | [IBM Watson](#ibm-watson)                   | [✓](https://www.ibm.com/cloud/watson-speech-to-text)                               | [✓](https://www.ibm.com/cloud/watson-text-to-speech)                               | ✗                                                          |
 | [Microsoft Azure](#microsoft-azure)         | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/speech-to-text/) | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/) | ✗                                                          |
 | [Google Cloud](#google-cloud)               | [✓](https://cloud.google.com/speech-to-text)                                       | [✓](https://cloud.google.com/text-to-speech)                                       | ✗                                                          |
-| [Amazon Web Services](#amazon-web-services) | ✗                               | ✗                                                | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb)                                                                                      |
+| [Amazon Web Services](#amazon-web-services) | ✗                                                                                  | ✗                                                                                  | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb)                                                                                      |
 
 #### IBM Watson
 
@@ -150,6 +150,8 @@ Details on how to authenticate and configure each provider can be found in each 
     - Try adding / updating the [`youtube_cookie`](#environment-variables) to the bot
 
 ## Support
+
+- Feel free to create an issue on GitHub if there are any problems installing or using E.V.E!
 
 ## License
 
