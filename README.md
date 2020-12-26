@@ -41,30 +41,24 @@ The installation process for E.V.E is quite long due to all the different servic
 These steps are if you wish to run the bot on your local machine (i.e PC, laptop).
 E.V.E runs on Mac OS and Linux (Windows has not been tested).
 
-Mac OS requires the following external dependencies:
-- ffmpeg
-- node / npm
-
-Linux requires the following external dependencies:
-- node / npm
-- cmake
-- lame
-- ffmpeg
-- libmagic-dev
-- libatlas-base-dev
+#### Pre Installation
+1. Retrieve all the required / desired tokens
+2. Install the following external dependencies
+    - ffmpeg
+    - lame (pre-installed on Mac OS)
+    - node / npm (node >=12.0.0)
 
 #### Installation from NPM
-
-// TODO
+1. Install the package (`npm install evebot`)
+2. TODO: setup way to configure env variables / etc when starting program
 
 #### Installation From Source
-1. Retrieve all the required / desired tokens from the following tables.
-2. Clone / Download the git repository
-3. Setup the environment variables and api tokens
+1. Clone / Download the git repository (`git clone git@github.com:henrymxu/evebot.git`)
+2. Setup the environment variables and api tokens
     - If you know how to set up environment variables you can do that
     - If not, you can set up a `keys.json` file in the `evebot` folder with the key value pairs
-4. Inside a terminal, navigate to the `evebot` folder
-5. Install TypeScript (`npm install -g typescript`) and ts-node (`npm install -g ts-node`)
+3. Inside a terminal, navigate to the `evebot` folder
+4. Install TypeScript (`npm install -g typescript`) and ts-node (`npm install -g ts-node`)
 5. Install the dependencies using `npm install`
 6. Start the bot using `node -r ts-node/register ./src/main.ts`
 
