@@ -90,7 +90,7 @@ Linux requires the following external dependencies:
 | [Discord Bot Token](https://discord.com/developers/applications)           | discord_token        | Required for the bot to login and communicate with discord.                                    | ✓        |
 | [Youtube Search API Token](https://developers.google.com/youtube/v3)       | youtube_api_token    | Required for the bot to search for song URLs  (Hopefully this will be converted to a scraper). | ✓        |
 | [Genius API Token](https://docs.genius.com/)                               | genius_token         | Required for the bot to find lyrics of songs.                                                  | ✗        |
-| [Spotify API Tokens](https://developer.spotify.com/documentation/web-api/) | spotify_id           | Required for the bot to create radio playlists                                                 | ✗        |
+| [Spotify API Tokens](https://developer.spotify.com/documentation/web-api/) | spotify_id           | Required for the bot to create radio playlists, search albums and playlists.                   | ✗        |
 |                                                                            | spotify_secret       |                                                                                                | ✗        |
 
 ### Platform API Tokens
@@ -104,7 +104,7 @@ Details on how to authenticate and configure each provider can be found in each 
 | [IBM Watson](#ibm-watson)                   | [✓](https://www.ibm.com/cloud/watson-speech-to-text)                               | [✓](https://www.ibm.com/cloud/watson-text-to-speech)                               | ✗                                                          |
 | [Microsoft Azure](#microsoft-azure)         | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/speech-to-text/) | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/) | ✗                                                          |
 | [Google Cloud](#google-cloud)               | [✓](https://cloud.google.com/speech-to-text)                                       | [✓](https://cloud.google.com/text-to-speech)                                       | ✗                                                          |
-| [Amazon Web Services](#amazon-web-services) | ✗                                                                                  | ✗                                                                                  | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb) |
+| [Amazon Web Services](#amazon-web-services) | ✗                               | ✗                                                | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb)                                                                                      |
 
 #### IBM Watson
 
