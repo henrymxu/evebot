@@ -4,7 +4,7 @@
 
 E.V.E is a voice enabled all in one discord bot.  Feel free to host your own instance!
 
-If you are a developer and wish to contribute / customize E.V.E bot, check out the [wiki](https://github.com/henrymxu/evebot/wiki)!
+If you are a developer and wish to contribute / customize E.V.E, check out the [wiki](https://github.com/henrymxu/evebot/wiki)!
 
 ## Table of Contents
 
@@ -19,18 +19,20 @@ If you are a developer and wish to contribute / customize E.V.E bot, check out t
 ## Features
 
 - Play music!
-- Start a radio!
+- Start a custom radio!
 - Clip or recite voice channel activity!
 - Say anything you want with the bot!
 - And much more!
 
 ## Usage
 
-1. Add the bot to your Discord Server! 
-2. Use the `?help` command to all the various commands!
-    - Use the `?help` command with a command name to see the command details! (e.g `?help play`)
-3. Say a registered hotword to start a voice command!
-    - The bot will cut you off after a few seconds, so be ready to say your command!
+1. Add the bot to your Discord Server
+    - Once the bot has been started (see [here](#installation)), add it through the [Discord Developer Portal](https://discord.com/developers/docs/intro)
+2. Use the `?help` command to see the various command groups
+    - Use the `?help` command with a command name or group to see the command details (e.g `?help play`)
+3. Say one of the provided hotwords to start a voice command (Alexa, Hey Siri, and OK Google)
+    - Wait for the chime to start saying your command
+    - Don't worry about other people interrupting you
 
 ## Installation
 
@@ -88,7 +90,7 @@ Linux requires the following external dependencies:
 | [Discord Bot Token](https://discord.com/developers/applications)           | discord_token        | Required for the bot to login and communicate with discord.                                    | ✓        |
 | [Youtube Search API Token](https://developers.google.com/youtube/v3)       | youtube_api_token    | Required for the bot to search for song URLs  (Hopefully this will be converted to a scraper). | ✓        |
 | [Genius API Token](https://docs.genius.com/)                               | genius_token         | Required for the bot to find lyrics of songs.                                                  | ✗        |
-| [Spotify API Tokens](https://developer.spotify.com/documentation/web-api/) | spotify_id           | Required for the bot to create radio playlists                                                 | ✗        |
+| [Spotify API Tokens](https://developer.spotify.com/documentation/web-api/) | spotify_id           | Required for the bot to create radio playlists, search albums and playlists.                   | ✗        |
 |                                                                            | spotify_secret       |                                                                                                | ✗        |
 
 ### Platform API Tokens
@@ -102,7 +104,7 @@ Details on how to authenticate and configure each provider can be found in each 
 | [IBM Watson](#ibm-watson)                   | [✓](https://www.ibm.com/cloud/watson-speech-to-text)                               | [✓](https://www.ibm.com/cloud/watson-text-to-speech)                               | ✗                                                          |
 | [Microsoft Azure](#microsoft-azure)         | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/speech-to-text/) | [✓](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/) | ✗                                                          |
 | [Google Cloud](#google-cloud)               | [✓](https://cloud.google.com/speech-to-text)                                       | [✓](https://cloud.google.com/text-to-speech)                                       | ✗                                                          |
-| [Amazon Web Services](#amazon-web-services) | ✗                                                                                  | ✗                                                                                  | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb) |
+| [Amazon Web Services](#amazon-web-services) | ✗                                                                                  | ✗                                                                                  | [✓](https://aws.amazon.com/dynamodb/?nc2=h_ql_prod_db_ddb)                                                                                      |
 
 #### IBM Watson
 
@@ -148,6 +150,8 @@ Details on how to authenticate and configure each provider can be found in each 
     - Try adding / updating the [`youtube_cookie`](#environment-variables) to the bot
 
 ## Support
+
+- Feel free to create an issue on GitHub if there are any problems installing or using E.V.E!
 
 ## License
 
