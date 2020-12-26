@@ -38,15 +38,15 @@ If you are a developer and wish to contribute / customize E.V.E, check out the [
 
 The installation process for E.V.E is quite long due to all the different services it requires.
 
-These steps are if you wish to run the bot on your local machine (i.e PC, laptop).
-E.V.E runs on Mac OS and Linux (Windows has not been tested).
+These steps are if you wish to run the bot on your local machine (i.e. PC, laptop).
+E.V.E runs on macOS and Linux (Windows has not been tested).
 
 #### Pre Installation
 1. Retrieve all the required / desired tokens
 2. Install the following external dependencies
     - ffmpeg
-    - lame (pre-installed on Mac OS)
-    - node / npm (node >=12.0.0)
+    - lame (pre-installed on macOS)
+    - node / npm (`node >=12.0.0`)
 
 #### Installation from NPM
 1. Install the package (`npm install evebot`)
@@ -54,10 +54,10 @@ E.V.E runs on Mac OS and Linux (Windows has not been tested).
 
 #### Installation From Source
 1. Clone / Download the git repository (`git clone git@github.com:henrymxu/evebot.git`)
-2. Setup the environment variables and api tokens
+2. Set up the environment variables and api tokens
     - If you know how to set up environment variables you can do that
-    - If not, you can set up a `keys.json` file in the `evebot` folder with the key value pairs
-3. Inside a terminal, navigate to the `evebot` folder
+    - If not, you can set up a `keys.json` file in the `evebot` directory with the key value pairs
+3. Inside a terminal, navigate to the newly cloned `evebot` directory
 4. Install TypeScript (`npm install -g typescript`) and ts-node (`npm install -g ts-node`)
 5. Install the dependencies using `npm install`
 6. Start the bot using `node -r ts-node/register ./src/main.ts`
@@ -133,14 +133,14 @@ Details on how to authenticate and configure each provider can be found in each 
 
 ## Troubleshooting
 
-- If the bot doesn't seem to recognize your voice commands
+- The bot doesn't seem to recognize your voice commands
     - Wait until you hear the chime from the bot after saying the hotword to begin your voice command
     - Make sure the voice command doesn't get cut off by the ending chime
 
-- If the bot seems to be unresponsive or not listening to any hotwords
+- The bot seems to be unresponsive or not listening to any hotwords
     - Try using the `rejoin` command
     
-- If the bot is unable to find any songs to play
+- The bot is unable to find any songs to play
     - Try adding / updating the [`youtube_cookie`](#environment-variables) to the bot
 
 ## Support
