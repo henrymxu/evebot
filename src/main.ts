@@ -6,13 +6,12 @@ import {GlobalContext} from './GlobalContext';
 import {CommandDispatcher} from './commands/Dispatcher';
 import {CommandRegistry} from './commands/Registry';
 import {Logger} from './Logger';
-import * as path from 'path';
+import {Directory} from './Directory';
 
 const client = GlobalContext.getClient();
-
 Logger.i('Main', 'Registering Commands ...');
 CommandDispatcher.register(client);
-CommandRegistry.registerCommandsIn(path.join(__dirname, 'commands'));
+CommandRegistry.registerCommandsIn(Directory.relativeSource('commands'));
 
 Lifecycle.registerVoiceLifecycleHandler(client);
 
