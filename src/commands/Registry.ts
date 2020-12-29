@@ -1,3 +1,4 @@
+import RequireAll from 'require-all';
 import {Command} from './Command';
 import {Utils} from '../utils/Utils';
 import {GuildContext} from '../guild/Context';
@@ -33,7 +34,7 @@ export namespace CommandRegistry {
     }
 
     export function registerCommandsIn(path: string) {
-        const modules = require('require-all')({
+        const modules = RequireAll({
             dirname: path,
             filter: /^([^.]*)\.(ts|js)$/,
         });

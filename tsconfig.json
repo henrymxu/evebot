@@ -5,6 +5,7 @@
     "outDir": "build",
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": ["es2020"]
   },
