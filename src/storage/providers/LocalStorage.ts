@@ -12,7 +12,7 @@ export default class LocalStorage implements Storage {
             if (!existsSync('./configs')) {
                 mkdirSync('./configs');
             }
-            copyFileSync('./default_config.json', path);
+            copyFileSync('./resources/default_config.json', path);
         }
         //throw ('Attempted to load an invalid config file')
         return Promise.resolve(FileUtils.openJsonFile(path));
