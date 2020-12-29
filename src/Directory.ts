@@ -3,8 +3,12 @@ import * as path from 'path';
 export namespace Directory {
     export const ROOT_DIR = __dirname;
 
-    export function relativeSource(filePath: string): string {
-        return path.join(ROOT_DIR, filePath);
+    export function relativeRoot(file: string): string {
+        return path.join(ROOT_DIR, `../${file}`);
+    }
+
+    export function relativeSource(file: string): string {
+        return path.join(ROOT_DIR, file);
     }
 
     export function relativeConfig(file: string): string {
