@@ -1,9 +1,7 @@
 {
   "name": "evebot",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "E.V.E Voice Enabled",
-  "main": "./build/src/main.js",
-  "typings": "./build/src/main.d.ts",
   "bin": {
     "evebot": "./build/src/main.js"
   },
@@ -18,7 +16,8 @@
     "start": "npx ts-node -T ./src/main.ts"
   },
   "files": [
-    "./build/src/**/*"
+    "build",
+    "resources"
   ],
   "config": {
     "unsafe-perm": true
