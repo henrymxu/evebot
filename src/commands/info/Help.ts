@@ -86,7 +86,7 @@ function createSingleCommandHelpMessage(context: GuildContext, keyword: string, 
     const descriptionIndex = command.options.keywords.indexOf(keyword);
     description += `Description: ${command.options.descriptions[descriptionIndex]}\n`;
     description += `Group: ${command.options.group}\n`;
-    const aliases = [...context.getConfig().getAliases(command.options.name)];
+    const aliases = [...Array.from(context.getConfig().getAliases(command.options.name))];
     const aliasesString = aliases.length > 0 ? aliases.reduce((result, alias) => `${result}, ${alias}`) : '';
     description += `Keyword: <${keyword}>\n`;
     description = aliasesString ? description + `Aliases: <${aliases}>\n` : description;
