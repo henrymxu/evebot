@@ -2,7 +2,6 @@ import {FileUtils} from './utils/FileUtils';
 import {ProcessArguments} from './ProcessArguments';
 
 const DEFAULT_PATH = './keys.json';
-
 const keys: Map<string, string> = loadKeysFromJson(ProcessArguments.getKeysPath());
 
 /**
