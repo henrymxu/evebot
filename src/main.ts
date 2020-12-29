@@ -1,3 +1,5 @@
+#!/usr/bin/env npx ts-node -T
+
 import {Keys} from './Keys';
 import {Lifecycle} from './Lifecycle';
 import {GlobalContext} from './GlobalContext';
@@ -22,6 +24,7 @@ client
     })
     .catch(err => {
         Logger.e('Main', `Unable to login, reason: ${err}`);
+        process.abort();
     });
 
 client.on('invalidated', () => {

@@ -2,7 +2,9 @@
   "name": "evebot",
   "version": "1.0.0",
   "description": "E.V.E Voice Enabled",
-  "main": "src/main.ts",
+  "bin": {
+    "evebot": "src/main.ts"
+  },
   "scripts": {
     "lint": "gts lint",
     "clean": "gts clean",

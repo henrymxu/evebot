@@ -47,20 +47,23 @@ E.V.E runs on macOS and Linux (Windows has not been tested).
     - ffmpeg
     - lame (pre-installed on macOS)
     - node / npm (`node >=12.0.0`)
+3. Set up the environment variables and api tokens
+    - Set up a `json` file with the key value pairs
+    - An example can be found in [`example_keys.json`](https://github.com/henrymxu/evebot/blob/main/package-lock.json)
+    - Environment variables can be used instead of a `json` file
 
 #### Installation from NPM
-1. Install the package (`npm install evebot`)
-2. TODO: setup way to configure env variables / etc when starting program
+1. Install the package (`npm install -g evebot`)
+2. Start the bot using `evebot <path to keys.json>` (e.g `evebot ~/Documents/keys.json`)
 
 #### Installation From Source
 1. Clone / Download the git repository (`git clone git@github.com:henrymxu/evebot.git`)
-2. Set up the environment variables and api tokens
-    - If you know how to set up environment variables you can do that
-    - If not, you can set up a `keys.json` file in the `evebot` directory with the key value pairs
+2. Copy the `json` file you created [above](#pre-installation) into the `evebot` directory
+   - Rename this file to be `keys.json`
 3. Inside a terminal, navigate to the newly cloned `evebot` directory
 4. Install TypeScript (`npm install -g typescript`) and ts-node (`npm install -g ts-node`)
 5. Install the dependencies using `npm install`
-6. Start the bot using `node -r ts-node/register ./src/main.ts`
+6. Start the bot using `npx ts-node -T ./src/main.ts`
 
 #### Local Installation with Docker
 
