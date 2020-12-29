@@ -1,12 +1,12 @@
-#!/usr/bin/env npx ts-node -T
+#!/usr/bin/env node
 
 import {Keys} from './Keys';
 import {Lifecycle} from './Lifecycle';
 import {GlobalContext} from './GlobalContext';
 import {CommandDispatcher} from './commands/Dispatcher';
 import {CommandRegistry} from './commands/Registry';
-import path from 'path';
 import {Logger} from './Logger';
+import * as path from 'path';
 
 const client = GlobalContext.getClient();
 
