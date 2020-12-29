@@ -4,10 +4,11 @@ import {execSync} from 'child_process';
 import {Config} from './guild/Config';
 import {FileUtils} from './utils/FileUtils';
 import {DefaultConfig} from './guild/DefaultConfig';
+import {Directory} from './Directory';
 
 const guildContexts: Map<string, GuildContext> = new Map();
 const client = new Client();
-const defaultConfig = new DefaultConfig(FileUtils.openJsonFile('./resources/default_config.json'));
+const defaultConfig = new DefaultConfig(FileUtils.openJsonFile(Directory.relativeResources('default_config.json')));
 
 export namespace GlobalContext {
     export async function get(guildID: string): Promise<GuildContext> {

@@ -1,7 +1,8 @@
 import {FileUtils} from './utils/FileUtils';
 import {ProcessArguments} from './ProcessArguments';
+import {Directory} from './Directory';
 
-const DEFAULT_PATH = './keys.json';
+const DEFAULT_PATH = Directory.relativeRoot('keys.json');
 const keys: Map<string, string> = loadKeysFromJson(ProcessArguments.getKeysPath());
 
 /**

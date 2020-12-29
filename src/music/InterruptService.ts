@@ -1,9 +1,10 @@
 import {GuildContext} from '../guild/Context';
 import {AudioUtils} from '../utils/AudioUtils';
 import {Readable} from 'stream';
+import {Directory} from '../Directory';
 
-const hotword_ack_start = './resources/siri_acknowledge.mp3';
-const hotword_ack_finish = './resources/siri_acknowledge_done.mp3';
+const hotword_ack_start = Directory.relativeResources('siri_acknowledge.mp3');
+const hotword_ack_finish = Directory.relativeResources('siri_acknowledge_done.mp3');
 
 export default class InterruptService {
     private context: GuildContext;
