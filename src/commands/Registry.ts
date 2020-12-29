@@ -1,4 +1,3 @@
-import requireAll from 'require-all';
 import {Command} from './Command';
 import {Utils} from '../utils/Utils';
 import {GuildContext} from '../guild/Context';
@@ -34,11 +33,10 @@ export namespace CommandRegistry {
     }
 
     export function registerCommandsIn(path: string) {
-        const modules = requireAll({
+        const modules = require('require-all')({
             dirname: path,
-            filter: /^([^.].*)\.(ts|js)(on)?$/,
+            filter: /^([^.]*)\.(ts|js)$/,
         });
-
         function getLeafNodes(nodes: object, result: any[] = []): any[] {
             Object.values(nodes).forEach(node => {
                 if (node.default) {

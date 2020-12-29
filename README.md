@@ -49,7 +49,7 @@ E.V.E runs on macOS and Linux (Windows has not been tested).
     - node / npm (`node >=12.0.0`)
 3. Set up the environment variables and api tokens
     - Set up a `json` file with the key value pairs
-    - An example can be found in [`example_keys.json`](https://github.com/henrymxu/evebot/blob/main/package-lock.json)
+    - An example can be found in [`example_keys.json`](https://github.com/henrymxu/evebot/blob/main/example_keys.json)
     - Environment variables can be used instead of a `json` file
 
 #### Installation from NPM
@@ -63,7 +63,7 @@ E.V.E runs on macOS and Linux (Windows has not been tested).
 3. Inside a terminal, navigate to the newly cloned `evebot` directory
 4. Install TypeScript (`npm install -g typescript`) and ts-node (`npm install -g ts-node`)
 5. Install the dependencies using `npm install`
-6. Start the bot using `npx ts-node -T ./src/main.ts`
+6. Start the bot using `npm start`
 
 #### Local Installation with Docker
 
