@@ -86,6 +86,10 @@ export namespace AudioUtils {
         });
         audioStream.pipe(wavWriter);
     }
+
+    export function createOpusDecodingStream(): Transform {
+        return new opus.Decoder({channels: 2, rate: 48000, frameSize: 960});
+    }
 }
 
 function convertStereoBufferToMonoBuffer(buffer: Buffer): Buffer {
