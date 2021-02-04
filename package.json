@@ -1,6 +1,6 @@
 {
   "name": "evebot",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "E.V.E Voice Enabled",
   "bin": {
     "evebot": "./build/src/main.js"
@@ -37,7 +37,7 @@
     "url": "https://github.com/henrymxu/evebot"
   },
   "dependencies": {
-    "@discordjs/opus": "^0.3.3",
+    "@discordjs/opus": "^0.4.0",
     "@google-cloud/speech": "^4.1.2",
     "@picovoice/porcupine-node": "^1.9.0",
     "aws-sdk": "^2.758.0",
@@ -52,9 +52,10 @@
     "nan": "^2.14.1",
     "node-cache": "^5.1.2",
     "node-lame": "^1.2.2",
+    "opusscript": "^0.0.7",
     "pcm-convert": "^1.6.5",
     "priorityqueuejs": "^2.0.0",
-    "prism-media": "^1.2.3",
+    "prism-media": "^1.2.5",
     "require-all": "^3.0.0",
     "simple-youtube-api": "^5.2.1",
     "spotify-web-api-node": "^4.0.0",
