@@ -85,7 +85,8 @@ function getStatusResponse(context: GuildContext): string {
             tableData3.push([GuildUtils.parseUserFromUserID(context, userID)!.username]);
         });
     response += `${TableGenerator.createTable(tableHeader3, tableData3)}\n`;
-    response += `Version: ${GlobalContext.getBotVersion()}`;
+    response += `Version: ${GlobalContext.getBotVersion()}\n`;
+    response += `Uptime: ${GlobalContext.getUptime()}`;
     return response;
 }
 
@@ -93,8 +94,10 @@ function getMemoryResponse(): string {
     const tableHeaders = ['Type', 'Allocated (MBs)'];
     const tableData: string[][] = [];
     const memory = GlobalContext.getMemoryUsage();
-    tableData.push(['heapTotal', memory[0].toString()]);
-    tableData.push(['external', memory[1].toString()]);
-    tableData.push(['rss', memory[2].toString()]);
+    tableData.push(['heapUsed', memory[0].toString()]);
+    tableData.push(['heapTotal', memory[1].toString()]);
+    tableData.push(['external', memory[2].toString()]);
+    tableData.push(['rss', memory[3].toString()]);
+    tableData.push(['arrayBuffers', memory[4].toString()]);
     return TableGenerator.createTable(tableHeaders, tableData);
 }

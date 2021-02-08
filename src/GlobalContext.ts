@@ -5,6 +5,7 @@ import {Config} from './guild/Config';
 import {FileUtils} from './utils/FileUtils';
 import {DefaultConfig} from './guild/DefaultConfig';
 import {Directory} from './Directory';
+import {Utils} from './utils/Utils';
 
 const guildContexts: Map<string, GuildContext> = new Map();
 const client = new Client();
@@ -43,9 +44,11 @@ export namespace GlobalContext {
 
     export function getMemoryUsage(): number[] {
         return [
+            process.memoryUsage().heapUsed / 1000000,
             process.memoryUsage().heapTotal / 1000000,
             process.memoryUsage().external / 1000000,
             process.memoryUsage().rss / 1000000,
+            process.memoryUsage().arrayBuffers,
         ];
     }
 
@@ -58,5 +61,9 @@ export namespace GlobalContext {
             version = `(NPM Version) ${require('../package.json').version}` || 'Unavailable';
         }
         return version;
+    }
+
+    export function getUptime(): string {
+        return Utils.convertSecondsToTimeString(process.uptime());
     }
 }

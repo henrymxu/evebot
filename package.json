@@ -64,7 +64,7 @@
     "wav": "^1.0.2",
     "yargs-parser": "^20.0.0",
     "youtube-search": "^1.1.4",
-    "ytdl-core": "^4.2.1",
+    "ytdl-core": "^4.4.5",
     "ytpl": "^2.0.3",
     "ytsr": "^3.0.0",
     "zlib-sync": "^0.1.7"
