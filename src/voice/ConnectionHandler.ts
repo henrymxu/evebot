@@ -9,6 +9,7 @@ import {CachingStream} from '../utils/CachingStream';
 import SilenceInsertionHandler from './SilenceInsertionHandler';
 import SilenceDetectingStream from '../utils/SilenceDetectingStream';
 import {AudioUtils} from '../utils/AudioUtils';
+import { Transform } from 'stream';
 
 const USER_REJOIN_THRESHOLD = 15000;
 const NO_USER_TIMEOUT = 60 * 1000;
@@ -24,6 +25,7 @@ export default class VoiceConnectionHandler {
     private readonly isListeningToCommand: Map<string, boolean> = new Map();
     private noUsersInVoiceChannelTimeout: NodeJS.Timeout | undefined;
     private userJoinedFromBrowser: Set<string> = new Set();
+    private readonly opusDecoderStreamReferences: Map<string, Transform> = new Map();
 
     private readonly silenceInsertionHandler = new SilenceInsertionHandler(this.voiceStreams);
     private readonly mergeStream: MergingStream = new MergingStream(this.voiceStreams);
@@ -177,6 +179,8 @@ export default class VoiceConnectionHandler {
         const timeout = setTimeout(() => {
             Logger.i(VoiceConnectionHandler.name, `Removing ${user.tag} [${user.id}]`, this.context);
             this.voiceStreams.delete(user.id);
+            this.opusDecoderStreamReferences.get(user.id)?.destroy();
+            this.opusDecoderStreamReferences.delete(user.id);
             this.removedTimeouts.delete(user.id);
         }, USER_REJOIN_THRESHOLD);
         this.removedTimeouts.set(user.id, timeout);
@@ -197,9 +201,11 @@ export default class VoiceConnectionHandler {
             console.log(`Error when decoding stream, unable to listen to ${user.tag}, Error: ${err}`);
             opusStream.removeAllListeners();
             opusStream.destroy();
+            decodedAudioStream.destroy();
             this.userJoinedFromBrowser.add(user.id);
             return;
         });
+        this.opusDecoderStreamReferences.set(user.id, decodedAudioStream);
 
         // Currently Broken, Need to manually decode in order to catch exception
         // const audio = connection.receiver.createStream(user, {
@@ -208,7 +214,7 @@ export default class VoiceConnectionHandler {
         // });
         const previousStream = this.voiceStreams.get(user.id);
         const recorderStream = previousStream || new RecordingStream(true);
-        opusStream.pipe(recorderStream, {end: false});
+        decodedAudioStream.pipe(recorderStream, {end: false});
         this.voiceStreams.set(user.id, recorderStream);
         const speechRecognizer = this.context.getVoiceDependencyProvider().getSpeechRecognizer();
         const hotwordEngine = this.context.getVoiceDependencyProvider().getHotwordEngine();
