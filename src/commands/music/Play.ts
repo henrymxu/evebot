@@ -44,7 +44,7 @@ export default class PlayCommand extends VoiceCommand {
 
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         let mode: QueryMode = QueryMode.Play;
-        mode = args.get('keyword') ? ((args.get('keyword') as string) as QueryMode) : mode;
+        mode = args.get('keyword') ? (args.get('keyword') as string as QueryMode) : mode;
         context.getProvider().getResponder().startTyping(message);
         return context
             .getProvider()

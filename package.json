@@ -71,12 +71,11 @@
   },
   "devDependencies": {
     "@types/defaults": "^1.0.3",
-    "@types/node": "^14.17.4",
+    "@types/node": "^16.0.0",
     "@types/priorityqueuejs": "^1.0.1",
     "@types/require-all": "^3.0.2",
-    "@types/table": "^6.3.2",
     "@types/wav": "^1.0.1",
-    "@types/yargs": "^15.0.14",
+    "@types/yargs": "^17.0.1",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
     "gts": "^3.1.0",
@@ -84,7 +83,7 @@
     "typescript": "^4.3.5"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=12.20.0"
   },
   "engineStrict": true,
   "type": "commonjs"
