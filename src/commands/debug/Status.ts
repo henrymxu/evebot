@@ -66,11 +66,11 @@ function getStatusResponse(context: GuildContext): string {
     tableData2.push(['Hotwords', hotwordEngine ? hotwordEngine.getHotwords().join(', ') : 'None']);
     tableData2.push([
         'SpeechGeneration',
-        ((context.getVoiceDependencyProvider().getSpeechGenerator() as unknown) as SpeechProvider).getStatus(),
+        (context.getVoiceDependencyProvider().getSpeechGenerator() as unknown as SpeechProvider).getStatus(),
     ]);
     tableData2.push([
         'SpeechRecognition',
-        ((context.getVoiceDependencyProvider().getSpeechRecognizer() as unknown) as SpeechProvider).getStatus(),
+        (context.getVoiceDependencyProvider().getSpeechRecognizer() as unknown as SpeechProvider).getStatus(),
     ]);
 
     response += `${TableGenerator.createTable(tableHeader2, tableData2)}\n`;

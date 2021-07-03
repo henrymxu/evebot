@@ -39,16 +39,14 @@ export default class IBM implements SpeechRecognizer, SpeechProvider {
             contentType: 'audio/l16;rate=48000;channels=2;endianness=little-endian',
             objectMode: true,
         };
-        return new Promise((res, rej) => {
-            this.speechToText.recognize(params, (error, response) => {
-                let result = 'Unknown Value';
-                if (response?.result?.results && response.result.results.length > 0) {
-                    if (response.result.results[0].alternatives.length > 0) {
-                        result = response.result.results[0].alternatives[0].transcript;
-                    }
+        return this.speechToText.recognize(params).then(response => {
+            let result = 'Unknown Value';
+            if (response?.result?.results && response.result.results.length > 0) {
+                if (response.result.results[0].alternatives.length > 0) {
+                    result = response.result.results[0].alternatives[0].transcript;
                 }
-                res(result);
-            });
+            }
+            return result;
         });
     }
 }

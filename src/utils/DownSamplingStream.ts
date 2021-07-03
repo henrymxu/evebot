@@ -57,26 +57,8 @@ export default class DownSamplingStream extends Transform {
         // (Human voice tops out at < 4kHz, so nothing important is lost for transcription.)
         // See http://dsp.stackexchange.com/a/37475/26392 for a good explination of this code.
         const filter = [
-            -0.037935,
-            -0.00089024,
-            0.040173,
-            0.019989,
-            0.0047792,
-            -0.058675,
-            -0.056487,
-            -0.0040653,
-            0.14527,
-            0.26927,
-            0.33913,
-            0.26927,
-            0.14527,
-            -0.0040653,
-            -0.056487,
-            -0.058675,
-            0.0047792,
-            0.019989,
-            0.040173,
-            -0.00089024,
+            -0.037935, -0.00089024, 0.040173, 0.019989, 0.0047792, -0.058675, -0.056487, -0.0040653, 0.14527, 0.26927,
+            0.33913, 0.26927, 0.14527, -0.0040653, -0.056487, -0.058675, 0.0047792, 0.019989, 0.040173, -0.00089024,
             -0.037935,
         ];
         const samplingRateRatio = this.options.sourceSampleRate / TARGET_SAMPLE_RATE;
