@@ -36,19 +36,17 @@ export default class Google implements SpeechRecognizer, SpeechProvider {
                 keyFileName: Keys.get(configVars[0]),
             });
         }
-        const request = {
-            config: {
-                encoding: 'LINEAR16',
-                sampleRateHertz: 48000,
-                languageCode: 'en-US',
-            },
-            interimResults: false,
-        };
-
         return new Promise((res, rej) => {
             const recognizeStream = this.client
-                .streamingRecognize(request)
-                .on('data', (data: any) => {
+                .streamingRecognize({
+                    config: {
+                        encoding: 'LINEAR16',
+                        sampleRateHertz: 48000,
+                        languageCode: 'en-US',
+                    },
+                    interimResults: false,
+                })
+                .on('data', data => {
                     res(data.results[0].alternatives[0].transcript);
                 })
                 .on('error', (err: Error) => {
