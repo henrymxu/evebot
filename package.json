@@ -1,6 +1,6 @@
 {
   "name": "evebot",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "E.V.E Voice Enabled",
   "bin": {
     "evebot": "./build/src/main.js"
