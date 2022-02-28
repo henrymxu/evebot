@@ -1,4 +1,3 @@
-const genius = require('genius-lyrics-api');
 import {Keys} from '../../Keys';
 
 export namespace GeniusLyrics {
@@ -10,21 +9,7 @@ export namespace GeniusLyrics {
             artist: artistString,
             optimizeQuery: true,
         };
-        return genius
-            .getSong(options)
-            .then((song: any) => {
-                if (!song) {
-                    throw new Error(`No lyrics found for ${songTitle}`);
-                }
-                return {
-                    url: song.url,
-                    albumArt: song.albumArt,
-                    lyrics: song.lyrics,
-                };
-            })
-            .catch((err: Error) => {
-                throw new Error(`Error when retrieving lyrics for ${songTitle}: ${err}`);
-            });
+        return Promise.reject('This feature is temporarily disabled');
     }
 }
 
