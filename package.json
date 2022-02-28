@@ -38,7 +38,7 @@
     "url": "https://github.com/henrymxu/evebot"
   },
   "dependencies": {
-    "@discordjs/opus": "^0.7.0",
+    "@discordjs/opus": "0.7.0",
     "@google-cloud/speech": "^4.5.3",
     "@picovoice/porcupine-node": "^1.9.1",
     "aws-sdk": "^2.939.0",
