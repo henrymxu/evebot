@@ -74,7 +74,7 @@ export namespace GuildUtils {
 }
 
 function parseIdFromMention(input: string): string | undefined {
-    const parsedId = input.match(/^<@.?(\d+)>$/);
+    const parsedId = input.match(/^<@(\d+)>$/);
     return parsedId?.[1];
 }
 
