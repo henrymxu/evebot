@@ -113,7 +113,11 @@ export default class VoiceConnectionHandler {
 
     userChangedChannel(oldState: VoiceState) {
         if (this.context.getVoiceConnection() && oldState.channelID === this.context.getVoiceConnection()?.channel.id) {
-            this.removeVoiceStreamForUser(oldState?.member?.user);
+            const user = oldState?.member?.user;
+            if (!user) {
+                return;
+            }
+            this.removeVoiceStreamForUser(user);
         }
     }
 
@@ -137,7 +141,7 @@ export default class VoiceConnectionHandler {
             } else if (this.voiceStreams.has(user.id) || user.bot) {
                 return;
             }
-            if (this.context.getConfig().getUserVoiceOptOut(user.id)) {
+            if (this.context.getConfig().isUserVoiceOptedOut(user.id)) {
                 return;
             }
             this.startVoiceStreamForUser(user);
@@ -171,18 +175,22 @@ export default class VoiceConnectionHandler {
         });
     }
 
-    private removeVoiceStreamForUser(user?: User) {
-        this.userJoinedFromBrowser.delete(user?.id || '');
+    private removeVoiceStreamForUser(user: User, forceLeave: Boolean = false) {
         if (!user) {
             return;
         }
-        const timeout = setTimeout(() => {
-            Logger.i(VoiceConnectionHandler.name, `Removing ${user.tag} [${user.id}]`, this.context);
-            this.voiceStreams.delete(user.id);
-            this.opusDecoderStreamReferences.get(user.id)?.destroy();
-            this.opusDecoderStreamReferences.delete(user.id);
-            this.removedTimeouts.delete(user.id);
-        }, USER_REJOIN_THRESHOLD);
+        Logger.i(VoiceConnectionHandler.name, `removing user ${user}`, this.context);
+        this.userJoinedFromBrowser.delete(user.id);
+        const timeout = setTimeout(
+            () => {
+                Logger.i(VoiceConnectionHandler.name, `Removing ${user.tag} [${user.id}]`, this.context);
+                this.voiceStreams.delete(user.id);
+                this.opusDecoderStreamReferences.get(user.id)?.destroy();
+                this.opusDecoderStreamReferences.delete(user.id);
+                this.removedTimeouts.delete(user.id);
+            },
+            forceLeave ? 0 : USER_REJOIN_THRESHOLD
+        );
         this.removedTimeouts.set(user.id, timeout);
         this.context.getVoiceConnection()?.receiver.createStream(user).emit('end');
         this.context.getVoiceDependencyProvider();
