@@ -51,7 +51,7 @@ export default class ClipCommand extends VoiceCommand {
             stream = context.getProvider().getVoiceConnectionHandler().getVoiceStreamForUser(user);
             if (!stream) {
                 throw new CommandExecutionError(
-                    `No listening stream registered for ${user.tag}}`,
+                    `No listening stream registered for ${user.tag}`,
                     Acknowledgement.NEGATIVE
                 );
             }

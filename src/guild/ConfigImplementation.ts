@@ -184,12 +184,12 @@ export class ConfigImplementation implements Config {
         this.save();
     }
 
-    getUserVoiceOptOut(userID: string): boolean {
+    isUserVoiceOptedOut(userID: string): boolean {
         return this.json['voice_opt_out_list'].includes(userID);
     }
 
-    setUserVoiceOptOut(userID: string, optOut: boolean): void {
-        if ((optOut && this.getUserVoiceOptOut(userID)) || (!optOut && !this.getUserVoiceOptOut(userID))) {
+    setUserVoiceOptedOut(userID: string, optOut: boolean): void {
+        if ((optOut && this.isUserVoiceOptedOut(userID)) || (!optOut && !this.isUserVoiceOptedOut(userID))) {
             return;
         }
         if (optOut) {

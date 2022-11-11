@@ -1,6 +1,6 @@
 import {Message, User} from 'discord.js';
 import {GuildContext} from '../../guild/Context';
-import {Command, CommandAck, CommandOptions} from '../Command';
+import {Command, CommandAck, CommandExecutionError, CommandOptions} from '../Command';
 import {Acknowledgement} from '../../communication/Responder';
 
 export default class VoiceOptionsCommand extends Command {
@@ -19,11 +19,18 @@ export default class VoiceOptionsCommand extends Command {
     execute(context: GuildContext, source: User, args: Map<string, any>, message?: Message): Promise<CommandAck> {
         switch (args.get('keyword')) {
             case 'voiceoptout':
-                context.getConfig().setUserVoiceOptOut(source.id, true);
-                context.getProvider().getVoiceConnectionHandler().deleteVoiceStreamForUser(source);
+                if (context.getConfig().isUserVoiceOptedOut(source.id)) {
+                    throw new CommandExecutionError(`${source.username} is already opted out!`);
+                } else {
+                    context.getConfig().setUserVoiceOptedOut(source.id, true);
+                    context.getProvider().getVoiceConnectionHandler().deleteVoiceStreamForUser(source);
+                }
                 break;
             case 'voiceoptin':
-                context.getConfig().setUserVoiceOptOut(source.id, false);
+                if (!context.getConfig().isUserVoiceOptedOut(source.id)) {
+                    throw new CommandExecutionError(`${source.username} is already opted in!`);
+                }
+                context.getConfig().setUserVoiceOptedOut(source.id, false);
                 context.getProvider().getVoiceConnectionHandler().addVoiceStreamForUser(source);
         }
         return Promise.resolve(Acknowledgement.UPDATED);
