@@ -1,6 +1,6 @@
 {
   "name": "evebot",
-  "version": "1.1.5",
+  "version": "1.1.7",
   "description": "E.V.E Voice Enabled",
   "bin": {
     "evebot": "./build/src/main.js"
@@ -64,7 +64,7 @@
     "wav": "^1.0.2",
     "yargs-parser": "^20.2.9",
     "youtube-search": "^1.1.6",
-    "ytdl-core": "^4.11.1",
+    "ytdl-core": "^4.11.2",
     "ytpl": "^2.2.3",
     "ytsr": "^3.5.3",
     "zlib-sync": "^0.1.7"
