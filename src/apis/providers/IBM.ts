@@ -1,12 +1,13 @@
-import {SpeechGenerator, SpeechProvider, SpeechRecognizer} from '../Interfaces';
+import {SpeechRecognizer} from '../SpeechProvider';
 import {Readable} from 'stream';
 import {Keys} from '../../Keys';
 import Auth from 'ibm-watson/auth';
 import {SpeechToTextV1} from 'ibm-watson/sdk';
+import {Provider} from '../Provider';
 
 const configVars = ['watson_token', 'watson_url'];
 
-export default class IBM implements SpeechRecognizer, SpeechProvider {
+export default class IBM implements Provider, SpeechRecognizer {
     private speechToText: SpeechToTextV1;
 
     requiredConfigVariables(): string[] {
@@ -15,14 +16,6 @@ export default class IBM implements SpeechRecognizer, SpeechProvider {
 
     getStatus(): string {
         return 'IBM';
-    }
-
-    asGenerator(): SpeechGenerator | undefined {
-        return undefined;
-    }
-
-    asRecognizer(): SpeechRecognizer | undefined {
-        return this;
     }
 
     recognizeTextFromSpeech(audioStream: Readable): Promise<string> {

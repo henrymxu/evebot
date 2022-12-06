@@ -78,8 +78,6 @@ export default class Responder {
         }
     }
 
-    reply() {}
-
     startTyping(source?: Message, id?: string) {
         const textChannel = source ? (source.channel as TextChannel) : this.context.getTextChannel();
         Communicator.startTyping(textChannel);

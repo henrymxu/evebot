@@ -1,7 +1,8 @@
 import {HotwordEngine} from '../hotword/Engine';
-import {SpeechGenerator, SpeechRecognizer} from '../speech/Interfaces';
-import {SpeechEngine} from '../speech/Engine';
+import {SpeechGenerator, SpeechRecognizer} from '../apis/SpeechProvider';
+import {SpeechEngine} from '../apis/Engine';
 import Porcupine from '../hotword/providers/Porcupine';
+import {Config} from '../guild/Config';
 
 export class VoiceDependencyProvider {
     private readonly hotwordEngine: HotwordEngine;
@@ -24,7 +25,7 @@ export class VoiceDependencyProvider {
 }
 
 export namespace VoiceDependencyProviderBuilder {
-    export function build(config: object): VoiceDependencyProvider {
+    export function build(config: Config): VoiceDependencyProvider {
         return new VoiceDependencyProvider(new Porcupine());
     }
 }
