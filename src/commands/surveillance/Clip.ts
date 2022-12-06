@@ -73,7 +73,6 @@ export default class ClipCommand extends VoiceCommand {
             .then(buffer => {
                 const embedMessage = MessageGenerator.createBasicEmbed(embedMessageContents);
                 const embed = MessageGenerator.attachFileToEmbed(embedMessage, buffer, `${caption}.mp3`);
-                context.getProvider().getResponder().stopTyping(message);
                 return [{content: embed, message: message}, Acknowledgement.SURVEILLANCE];
             })
             .catch(err => {

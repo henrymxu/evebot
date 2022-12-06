@@ -1,4 +1,4 @@
-import {SpeechGenerator, SpeechGeneratorResult, SpeechProvider, SpeechRecognizer} from '../Interfaces';
+import {SpeechGenerator, SpeechGeneratorResult, SpeechRecognizer} from '../SpeechProvider';
 import {Duplex, Readable} from 'stream';
 import {AudioUtils} from '../../utils/AudioUtils';
 import {Keys} from '../../Keys';
@@ -9,25 +9,19 @@ import {
     SpeechRecognitionResult,
     SpeechSynthesisResult,
 } from 'microsoft-cognitiveservices-speech-sdk';
+import {Provider} from '../Provider';
+
 const SpeechSDK = require('microsoft-cognitiveservices-speech-sdk');
 
 const configVars = ['microsoft_token', 'microsoft_location'];
 
-export default class Microsoft implements SpeechGenerator, SpeechRecognizer, SpeechProvider {
+export default class Microsoft implements Provider, SpeechGenerator, SpeechRecognizer {
     requiredConfigVariables(): string[] {
         return configVars;
     }
 
     getStatus(): string {
         return 'microsoft';
-    }
-
-    asGenerator(): SpeechGenerator {
-        return this;
-    }
-
-    asRecognizer(): SpeechRecognizer {
-        return this;
     }
 
     asyncGenerateSpeechFromText(message: string, voice = 'en-CA-Linda'): Promise<SpeechGeneratorResult> {

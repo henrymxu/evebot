@@ -4,7 +4,7 @@ import ytdl from 'discord-ytdl-core';
 import {GuildContext} from '../../guild/Context';
 import {StreamUtils} from '../../utils/StreamUtils';
 import {Logger} from '../../Logger';
-import {SpeechGeneratorResult} from '../../speech/Interfaces';
+import {SpeechGeneratorResult} from '../../apis/SpeechProvider';
 
 export default class YoutubeTrack extends Track {
     protected youtubeInfo: TrackInfo | undefined;

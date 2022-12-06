@@ -6,12 +6,14 @@ import {GuildUtils} from '../utils/GuildUtils';
 import {GlobalContext} from '../GlobalContext';
 import {Logger} from '../Logger';
 import {Config} from './Config';
+import {SynthesisDependencyProvider, SynthesisDependencyProviderBuilder} from '../synthesis/DependencyProvider';
 
 export class GuildContext {
     private voiceConnection: VoiceConnection | undefined;
     private textChannel: TextChannel | undefined;
 
     private readonly voiceDependencyProvider: VoiceDependencyProvider;
+    private readonly synthesisDependencyProvider: SynthesisDependencyProvider;
     private readonly guildProvider: GuildProvider;
 
     private readonly id: string;
@@ -22,6 +24,7 @@ export class GuildContext {
         this.guildProvider = new GuildProvider(this);
         this.config = new ConfigImplementation(id);
         this.voiceDependencyProvider = VoiceDependencyProviderBuilder.build(this.config);
+        this.synthesisDependencyProvider = SynthesisDependencyProviderBuilder.build(this.config);
     }
 
     async initialize() {
@@ -59,6 +62,10 @@ export class GuildContext {
 
     getVoiceDependencyProvider(): VoiceDependencyProvider {
         return this.voiceDependencyProvider;
+    }
+
+    getSynthesisDependencyProvider(): SynthesisDependencyProvider {
+        return this.synthesisDependencyProvider;
     }
 
     getProvider(): GuildProvider {

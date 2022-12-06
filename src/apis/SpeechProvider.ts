@@ -13,9 +13,10 @@ export interface SpeechRecognizer {
     recognizeTextFromSpeech(audioStream: Readable): Promise<string>;
 }
 
-export interface SpeechProvider {
-    requiredConfigVariables(): string[];
-    getStatus(): string;
-    asGenerator(): SpeechGenerator | undefined;
-    asRecognizer(): SpeechRecognizer | undefined;
+export function isSpeechGenerator(object: any): object is SpeechGenerator {
+    return (object as SpeechGenerator).asyncGenerateSpeechFromText !== undefined;
+}
+
+export function isSpeechRecognizer(object: any): object is SpeechRecognizer {
+    return (object as SpeechRecognizer).recognizeTextFromSpeech !== undefined;
 }

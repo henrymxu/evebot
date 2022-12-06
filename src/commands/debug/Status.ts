@@ -2,9 +2,9 @@ import {Message, User} from 'discord.js';
 import {GuildContext} from '../../guild/Context';
 import {Command, CommandAck, CommandOptions} from '../Command';
 import {TableGenerator} from '../../communication/TableGenerator';
-import {SpeechProvider} from '../../speech/Interfaces';
 import {GuildUtils} from '../../utils/GuildUtils';
 import {GlobalContext} from '../../GlobalContext';
+import {Provider} from '../../apis/Provider';
 
 export default class StatusCommand extends Command {
     readonly options: CommandOptions = {
@@ -66,11 +66,15 @@ function getStatusResponse(context: GuildContext): string {
     tableData2.push(['Hotwords', hotwordEngine ? hotwordEngine.getHotwords().join(', ') : 'None']);
     tableData2.push([
         'SpeechGeneration',
-        (context.getVoiceDependencyProvider().getSpeechGenerator() as unknown as SpeechProvider).getStatus(),
+        (context.getVoiceDependencyProvider().getSpeechGenerator() as unknown as Provider).getStatus(),
     ]);
     tableData2.push([
         'SpeechRecognition',
-        (context.getVoiceDependencyProvider().getSpeechRecognizer() as unknown as SpeechProvider).getStatus(),
+        (context.getVoiceDependencyProvider().getSpeechRecognizer() as unknown as Provider).getStatus(),
+    ]);
+    tableData2.push([
+        'ImageGeneration',
+        (context.getSynthesisDependencyProvider().getImageGenerator() as unknown as Provider).getStatus(),
     ]);
 
     response += `${TableGenerator.createTable(tableHeader2, tableData2)}\n`;
