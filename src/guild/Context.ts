@@ -13,7 +13,7 @@ export class GuildContext {
     private textChannel: TextChannel | undefined;
 
     private readonly voiceDependencyProvider: VoiceDependencyProvider;
-    private readonly synthesisDependencyProvider: SynthesisDependencyProvider
+    private readonly synthesisDependencyProvider: SynthesisDependencyProvider;
     private readonly guildProvider: GuildProvider;
 
     private readonly id: string;
