@@ -1,4 +1,5 @@
 import {Readable} from 'stream';
+import {Language} from '../LanguageDictionary';
 
 export interface SpeechGenerator {
     asyncGenerateSpeechFromText(message: string, voice?: string): Promise<SpeechGeneratorResult>;
@@ -10,7 +11,7 @@ export interface SpeechGeneratorResult {
 }
 
 export interface SpeechRecognizer {
-    recognizeTextFromSpeech(audioStream: Readable): Promise<string>;
+    recognizeTextFromSpeech(audioStream: Readable, language: Language): Promise<string>;
 }
 
 export function isSpeechGenerator(object: any): object is SpeechGenerator {

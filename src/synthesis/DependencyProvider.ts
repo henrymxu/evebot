@@ -1,12 +1,17 @@
-import {ImageEngine} from '../apis/Engine';
+import {ImageEngine, TextEngine} from '../apis/Engine';
 import {ImageGenerator} from '../apis/ImageProvider';
 import {Config} from '../guild/Config';
+import {TextGenerator} from '../apis/TextProvider';
 
 export class SynthesisDependencyProvider {
     constructor() {}
 
     getImageGenerator(): ImageGenerator | undefined {
         return ImageEngine.getGenerator();
+    }
+
+    getTextGenerator(): TextGenerator | undefined {
+        return TextEngine.getGenerator();
     }
 }
 

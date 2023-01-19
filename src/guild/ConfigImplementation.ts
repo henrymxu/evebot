@@ -2,6 +2,7 @@ import {Role, User} from 'discord.js';
 import {Storage} from '../storage/Storage';
 import {CommandRegistry} from '../commands/Registry';
 import {Aliases, Config, Emojis, Logging, Macro, Nicknames, Privilege} from './Config';
+import {Language} from '../LanguageDictionary';
 
 export class ConfigImplementation implements Config {
     private readonly guildID: string;
@@ -29,6 +30,14 @@ export class ConfigImplementation implements Config {
 
     setPrefix(prefix: string) {
         ConfigImplementation.setKeyValue(this, 'prefix', prefix);
+    }
+
+    getLanguage(): Language {
+        return this.json['language'];
+    }
+
+    setLanguage(language: Language) {
+        ConfigImplementation.setKeyValue(this, 'language', language);
     }
 
     getDefaultPrivilege(): boolean {
@@ -197,6 +206,39 @@ export class ConfigImplementation implements Config {
         } else {
             const index = this.json['voice_opt_out_list'].indexOf(userID);
             index > -1 ? this.json['voice_opt_out_list'].splice(index, 1) : false;
+        }
+        this.save();
+    }
+
+    getUserVoiceLanguage(userID: string): Language {
+        return this.json['user_languages'][userID] ?? this.getLanguage();
+    }
+
+    setUserVoiceLanguage(userID: string, language?: Language) {
+        if (!language) {
+            delete this.json['user_languages'][userID];
+        } else {
+            this.json['user_languages'][userID] = language;
+        }
+        this.save();
+    }
+
+    isUserInConversationMode(userID: string): boolean {
+        return this.json['user_conversation_mode_list'].includes(userID);
+    }
+
+    setUserInConversationMode(userID: string, enabled: boolean) {
+        if (
+            (enabled && this.isUserInConversationMode(userID)) ||
+            (!enabled && !this.isUserInConversationMode(userID))
+        ) {
+            return;
+        }
+        if (enabled) {
+            this.json['user_conversation_mode_list'].push(userID);
+        } else {
+            const index = this.json['user_conversation_mode_list'].indexOf(userID);
+            index > -1 ? this.json['user_conversation_mode_list'].splice(index, 1) : false;
         }
         this.save();
     }

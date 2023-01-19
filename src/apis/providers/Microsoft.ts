@@ -10,6 +10,7 @@ import {
     SpeechSynthesisResult,
 } from 'microsoft-cognitiveservices-speech-sdk';
 import {Provider} from '../Provider';
+import {Language} from '../../LanguageDictionary';
 
 const SpeechSDK = require('microsoft-cognitiveservices-speech-sdk');
 
@@ -26,7 +27,6 @@ export default class Microsoft implements Provider, SpeechGenerator, SpeechRecog
 
     asyncGenerateSpeechFromText(message: string, voice = 'en-CA-Linda'): Promise<SpeechGeneratorResult> {
         const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(Keys.get(configVars[0]), Keys.get(configVars[1]));
-        speechConfig.speechRecognitionLanguage = 'en-US';
         speechConfig.speechSynthesisVoiceName = voice;
         let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, null);
         return new Promise<SpeechGeneratorResult>((res, rej) => {
@@ -56,7 +56,7 @@ export default class Microsoft implements Provider, SpeechGenerator, SpeechRecog
         });
     }
 
-    recognizeTextFromSpeech(audioStream: Readable): Promise<string> {
+    recognizeTextFromSpeech(audioStream: Readable, language: Language): Promise<string> {
         const pushStream = SpeechSDK.AudioInputStream.createPushStream(
             SpeechSDK.AudioStreamFormat.getWaveFormatPCM(48000, 16, 2)
         );
@@ -70,7 +70,7 @@ export default class Microsoft implements Provider, SpeechGenerator, SpeechRecog
 
         const audioConfig = SpeechSDK.AudioConfig.fromStreamInput(pushStream);
         const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(Keys.get(configVars[0]), Keys.get(configVars[1]));
-        speechConfig.speechRecognitionLanguage = 'en-US';
+        speechConfig.speechRecognitionLanguage = language;
 
         let recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
 
