@@ -1,7 +1,7 @@
-import {ImageEngine, TextEngine} from '../apis/Engine';
-import {ImageGenerator} from '../apis/ImageProvider';
+import {ImageEngine, TextEngine} from './Engine';
+import {ImageGenerator} from './ImageProvider';
 import {Config} from '../guild/Config';
-import {TextGenerator} from '../apis/TextProvider';
+import {TextGenerator} from './TextProvider';
 
 export class SynthesisDependencyProvider {
     constructor() {}

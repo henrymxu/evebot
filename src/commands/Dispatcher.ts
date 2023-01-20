@@ -35,6 +35,10 @@ export namespace CommandDispatcher {
 
     // Assumes that the command does not include the prefix
     export function handleExplicitCommand(context: GuildContext, user: User, message: string) {
+        if (message === 'Unknown Value') {
+            Logger.d(TAG, 'Unknown Value received', context);
+            return;
+        }
         const prefix = context.getPrefix();
         if (context.getConfig().isUserInConversationMode(user.id)) {
             const language = context.getConfig().getUserVoiceLanguage(user.id);

@@ -1,6 +1,6 @@
 import {HotwordEngine} from '../hotword/Engine';
-import {SpeechGenerator, SpeechRecognizer} from '../apis/SpeechProvider';
-import {SpeechEngine} from '../apis/Engine';
+import {SpeechGenerator, SpeechRecognizer} from './SpeechProvider';
+import {SpeechEngine} from './Engine';
 import Porcupine from '../hotword/providers/Porcupine';
 import {Config} from '../guild/Config';
 
