@@ -38,13 +38,7 @@ export default class Microsoft implements Provider, SpeechGenerator, SpeechRecog
         const speechConfig = SpeechConfig.fromSubscription(Keys.get(configVars[0]), Keys.get(configVars[1]));
         speechConfig.speechSynthesisOutputFormat = SpeechSynthesisOutputFormat.Ogg48Khz16BitMonoOpus;
         speechConfig.speechSynthesisVoiceName = voice;
-        let synthesizer: SpeechSynthesizer;
-        if (this.synthesizerCache.has(voice)) {
-            synthesizer = this.synthesizerCache.get(voice)!;
-        } else {
-            synthesizer = new SpeechSynthesizer(speechConfig, undefined);
-            this.synthesizerCache.set(voice, synthesizer);
-        }
+        let synthesizer: SpeechSynthesizer | undefined = new SpeechSynthesizer(speechConfig, undefined);
         return new Promise<SpeechGeneratorResult>((res, rej) => {
             synthesizer?.speakTextAsync(
                 message,
@@ -59,10 +53,12 @@ export default class Microsoft implements Provider, SpeechGenerator, SpeechRecog
                         stream: AudioUtils.convertMp3StreamToOpusStream(duplex),
                         length: streamLengthInSeconds,
                     });
-                    // synthesizer?.close();
+                    synthesizer?.close();
+                    synthesizer = undefined;
                 },
                 (err: string) => {
-                    // synthesizer?.close();
+                    synthesizer?.close();
+                    synthesizer = undefined;
                     Logger.e(Microsoft.name, `Generate speech error, reason ${err}`);
                     rej(err);
                 }
@@ -84,26 +80,25 @@ export default class Microsoft implements Provider, SpeechGenerator, SpeechRecog
         const speechConfig = SpeechConfig.fromSubscription(Keys.get(configVars[0]), Keys.get(configVars[1]));
         speechConfig.speechRecognitionLanguage = language;
 
-        let recognizer: MicrosoftSpeechRecognizer;
-        if (this.recognizerCache.has(language)) {
-            recognizer = this.recognizerCache.get(language)!;
-        } else {
-            recognizer = new MicrosoftSpeechRecognizer(speechConfig, audioConfig);
-            this.recognizerCache.set(language, recognizer);
-        }
+        let recognizer: MicrosoftSpeechRecognizer | undefined = new MicrosoftSpeechRecognizer(
+            speechConfig,
+            audioConfig
+        );
         return new Promise((res, rej) => {
-            recognizer.recognized = (s: Recognizer, e: SpeechRecognitionEventArgs) => {
+            recognizer!.recognized = (s: Recognizer, e: SpeechRecognitionEventArgs) => {
                 const result =
                     e.result.reason === ResultReason.NoMatch ? 'Unknown Value' : e.result.text.replace('.', '');
                 res(result);
             };
 
-            recognizer.recognizeOnceAsync(
+            recognizer?.recognizeOnceAsync(
                 (result: SpeechRecognitionResult) => {
-                    // recognizer.close();
+                    recognizer?.close();
+                    recognizer = undefined;
                 },
                 (err: string) => {
-                    // recognizer.close();
+                    recognizer?.close();
+                    recognizer = undefined;
                 }
             );
         });
