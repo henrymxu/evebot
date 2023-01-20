@@ -57,7 +57,7 @@ export default class ReciteCommand extends VoiceCommand {
             if (!speechRecognizer) {
                 throw new CommandExecutionError('No SpeechRecognizer Registered', Acknowledgement.NEGATIVE);
             }
-            return speechRecognizer.recognizeTextFromSpeech(audioStream).then(transcribed => {
+            return speechRecognizer.recognizeTextFromSpeech(audioStream, 'en-US').then(transcribed => {
                 const transcribedMessage = createTranscriptionEmbed(user, transcribed);
                 return [{content: transcribedMessage, message: message}, Acknowledgement.SURVEILLANCE];
             });

@@ -248,7 +248,14 @@ export default class VoiceConnectionHandler {
                 this.isListeningToCommand.delete(user.id);
             }, MAX_VOICE_COMMAND_LENGTH);
             recorderStream.pipe(recognitionStream);
-            speechRecognizer.recognizeTextFromSpeech(recognitionStream).then(text => {
+            // Language handling for converse mode
+            let language;
+            if (this.context.getConfig().isUserInConversationMode(user.id)) {
+                language = this.context.getConfig().getUserVoiceLanguage(user.id);
+            } else {
+                language = this.context.getConfig().getLanguage();
+            }
+            speechRecognizer.recognizeTextFromSpeech(recognitionStream, language).then(text => {
                 Logger.i('HotwordDetector', `${user.tag} said ${text}`, this.context);
                 CommandDispatcher.handleExplicitCommand(this.context, user, text);
             });

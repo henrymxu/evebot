@@ -5,6 +5,7 @@ import Microsoft from './providers/Microsoft';
 import {isSpeechGenerator, isSpeechRecognizer, SpeechGenerator, SpeechRecognizer} from './SpeechProvider';
 import {ImageGenerator, isImageGenerator} from './ImageProvider';
 import OpenAi from './providers/OpenAi';
+import {isTextGenerator, TextGenerator} from './TextProvider';
 
 const providers: Provider[] = [new OpenAi(), new Microsoft()];
 
@@ -21,6 +22,12 @@ export namespace SpeechEngine {
 export namespace ImageEngine {
     export function getGenerator(): ImageGenerator | undefined {
         return findValidProvider(providers.filter(provider => isImageGenerator(provider)));
+    }
+}
+
+export namespace TextEngine {
+    export function getGenerator(): TextGenerator | undefined {
+        return findValidProvider(providers.filter(provider => isTextGenerator(provider)));
     }
 }
 

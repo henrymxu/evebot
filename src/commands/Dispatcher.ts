@@ -15,6 +15,7 @@ import {CommandRegistry} from './Registry';
 import {Logger} from '../Logger';
 import {Command, FileType} from './Command';
 import {Acknowledgement} from '../communication/Responder';
+import {LanguageMap} from '../LanguageDictionary';
 
 const TAG = 'CommandDispatcher';
 
@@ -34,9 +35,22 @@ export namespace CommandDispatcher {
 
     // Assumes that the command does not include the prefix
     export function handleExplicitCommand(context: GuildContext, user: User, message: string) {
+        if (message === 'Unknown Value') {
+            Logger.d(TAG, 'Unknown Value received', context);
+            return;
+        }
         const prefix = context.getPrefix();
-        // Check Voice Command Permissions
-        handleGuildCommand(context, `${prefix}${message}`, user);
+        if (context.getConfig().isUserInConversationMode(user.id)) {
+            const language = context.getConfig().getUserVoiceLanguage(user.id);
+            if (message === LanguageMap.get(language)!.muteKey) {
+                handleGuildCommand(context, `${prefix}muted`, user);
+            } else {
+                handleGuildCommand(context, `${prefix}converse ${message}`, user);
+            }
+        } else {
+            // Check Voice Command Permissions
+            handleGuildCommand(context, `${prefix}${message}`, user);
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 import {Role, User} from 'discord.js';
+import {Language} from '../LanguageDictionary';
 
 export interface Config {
     load(): Promise<void>;
@@ -10,6 +11,10 @@ export interface Config {
     getPrefix(): string;
 
     setPrefix(prefix: string): void;
+
+    getLanguage(): Language;
+
+    setLanguage(language: Language): void;
 
     getDefaultPrivilege(): boolean;
 
@@ -70,6 +75,14 @@ export interface Config {
     isUserVoiceOptedOut(userID: string): boolean;
 
     setUserVoiceOptedOut(userID: string, optOut: boolean): void;
+
+    getUserVoiceLanguage(userID: string): Language;
+
+    setUserVoiceLanguage(userID: string, language?: Language): void;
+
+    isUserInConversationMode(userID: string): boolean;
+
+    setUserInConversationMode(userID: string, enabled: boolean): void;
 }
 
 export type Nicknames = Set<string>;

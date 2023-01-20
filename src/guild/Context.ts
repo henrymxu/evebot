@@ -1,12 +1,12 @@
 import {Guild, TextChannel, VoiceConnection} from 'discord.js';
 import {ConfigImplementation} from './ConfigImplementation';
-import {VoiceDependencyProvider, VoiceDependencyProviderBuilder} from '../voice/DependencyProvider';
+import {VoiceDependencyProvider, VoiceDependencyProviderBuilder} from '../apis/VoiceDependencyProvider';
 import GuildProvider from './Provider';
 import {GuildUtils} from '../utils/GuildUtils';
 import {GlobalContext} from '../GlobalContext';
 import {Logger} from '../Logger';
 import {Config} from './Config';
-import {SynthesisDependencyProvider, SynthesisDependencyProviderBuilder} from '../synthesis/DependencyProvider';
+import {SynthesisDependencyProvider, SynthesisDependencyProviderBuilder} from '../apis/SynthesisDependencyProvider';
 
 export class GuildContext {
     private voiceConnection: VoiceConnection | undefined;

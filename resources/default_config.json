@@ -1,5 +1,6 @@
 {
   "prefix": "?",
+  "language": "en-US",
   "defaultTextChannel": "",
   "logging": {
     "channelID": "",
@@ -30,5 +31,8 @@
   },
   "voice_opt_out_list": [
 
-  ]
+  ],
+  "user_languages": {
+
+  }
 }

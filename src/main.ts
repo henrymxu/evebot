@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import {Keys} from './Keys';
-import {Lifecycle} from './Lifecycle';
+import {Lifecycle} from './voice/Lifecycle';
 import {GlobalContext} from './GlobalContext';
 import {CommandDispatcher} from './commands/Dispatcher';
 import {CommandRegistry} from './commands/Registry';
